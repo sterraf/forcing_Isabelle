@@ -60,7 +60,7 @@ begin
 
 lemma rvimage_separation: "M(f) \<Longrightarrow> M(r) \<Longrightarrow>
     separation(M, \<lambda>z. \<exists>x y. z = \<langle>x, y\<rangle> \<and> \<langle>f ` x, f ` y\<rangle> \<in> r)"
-  using separation_pair separation_in
+  using separation_Pair separation_in
     lam_replacement_Pair[THEN[5] lam_replacement_hcomp2]
     lam_replacement_constant lam_replacement_apply2[THEN[5] lam_replacement_hcomp2,OF lam_replacement_constant[of f]]
     lam_replacement_fst lam_replacement_snd

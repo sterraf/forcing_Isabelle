@@ -362,17 +362,6 @@ lemma cardinal_lib_assms5 :
   unfolding lt_def
   by simp_all
 
-lemma separation_dist: "separation(M, \<lambda> x . \<exists>a. \<exists>b . x=\<langle>a,b\<rangle> \<and> a\<noteq>b)"
-  using separation_pair separation_neg separation_eq lam_replacement_fst lam_replacement_snd
-  by simp
-
-lemma cdlt_assms': "M(x) \<Longrightarrow> M(Q) \<Longrightarrow> separation(M, \<lambda>a .  \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q)"
-  using separation_in[OF _
-      lam_replacement_hcomp2[OF _ _ _ _ lam_replacement_Pair] _
-      lam_replacement_constant]
-    separation_ball lam_replacement_hcomp lam_replacement_fst lam_replacement_snd
-  by simp_all
-
 lemma countable_rel_union_countable_rel:
   assumes "\<And>x. x \<in> C \<Longrightarrow> countable_rel(M,x)" "countable_rel(M,C)" "M(C)"
   shows "countable_rel(M,\<Union>C)"
@@ -802,7 +791,7 @@ lemma bounded_cardinal_rel_selection:
 proof -
   from assms
   have "M(x) \<Longrightarrow> M({a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q})" for x
-    using cdlt_assms' by simp
+    using separation_orthogonal by simp
   let ?cdlt\<gamma>="{Z\<in>Pow_rel(M,G) . |Z|\<^bsup>M\<^esup><\<gamma>}" \<comment> \<open>“cardinal\_rel less than \<^term>\<open>\<gamma>\<close>”\<close>
     and ?inQ="\<lambda>Y.{a\<in>G. \<forall>s\<in>Y. <s,a>\<in>Q}"
   from \<open>M(G)\<close> \<open>Card_rel(M,\<gamma>)\<close> \<open>M(\<gamma>)\<close>
@@ -842,7 +831,7 @@ proof -
           unfolded lam_replacement_def]
         lam_replacement_hcomp lam_replacement_Sigfun[OF
           lam_replacement_Collect_ball_Pair, of G Q, THEN
-          lam_replacement_imp_strong_replacement] cdlt_assms'
+          lam_replacement_imp_strong_replacement] separation_orthogonal
       by unfold_locales (blast dest: transM, auto dest:transM)
     show ?thesis using AC_Pi_rel Pi_rel_char H by auto
   qed

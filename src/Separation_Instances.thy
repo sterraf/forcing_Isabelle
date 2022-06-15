@@ -202,6 +202,6 @@ lemma (in M_replacement) separation_insnd_ballPair:
   using lam_replacement_fst lam_replacement_snd lam_replacement_hcomp
   lam_replacement_Pair[THEN [5] lam_replacement_hcomp2] lam_replacement_constant[of A]
   by(rule_tac separation_ball,simp_all,rule_tac separation_iff',rule_tac separation_in,auto)
-  (rule_tac separation_All,auto,rule_tac separation_in,auto)
+  (rule_tac separation_all,auto,rule_tac separation_in,auto)
 
 end

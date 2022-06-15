@@ -103,7 +103,7 @@ qed
 
 lemma converse_subset : "converse(r) \<subseteq> {\<langle>snd(x),fst(x)\<rangle> . x\<in>r}"
   unfolding converse_def
-proof(intro  subsetI, auto)
+proof(intro subsetI, auto)
   fix u v
   assume "\<langle>u,v\<rangle>\<in>r" (is "?z\<in>r")
   moreover
@@ -157,22 +157,21 @@ next
     by auto
 qed
 
-lemma diff_un : "b\<subseteq>a \<Longrightarrow> (a-b) \<union> b = a"
-  by auto
-
 lemma converse_eq: "converse(r) = ({\<langle>snd(x),fst(x)\<rangle> . x\<in>r} - {<0,0>}) \<union> (r\<inter>{<0,0>})"
 proof(cases "<0,0>\<in>r")
+  have *:"b\<subseteq>a \<Longrightarrow> (a-b) \<union> b = a" for a b
+    by auto
   case True
   then
   have "converse(r) = {\<langle>snd(x),fst(x)\<rangle> . x\<in>r}"
-    using converse_eq_aux  by auto
+    using converse_eq_aux by auto
   moreover
   from True
   have "r\<inter>{<0,0>} = {<0,0>}" "{<0,0>}\<subseteq>{\<langle>snd(x),fst(x)\<rangle> . x\<in>r}"
     using converse_subset by auto
   moreover from this True
   have "{\<langle>snd(x),fst(x)\<rangle> . x\<in>r} = ({\<langle>snd(x),fst(x)\<rangle> . x\<in>r} - {<0,0>}) \<union> ({<0,0>})"
-    using diff_un[of "{<0,0>}",symmetric] converse_eq_aux  by auto
+    using *[of "{<0,0>}",symmetric] converse_eq_aux by auto
   ultimately
   show ?thesis
     by simp
@@ -190,7 +189,7 @@ qed
 
 lemma range_subset : "range(r) \<subseteq> {snd(x). x\<in>r}"
   unfolding range_def domain_def converse_def
-proof(intro  subsetI, auto)
+proof(intro subsetI, auto)
   fix u v
   assume "\<langle>u,v\<rangle>\<in>r" (is "?z\<in>r")
   moreover
@@ -950,7 +949,7 @@ proof (clarify)
     by (rule_tac x="{z\<in>A. \<exists>x y. z = \<langle>x, y\<rangle>}" in rexI) auto
 qed
 
-lemma separation_pair:
+lemma separation_Pair:
   assumes "separation(M, \<lambda>y . P(fst(y), snd(y)))"
   shows "separation(M, \<lambda>y. \<exists> u v . y=\<langle>u,v\<rangle> \<and> P(u,v))"
   unfolding separation_def
@@ -1745,7 +1744,7 @@ lemma lam_apply_replacement: "M(A) \<Longrightarrow> M(f) \<Longrightarrow> lam_
   using lam_replacement_Lambda lam_replacement_hcomp[OF _ lam_replacement_apply[of f]] lam_replacement_Pair
   by simp
 
-lemma separation_All:
+lemma separation_all:
   assumes "separation(M, \<lambda>x  .P(fst(fst(x)),snd(x)))"
     "lam_replacement(M,f)" "lam_replacement(M,g)"
     "\<forall>x[M]. M(f(x))" "\<forall>x[M]. M(g(x))"
@@ -1884,18 +1883,26 @@ proof(clarify)
     by (rule_tac x="?L" in rexI,simp_all)
 qed
 
+(* Gives the orthogonal of x with respect Q *)
+lemma separation_orthogonal: "M(x) \<Longrightarrow> M(Q) \<Longrightarrow> separation(M, \<lambda>a .  \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q)"
+  using separation_in[OF _
+      lam_replacement_hcomp2[OF _ _ _ _ lam_replacement_Pair] _
+      lam_replacement_constant]
+    separation_ball lam_replacement_hcomp lam_replacement_fst lam_replacement_snd
+  by simp_all
+
 lemma separation_Transset: "separation(M,Transset)"
   unfolding Transset_def
   using separation_subset lam_replacement_fst lam_replacement_snd
   lam_replacement_hcomp lam_replacement_identity
-  by(rule_tac separation_All,auto)
+  by(rule_tac separation_all,auto)
 
 
 lemma separation_Ord: "separation(M,Ord)"
   unfolding Ord_def
   using  separation_Transset
     separation_comp separation_Transset lam_replacement_snd lam_replacement_identity
-  by(rule_tac separation_conj,auto,rule_tac separation_All,auto)
+  by(rule_tac separation_conj,auto,rule_tac separation_all,auto)
 
 lemma ord_iso_separation: "M(A) \<Longrightarrow> M(r) \<Longrightarrow> M(s) \<Longrightarrow>
       separation(M, \<lambda>f. \<forall>x\<in>A. \<forall>y\<in>A. \<langle>x, y\<rangle> \<in> r \<longleftrightarrow> \<langle>f ` x, f ` y\<rangle> \<in> s)"
@@ -1905,6 +1912,10 @@ lemma ord_iso_separation: "M(A) \<Longrightarrow> M(r) \<Longrightarrow> M(s) \<
     lam_replacement_hcomp lam_replacement_fst lam_replacement_snd
     lam_replacement_identity lam_replacement_constant
     separation_in separation_ball[of _ A] separation_iff'
+  by simp
+
+lemma separation_dist: "separation(M, \<lambda> x . \<exists>a. \<exists>b . x=\<langle>a,b\<rangle> \<and> a\<noteq>b)"
+  using separation_Pair separation_neg separation_eq lam_replacement_fst lam_replacement_snd
   by simp
 
 end \<comment> \<open>\<^locale>\<open>M_replacement\<close>\<close>

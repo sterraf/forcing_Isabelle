@@ -870,7 +870,7 @@ lemma wfrec_on_pred_closed':
   using assms wfrec_on_pred_closed wfrec_on_pred_eq Pow_rel_char
   by simp
 
-lemma ordermap_rel_closed':
+lemma ordermap_rel_closed[intro,simp]:
   assumes "wf[A](r)" "trans[A](r)" "r \<in> Pow\<^bsup>M\<^esup>(A\<times>A)" "M(A)"
   shows "M(ordermap_rel(M, A, r))"
 proof -
@@ -904,11 +904,6 @@ proof -
     using lam_cong[OF refl wfrec_on_pred_eq] wfrec_on_pred_closed lam_closed
     by auto
 qed
-
-lemma ordermap_rel_closed[intro,simp]:
-  assumes "wf[A](r)" "trans[A](r)" "r \<in> Pow\<^bsup>M\<^esup>(A\<times>A)"
-  shows "M(A) \<Longrightarrow> M(ordermap_rel(M, A, r))"
-  using ordermap_rel_closed' assms by simp
 
 lemma is_ordermap_iff:
   assumes "r \<in> Pow\<^bsup>M\<^esup>(A\<times>A)" "wf[A](r)" "trans[A](r)"
@@ -969,16 +964,33 @@ lemma ordertype_rel_abs:
 lemma (in M_pre_cardinal_arith) is_order_body_abs :
   "M(X) \<Longrightarrow> M(x) \<Longrightarrow> M(z) \<Longrightarrow> is_order_body(M, X, x, z) \<longleftrightarrow>
    M(z) \<and> x\<in>Pow\<^bsup>M\<^esup>(X\<times>X) \<and> well_ord(X, x) \<and> z = ordertype(X, x)"
-  using well_ord_abs is_ordertype_iff' ordertype_rel_abs
-    well_ord_is_linear subset_abs Pow_rel_char
+  using is_ordertype_iff' ordertype_rel_abs well_ord_is_linear Pow_rel_char
   unfolding is_order_body_def
   by simp
 
-lemma is_ordertype_iff'':
-  assumes "well_ord(A,r)" "r\<subseteq>A\<times>A"
-  shows "M(A) \<Longrightarrow> M(r) \<Longrightarrow> M(res) \<Longrightarrow> is_ordertype(M, A, r, res) \<longleftrightarrow> res = ordertype_rel(M, A, r)"
-  using assms is_ordertype_iff Pow_rel_char
-  unfolding well_ord_def part_ord_def tot_ord_def
+lemma well_ord_restr: "well_ord(X, r) \<Longrightarrow> well_ord(X, r \<inter> X\<times>X)"
+proof -
+  have "r \<inter> X\<times>X \<inter> X\<times>X = r \<inter> X\<times>X" by auto
+  moreover
+  assume "well_ord(X, r)"
+  ultimately
+  show ?thesis
+    unfolding well_ord_def tot_ord_def part_ord_def linear_def
+      irrefl_def wf_on_def
+    by simp_all (simp only: trans_on_def, blast)
+qed
+
+lemma ordertype_restr_eq :
+  assumes "well_ord(X,r)"
+  shows "ordertype(X, r) = ordertype(X, r \<inter> X\<times>X)"
+  using ordermap_restr_eq assms unfolding ordertype_def
+  by simp
+
+lemma ordertype_rel_closed[intro,simp]:
+  assumes "well_ord(A,r)" "r \<in> Pow\<^bsup>M\<^esup>(A\<times>A)" "M(A)"
+  shows "M(ordertype_rel(M,A,r))"
+  using assms Pow_rel_char
+  unfolding well_ord_def tot_ord_def part_ord_def ordertype_rel_def
   by simp
 
 end \<comment> \<open>\<^locale>\<open>M_pre_cardinal_arith\<close>\<close>
@@ -1000,15 +1012,28 @@ relativize functional "jump_cardinal" "jump_cardinal_rel" external
 relativize functional "trans_on" "transitivie_rel" external
 relationalize "jump_cardinal_rel" "is_jump_cardinal"
 
+
+lemma (in M_ordertype) ordermap_closed[intro,simp]:
+  assumes "wellordered(M,A,r)" and types:"M(A)" "M(r)"
+  shows "M(ordermap(A,r))"
+proof -
+  note assms
+  moreover from this
+  obtain i f where "Ord(i)" "f \<in> ord_iso(A, r, i, Memrel(i))"
+    "M(i)" "M(f)" using ordertype_exists by blast
+  moreover from calculation
+  have "i = ordertype(A,r)" using ordertypes_are_absolute by force
+  moreover from calculation
+  have "ordermap(A,r) \<in> ord_iso(A, r, i, Memrel(i))"
+    using ordertype_ord_iso by simp
+  ultimately
+  have "f = ordermap(A,r)" using well_ord_iso_unique by fastforce
+  with \<open>M(f)\<close>
+  show ?thesis by simp
+qed
+
 context M_pre_cardinal_arith
 begin
-
-lemma ordertype_rel_closed[intro,simp]:
-  assumes "well_ord(A,r)" "r \<in> Pow\<^bsup>M\<^esup>(A\<times>A)" "M(A)"
-  shows "M(ordertype_rel(M,A,r))"
-  using assms Pow_rel_char
-  unfolding well_ord_def tot_ord_def part_ord_def ordertype_rel_def
-  by simp
 
 lemma def_jump_cardinal_body:
   "M(X) \<Longrightarrow> M(U) \<Longrightarrow>
@@ -1081,30 +1106,10 @@ proof -
     by(rule_tac RepFun_closed,auto)
 qed
 
-end
+end \<comment> \<open>\<^locale>\<open>M_cardinal_arith\<close>\<close>
 
-context M_cardinal_arith
+context M_pre_cardinal_arith
 begin
-
-lemma (in M_ordertype) ordermap_closed[intro,simp]:
-  assumes "wellordered(M,A,r)" and types:"M(A)" "M(r)"
-  shows "M(ordermap(A,r))"
-proof -
-  note assms
-  moreover from this
-  obtain i f where "Ord(i)" "f \<in> ord_iso(A, r, i, Memrel(i))"
-    "M(i)" "M(f)" using ordertype_exists by blast
-  moreover from calculation
-  have "i = ordertype(A,r)" using ordertypes_are_absolute by force
-  moreover from calculation
-  have "ordermap(A,r) \<in> ord_iso(A, r, i, Memrel(i))"
-    using ordertype_ord_iso by simp
-  ultimately
-  have "f = ordermap(A,r)" using well_ord_iso_unique by fastforce
-  with \<open>M(f)\<close>
-  show ?thesis by simp
-qed
-
 
 (*A general fact about ordermap*)
 lemma ordermap_eqpoll_pred:
@@ -1331,7 +1336,7 @@ lemma InfCard_rel_cadd_rel_eq: "[| InfCard\<^bsup>M\<^esup>(K);  InfCard\<^bsup>
   might be  InfCard(K) ==> |list(K)| = K.
 *)
 
-end \<comment> \<open>\<^locale>\<open>M_cardinal_arith\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_pre_cardinal_arith\<close>\<close>
 
 subsection\<open>For Every Cardinal Number There Exists A Greater One\<close>
 
@@ -1339,24 +1344,6 @@ text\<open>This result is Kunen's Theorem 10.16, which would be trivial using AC
 
 locale M_cardinal_arith_jump = M_cardinal_arith + M_ordertype
 begin
-
-lemma well_ord_restr: "well_ord(X, r) \<Longrightarrow> well_ord(X, r \<inter> X\<times>X)"
-proof -
-  have "r \<inter> X\<times>X \<inter> X\<times>X = r \<inter> X\<times>X" by auto
-  moreover
-  assume "well_ord(X, r)"
-  ultimately
-  show ?thesis
-    unfolding well_ord_def tot_ord_def part_ord_def linear_def
-      irrefl_def wf_on_def
-    by simp_all (simp only: trans_on_def, blast)
-qed
-
-lemma ordertype_restr_eq :
-  assumes "well_ord(X,r)"
-  shows "ordertype(X, r) = ordertype(X, r \<inter> X\<times>X)"
-  using ordermap_restr_eq assms unfolding ordertype_def
-  by simp
 
 lemma def_jump_cardinal_rel_aux:
   "X \<in> Pow\<^bsup>M\<^esup>(K) \<Longrightarrow> M(K) \<Longrightarrow>
@@ -1528,8 +1515,6 @@ proof -
   show "M(jump_cardinal_rel(M,K))"
     by simp
 qed
-
-
 
 (*The proof by contradiction: the bijection f yields a wellordering of X
   whose ordertype is jump_cardinal_rel(K).  *)

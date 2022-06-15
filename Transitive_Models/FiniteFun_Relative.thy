@@ -100,10 +100,10 @@ lemma cons_like_separation : "separation(M,\<lambda>f. cons_like(f))"
     lam_replacement_hcomp[OF _ lam_replacement_snd ]
     lam_replacement_hcomp[OF _ lam_replacement_fst]
     separation_eq lam_replacement_apply2[THEN [5] lam_replacement_hcomp2] separation_neg
-  by(rule_tac separation_All,auto,rule_tac separation_All,auto)
+  by(rule_tac separation_all,auto,rule_tac separation_all,auto)
 
 lemma supset_separation: "separation(M, \<lambda> x. \<exists>a. \<exists>b. x = \<langle>a,b\<rangle> \<and> b \<subseteq> a)"
-  using separation_pair separation_subset lam_replacement_fst lam_replacement_snd
+  using separation_Pair separation_subset lam_replacement_fst lam_replacement_snd
   by simp
 
 lemma to_finiteFun_replacement: "strong_replacement(M, \<lambda>x y. y = range(x))"
