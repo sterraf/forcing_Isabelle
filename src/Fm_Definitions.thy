@@ -25,6 +25,61 @@ on its theory.
 declare arity_subset_fm [simp del] arity_ordinal_fm[simp del, arity] arity_transset_fm[simp del]
   FOL_arities[simp del]
 
+lemma is_lambda_iff_sats[iff_sats]:
+  assumes is_F_iff_sats:
+    "!!a0 a1 a2.
+        [|a0\<in>Aa; a1\<in>Aa; a2\<in>Aa|]
+        ==> is_F(a1, a0) \<longleftrightarrow> sats(Aa, is_F_fm, Cons(a0,Cons(a1,Cons(a2,env))))"
+  shows
+    "nth(A, env) = Ab \<Longrightarrow>
+    nth(r, env) = ra \<Longrightarrow>
+    A \<in> nat \<Longrightarrow>
+    r \<in> nat \<Longrightarrow>
+    env \<in> list(Aa) \<Longrightarrow>
+    is_lambda(##Aa, Ab, is_F, ra) \<longleftrightarrow> Aa, env \<Turnstile> lambda_fm(is_F_fm,A, r)"
+  using sats_lambda_fm[OF assms, of A r] by simp
+
+\<comment> \<open>same as @{thm sats_is_wfrec_fm}, but changing length assumptions to
+    \<^term>\<open>0\<close> being in the model\<close>
+lemma sats_is_wfrec_fm':
+  assumes MH_iff_sats:
+    "!!a0 a1 a2 a3 a4.
+        [|a0\<in>A; a1\<in>A; a2\<in>A; a3\<in>A; a4\<in>A|]
+        ==> MH(a2, a1, a0) \<longleftrightarrow> sats(A, p, Cons(a0,Cons(a1,Cons(a2,Cons(a3,Cons(a4,env))))))"
+  shows
+    "[|x \<in> nat; y \<in> nat; z \<in> nat; env \<in> list(A); 0 \<in> A|]
+       ==> sats(A, is_wfrec_fm(p,x,y,z), env) \<longleftrightarrow>
+           is_wfrec(##A, MH, nth(x,env), nth(y,env), nth(z,env))"
+  using MH_iff_sats [THEN iff_sym] nth_closed sats_is_recfun_fm
+  by (simp add: is_wfrec_fm_def is_wfrec_def) blast
+
+lemma is_wfrec_iff_sats'[iff_sats]:
+  assumes MH_iff_sats:
+    "!!a0 a1 a2 a3 a4.
+        [|a0\<in>Aa; a1\<in>Aa; a2\<in>Aa; a3\<in>Aa; a4\<in>Aa|]
+        ==> MH(a2, a1, a0) \<longleftrightarrow> sats(Aa, p, Cons(a0,Cons(a1,Cons(a2,Cons(a3,Cons(a4,env))))))"
+    "nth(x, env) = xx" "nth(y, env) = yy" "nth(z, env) = zz"
+    "x \<in> nat" "y \<in> nat" "z \<in> nat" "env \<in> list(Aa)" "0 \<in> Aa"
+  shows
+    "is_wfrec(##Aa, MH, xx, yy, zz) \<longleftrightarrow> Aa, env \<Turnstile> is_wfrec_fm(p,x,y,z)"
+  using assms(2-4) sats_is_wfrec_fm'[OF assms(1,5-9)] by simp
+
+lemma is_wfrec_on_iff_sats[iff_sats]:
+  assumes MH_iff_sats:
+    "!!a0 a1 a2 a3 a4.
+        [|a0\<in>Aa; a1\<in>Aa; a2\<in>Aa; a3\<in>Aa; a4\<in>Aa|]
+        ==> MH(a2, a1, a0) \<longleftrightarrow> sats(Aa, p, Cons(a0,Cons(a1,Cons(a2,Cons(a3,Cons(a4,env))))))"
+  shows
+    "nth(x, env) = xx \<Longrightarrow>
+    nth(y, env) = yy \<Longrightarrow>
+    nth(z, env) = zz \<Longrightarrow>
+    x \<in> nat \<Longrightarrow>
+    y \<in> nat \<Longrightarrow>
+    z \<in> nat \<Longrightarrow>
+    env \<in> list(Aa) \<Longrightarrow>
+    0 \<in> Aa \<Longrightarrow> is_wfrec_on(##Aa, MH, aa,xx, yy, zz) \<longleftrightarrow> Aa, env \<Turnstile> is_wfrec_fm(p,x,y,z)"
+  using assms sats_is_wfrec_fm'[OF assms] unfolding is_wfrec_on_def by simp
+
 text\<open>Formulas for particular replacement instances\<close>
 
 text\<open>Now we introduce some definitions used in the definition of check; which
@@ -840,11 +895,16 @@ proof -
     by(simp only: Un_commute, subst Un_commute, simp add:ord_simp_union,force)
 qed
 
+synthesize "is_ordermap" from_definition assuming "nonempty"
+
+synthesize "is_ordertype" from_definition assuming "nonempty"
+
 definition is_order_body
-  where "is_order_body(M,X,x,z) \<equiv> \<exists>A[M]. cartprod(M,X,X,A) \<and> subset(M,x,A) \<and> M(z) \<and> M(x) \<and>
-           is_well_ord(M,X, x) \<and> is_ordertype(M,X, x,z)"
+  where "is_order_body(M,X,x,z) \<equiv>
+           is_well_ord(M,X,x) \<and> is_ordertype(M,X,x,z)"
 
 synthesize "is_order_body" from_definition assuming "nonempty"
+arity_theorem for "is_order_body_fm"
 
 definition omap_wfrec_body where
   "omap_wfrec_body(A,r) \<equiv> (\<cdot>\<exists>\<cdot>image_fm(2, 0, 1) \<and> pred_set_fm(9+\<^sub>\<omega>A, 3,9+\<^sub>\<omega>r, 0) \<cdot>\<cdot>)"
@@ -876,8 +936,6 @@ lemma arity_is_ordertype: "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarro
   unfolding is_ordertype_fm_def
   using arity_isordermap arity_image_fm pred_Un_distrib FOL_arities
   by auto
-
-arity_theorem for "is_order_body_fm"
 
 lemma arity_is_order_body: "arity(is_order_body_fm(2,0,1)) = 3"
   using arity_is_order_body_fm arity_is_ordertype ord_simp_union
@@ -913,10 +971,14 @@ definition order_pred_wfrec_body where
 
 synthesize "order_pred_wfrec_body" from_definition
 arity_theorem for "order_pred_wfrec_body_fm"
+synthesize "is_jump_cardinal_body_rel" from_definition assuming "nonempty"
+arity_theorem for "is_jump_cardinal_body_rel_fm"
+synthesize "is_jump_cardinal_body'_rel" from_definition assuming "nonempty"
+arity_theorem for "is_jump_cardinal_body'_rel_fm"
 
 definition replacement_is_order_body_fm where "replacement_is_order_body_fm \<equiv> is_order_body_fm(2,0,1)"
 definition wfrec_replacement_order_pred_fm where "wfrec_replacement_order_pred_fm \<equiv> order_pred_wfrec_body_fm(3,2,1,0)"
-definition replacement_is_jump_cardinal_body_fm where "replacement_is_jump_cardinal_body_fm \<equiv> is_jump_cardinal_body'_fm(0,1)"
+definition replacement_is_jump_cardinal_body_fm where "replacement_is_jump_cardinal_body_fm \<equiv> is_jump_cardinal_body'_rel_fm(0,1)"
 definition replacement_is_aleph_fm where "replacement_is_aleph_fm \<equiv> \<cdot>\<cdot>0 is ordinal\<cdot> \<and> \<cdot>\<aleph>(0) is 1\<cdot>\<cdot>"
 
 definition

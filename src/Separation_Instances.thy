@@ -150,15 +150,6 @@ lemma (in M_ZF1_trans) separation_surjP_rel:
     nonempty surjP_rel_iff_sats[symmetric] arity_surjP_rel_fm surjP_rel_fm_type
   by(simp_all add: ord_simp_union)
 
-synthesize "cons_like_rel" from_definition assuming "nonempty"
-arity_theorem for "cons_like_rel_fm"
-
-lemma (in M_ZF1_trans) separation_cons_like_rel:
- "separation(##M, cons_like_rel(##M))"
-  using separation_in_ctm[where env="[]" and \<phi>="cons_like_rel_fm(0)"]
-    nonempty cons_like_rel_iff_sats[symmetric] arity_cons_like_rel_fm cons_like_rel_fm_type
-  by simp
-
 lemma (in M_ZF1_trans) separation_is_function:
  "separation(##M, is_function(##M))"
   using separation_in_ctm[where env="[]" and \<phi>="function_fm(0)"] arity_function_fm
@@ -206,28 +197,11 @@ lemma (in M_ZF1_trans) separation_sndfst_eq_fstsnd:
   unfolding sndfst_eq_fstsnd_def
   by simp
 
-(*  "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> separation(M, \<lambda>p. \<forall>x\<in>G. x \<in> snd(p) \<longleftrightarrow> (\<forall>s\<in>fst(p). \<langle>s, x\<rangle> \<in> Q))" *)
-definition insnd_ballPair :: "[i,i,i] \<Rightarrow> o" where
-  "insnd_ballPair(B,A) \<equiv> \<lambda>p. \<forall>x\<in>B. x \<in> snd(p) \<longleftrightarrow> (\<forall>s\<in>fst(p). \<langle>s, x\<rangle> \<in> A)"
-
-relativize "insnd_ballPair" "is_insnd_ballPair"
-synthesize "is_insnd_ballPair" from_definition assuming "nonempty"
-arity_theorem for "is_insnd_ballPair_fm"
-
-lemma (in M_ZF1_trans) insnd_ballPair_abs:
-  assumes "(##M)(B)" "(##M)(A)" "(##M)(x)"
-  shows "is_insnd_ballPair(##M,B,A,x) \<longleftrightarrow> insnd_ballPair(B,A,x)"
-  using assms pair_in_M_iff fst_abs snd_abs fst_snd_closed
-    transM[of _ B] transM[of _ "snd(x)"] transM[of _ "fst(x)"]
-  unfolding insnd_ballPair_def is_insnd_ballPair_def
-  by (auto)
-
-lemma (in M_ZF1_trans) separation_insnd_ballPair:
- "(##M)(B) \<Longrightarrow> (##M)(A) \<Longrightarrow> separation(##M, \<lambda>p. \<forall>x\<in>B. x \<in> snd(p) \<longleftrightarrow> (\<forall>s\<in>fst(p). \<langle>s, x\<rangle> \<in> A))"
-  using insnd_ballPair_abs nonempty
-    separation_in_ctm[where \<phi>="is_insnd_ballPair_fm(2,1,0)" and env="[A,B]"]
-    arity_is_insnd_ballPair_fm ord_simp_union is_insnd_ballPair_fm_type
-  unfolding insnd_ballPair_def
-  by simp
+lemma (in M_replacement) separation_insnd_ballPair:
+ "M(B) \<Longrightarrow> M(A) \<Longrightarrow> separation(M, \<lambda>p. \<forall>x\<in>B. x \<in> snd(p) \<longleftrightarrow> (\<forall>s\<in>fst(p). \<langle>s, x\<rangle> \<in> A))"
+  using lam_replacement_fst lam_replacement_snd lam_replacement_hcomp
+  lam_replacement_Pair[THEN [5] lam_replacement_hcomp2] lam_replacement_constant[of A]
+  by(rule_tac separation_ball,simp_all,rule_tac separation_iff',rule_tac separation_in,auto)
+  (rule_tac separation_All,auto,rule_tac separation_in,auto)
 
 end

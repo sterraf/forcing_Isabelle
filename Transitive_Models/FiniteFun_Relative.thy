@@ -78,14 +78,6 @@ text\<open>A function $g\in n\to A\times B$ that is functional in the first comp
 definition cons_like :: "i \<Rightarrow> o" where
   "cons_like(f) \<equiv> \<forall> i\<in>domain(f) . \<forall>j\<in>i . fst(f`i) \<noteq> fst(f`j)"
 
-relativize "cons_like" "cons_like_rel"
-
-lemma (in M_seqspace) cons_like_abs:
-  "M(f) \<Longrightarrow> cons_like(f) \<longleftrightarrow> cons_like_rel(M,f)"
-  unfolding cons_like_def cons_like_rel_def
-  using fst_abs
-  by simp
-
 definition FiniteFun_iso :: "[i,i,i,i,i] \<Rightarrow> o" where
   "FiniteFun_iso(A,B,n,g,f) \<equiv>  (\<forall> i\<in>n . g`i \<in> f) \<and> (\<forall> ab\<in>f. (\<exists> i\<in>n. g`i=ab))"
 
@@ -99,10 +91,16 @@ definition FiniteFun_Repr :: "[i,i] \<Rightarrow> i" where
 
 locale M_FiniteFun =  M_seqspace +
   assumes
-    cons_like_separation : "separation(M,\<lambda>f. cons_like_rel(M,f))"
-    and
     separation_is_function : "separation(M, is_function(M))"
 begin
+
+lemma cons_like_separation : "separation(M,\<lambda>f. cons_like(f))"
+  unfolding cons_like_def
+  using lam_replacement_identity lam_replacement_domain lam_replacement_snd
+    lam_replacement_hcomp[OF _ lam_replacement_snd ]
+    lam_replacement_hcomp[OF _ lam_replacement_fst]
+    separation_eq lam_replacement_apply2[THEN [5] lam_replacement_hcomp2] separation_neg
+  by(rule_tac separation_All,auto,rule_tac separation_All,auto)
 
 lemma supset_separation: "separation(M, \<lambda> x. \<exists>a. \<exists>b. x = \<langle>a,b\<rangle> \<and> b \<subseteq> a)"
   using separation_pair separation_subset lam_replacement_fst lam_replacement_snd
@@ -393,7 +391,7 @@ lemma FiniteFun_Repr_closed :
   shows "M(FiniteFun_Repr(A,B))"
   unfolding FiniteFun_Repr_def
   using assms cartprod_closed
-    seqspace_closed separation_closed cons_like_abs cons_like_separation
+    seqspace_closed separation_closed cons_like_separation
   by simp
 
 lemma to_FiniteFun_closed:

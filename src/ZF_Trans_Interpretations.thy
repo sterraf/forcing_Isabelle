@@ -116,15 +116,6 @@ lemma (in M_ZF3_trans) replacement_is_order_body:
     apply(simp_all add: arity_is_order_body )
   done
 
-lemma (in M_pre_cardinal_arith) is_order_body_abs :
-  "M(X) \<Longrightarrow> M(x) \<Longrightarrow> M(z) \<Longrightarrow> is_order_body(M, X, x, z) \<longleftrightarrow>
-   M(z) \<and> M(x) \<and> x\<in>Pow_rel(M,X\<times>X) \<and> well_ord(X, x) \<and> z = ordertype(X, x)"
-  using well_ord_abs is_well_ord_iff_wellordered is_ordertype_iff' ordertype_rel_abs
-    well_ord_is_linear subset_abs Pow_rel_char
-  unfolding is_order_body_def
-  by simp
-
-
 definition H_order_pred where
   "H_order_pred(A,r) \<equiv>  \<lambda>x f . f `` Order.pred(A, x, r)"
 
@@ -161,26 +152,26 @@ sublocale M_ZF3_trans \<subseteq> M_pre_cardinal_arith "##M"
     replacement_is_order_eq_map[unfolded order_eq_map_def] banach_replacement
   by unfold_locales simp_all
 
-lemma (in M_ZF3_trans) replacement_ordertype:
-  "X\<in>M \<Longrightarrow> strong_replacement(##M, \<lambda>x z. z \<in> M \<and> x \<in> M \<and> x \<in> Pow\<^bsup>M\<^esup>(X \<times> X) \<and> well_ord(X, x) \<and> z = ordertype(X, x))"
-  using strong_replacement_cong[THEN iffD1,OF _ replacement_is_order_body,simplified] is_order_body_abs
-  unfolding is_order_body_def
-  by simp
-
-lemma arity_is_jump_cardinal_body: "arity(is_jump_cardinal_body'_fm(0,1)) = 2"
-  unfolding is_jump_cardinal_body'_fm_def
+lemma arity_is_jump_cardinal_body: "arity(is_jump_cardinal_body_rel_fm(0,2,3)) = 4"
+  unfolding is_jump_cardinal_body_rel_fm_def
   using arity_is_ordertype arity_is_well_ord_fm arity_is_Pow_fm arity_cartprod_fm
     arity_Replace_fm[where i=5] ord_simp_union FOL_arities
   by simp
 
+lemma arity_is_jump_cardinal_body': "arity(is_jump_cardinal_body'_rel_fm(0,1)) = 2"
+  unfolding is_jump_cardinal_body'_rel_fm_def
+  using arity_is_jump_cardinal_body arity_is_Pow_fm arity_cartprod_fm
+     ord_simp_union FOL_arities
+  by simp
+
 lemma (in M_ZF3_trans) replacement_is_jump_cardinal_body:
-  "strong_replacement(##M, is_jump_cardinal_body'(##M))"
+  "strong_replacement(##M, is_jump_cardinal_body'_rel(##M))"
   apply(rule_tac strong_replacement_cong[
-        where P="\<lambda> x f. M,[x,f] \<Turnstile> is_jump_cardinal_body'_fm(0,1)",THEN iffD1])
-   apply(rule_tac is_jump_cardinal_body'_iff_sats[where env="[_,_]",symmetric])
+        where P="\<lambda> x f. M,[x,f] \<Turnstile> is_jump_cardinal_body'_rel_fm(0,1)",THEN iffD1])
+   apply(rule_tac is_jump_cardinal_body'_rel_iff_sats[where env="[_,_]",symmetric])
         apply(simp_all add:zero_in_M)
   apply(rule_tac replacement_ax3(3)[unfolded replacement_assm_def, rule_format, where env="[]",simplified])
-   apply(simp_all add: arity_is_jump_cardinal_body )
+   apply(simp_all add: arity_is_jump_cardinal_body' )
   done
 
 lemma (in M_pre_cardinal_arith) univalent_aux2: "M(X) \<Longrightarrow> univalent(M,Pow_rel(M,X\<times>X),
@@ -193,21 +184,23 @@ lemma (in M_pre_cardinal_arith) univalent_aux2: "M(X) \<Longrightarrow> univalen
   by (simp)
 
 lemma (in M_pre_cardinal_arith) is_jump_cardinal_body_abs :
-  "M(X) \<Longrightarrow> M(c) \<Longrightarrow> is_jump_cardinal_body'(M, X, c) \<longleftrightarrow> c = jump_cardinal_body'_rel(M,X)"
+  "M(X) \<Longrightarrow> M(c) \<Longrightarrow> is_jump_cardinal_body'_rel(M, X, c) \<longleftrightarrow> c = jump_cardinal_body'_rel(M,X)"
   using well_ord_abs is_well_ord_iff_wellordered is_ordertype_iff' ordertype_rel_abs
-    well_ord_is_linear subset_abs Pow_rel_iff Replace_abs[of "Pow_rel(M,X\<times>X)",OF _ _
-      univalent_aux2]
-  unfolding is_jump_cardinal_body'_def jump_cardinal_body'_rel_def
+    well_ord_is_linear subset_abs Pow_rel_iff
+    Replace_abs[of "Pow_rel(M,X\<times>X)",OF _ _univalent_aux2,simplified]
+  unfolding is_jump_cardinal_body'_rel_def jump_cardinal_body'_rel_def
+    is_jump_cardinal_body_rel_def  jump_cardinal_body_rel_def
   by simp
 
 lemma (in M_ZF3_trans) replacement_jump_cardinal_body:
-  "strong_replacement(##M, \<lambda>x z. z \<in> M \<and> x \<in> M \<and> z = jump_cardinal_body(##M, x))"
+  "strong_replacement(##M, \<lambda>x z.  z = jump_cardinal_body'_rel(##M,x))"
   using strong_replacement_cong[THEN iffD1,OF _ replacement_is_jump_cardinal_body,simplified]
-    jump_cardinal_body_eq is_jump_cardinal_body_abs
+     is_jump_cardinal_body_abs
   by simp
 
 sublocale M_ZF3_trans \<subseteq> M_pre_aleph "##M"
-  using replacement_ordertype replacement_jump_cardinal_body HAleph_wfrec_repl
+  using  replacement_jump_cardinal_body[unfolded jump_cardinal_body'_rel_def]
+    HAleph_wfrec_repl jump_cardinal_body_abs replacement_is_order_body[unfolded is_order_body_def]
   by unfold_locales (simp_all add: transrec_replacement_def
       wfrec_replacement_def is_wfrec_def M_is_recfun_def flip:setclass_iff)
 
@@ -296,7 +289,7 @@ sublocale M_ZF3_trans \<subseteq> M_aleph "##M"
   by unfold_locales
 
 sublocale M_ZF2_trans \<subseteq> M_FiniteFun "##M"
-  using separation_cons_like_rel separation_is_function
+  using separation_is_function
   by unfold_locales simp
 
 sublocale M_ZFC1_trans \<subseteq> M_AC "##M"
