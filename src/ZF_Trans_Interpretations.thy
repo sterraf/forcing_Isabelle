@@ -200,7 +200,7 @@ lemma (in M_ZF3_trans) replacement_jump_cardinal_body:
 
 sublocale M_ZF3_trans \<subseteq> M_pre_aleph "##M"
   using  replacement_jump_cardinal_body[unfolded jump_cardinal_body'_rel_def]
-    HAleph_wfrec_repl jump_cardinal_body_abs replacement_is_order_body[unfolded is_order_body_def]
+    HAleph_wfrec_repl replacement_is_order_body[unfolded is_order_body_def]
   by unfold_locales (simp_all add: transrec_replacement_def
       wfrec_replacement_def is_wfrec_def M_is_recfun_def flip:setclass_iff)
 

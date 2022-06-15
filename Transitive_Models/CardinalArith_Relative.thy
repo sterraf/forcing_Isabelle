@@ -668,7 +668,6 @@ end \<comment> \<open>\<^locale>\<open>M_pre_cardinal_arith\<close>\<close>
 
 (*** An infinite cardinal equals its square (Kunen, Thm 10.12, page 29) ***)
 
-
 lemma (in M_ordertype) ordertype_abs[absolut]:
   assumes "wellordered(M,A,r)" "M(A)" "M(r)" "M(i)"
   shows "otype(M,A,r,i) \<longleftrightarrow> i = ordertype(A,r)"
@@ -729,8 +728,10 @@ qed
 lemma (in M_ordertype) ordertype_closed[intro,simp]: "\<lbrakk> wellordered(M,A,r);M(A);M(r)\<rbrakk> \<Longrightarrow> M(ordertype(A,r))"
   using ordertype_exists ordertypes_are_absolute by blast
 
-lemma (in M_ordertype) ordertype_closed'[intro,simp]: "\<lbrakk> well_ord(A,r);M(A);M(r)\<rbrakk> \<Longrightarrow> M(ordertype(A,r))"
-  using ordertype_exists ordertypes_are_absolute well_ord_abs by blast
+(*
+This apparent duplication of definitions is needed because in ZF-Constructible
+pairs are in their absolute version and this breaks the synthesis of formulas.
+*)
 
 relationalize "transitive_rel" "is_transitive" external
 synthesize "is_transitive" from_definition assuming "nonempty"
@@ -868,7 +869,6 @@ lemma wfrec_on_pred_closed':
   shows "M(wfrec[A](r, x, \<lambda>x f. f `` Order.pred(A, x, r)))"
   using assms wfrec_on_pred_closed wfrec_on_pred_eq Pow_rel_char
   by simp
-
 
 lemma ordermap_rel_closed':
   assumes "wf[A](r)" "trans[A](r)" "r \<in> Pow\<^bsup>M\<^esup>(A\<times>A)" "M(A)"
@@ -1014,7 +1014,7 @@ lemma def_jump_cardinal_body:
   "M(X) \<Longrightarrow> M(U) \<Longrightarrow>
   jump_cardinal_body(U,X) = {z . r \<in> U, M(z) \<and> well_ord(X, r) \<and> z = ordertype(X, r)}"
   unfolding jump_cardinal_body_def
-  using ordertype_closed'
+  using ordertype_closed
   by(rule_tac Replace_cong,auto dest:transM)
 
 lemma jump_cardinal_body_abs:
@@ -1031,7 +1031,7 @@ locale M_cardinal_arith = M_pre_cardinal_arith +
     "M(X) \<Longrightarrow> strong_replacement(M,\<lambda> x z . is_well_ord(M,X, x) \<and> is_ordertype(M,X,x,z))"
     and
     strong_replacement_jc_body :
-    "strong_replacement(M,\<lambda> x z . z = jump_cardinal_body(Pow\<^bsup>M\<^esup>(x\<times>x),x))"
+    "strong_replacement(M,\<lambda> x z . z = jump_cardinal_body_rel(M,Pow\<^bsup>M\<^esup>(x\<times>x),x))"
 begin
 
 lemma jump_cardinal_closed_aux1:
@@ -1077,7 +1077,7 @@ proof -
   then
   show ?thesis
     using assms jump_cardinal_closed_aux1 strong_replacement_jc_body
-      transM[of _ "Pow\<^bsup>M\<^esup>(K)"]
+      transM[of _ "Pow\<^bsup>M\<^esup>(K)"] jump_cardinal_body_abs
     by(rule_tac RepFun_closed,auto)
 qed
 
@@ -1407,17 +1407,16 @@ lemma def_jump_cardinal_rel:
   shows "jump_cardinal_rel(M,K) =
          (\<Union>{jump_cardinal_body(Pow\<^bsup>M\<^esup>(K*K),X) . X\<in> Pow\<^bsup>M\<^esup>(K)})"
 proof -
-  have "jump_cardinal_body(Pow\<^bsup>M\<^esup>(X \<times> X),X) =
-    {z . r \<in> Pow\<^bsup>M\<^esup>(X \<times> X), M(z) \<and>  well_ord(X, r) \<and> z=ordertype(X, r)}"
+  have "jump_cardinal_body(Pow\<^bsup>M\<^esup>(X \<times> X),X) = {z . r \<in> Pow\<^bsup>M\<^esup>(X \<times> X), M(z) \<and> well_ord(X, r) \<and> z=ordertype(X, r)}"
     if "M(X)" for X
-    using that ordertype_closed' transM[of _ "Pow\<^bsup>M\<^esup>(X\<times>X)"]
+    using that ordertype_closed transM[of _ "Pow\<^bsup>M\<^esup>(X\<times>X)"]
     unfolding jump_cardinal_body_def
     by(intro equalityI subsetI,auto)
   then
   have "M({z . r \<in> Pow\<^bsup>M\<^esup>(X \<times> X), M(z) \<and> well_ord(X, r) \<and> z = ordertype(X, r)})"
     if "M(Y)" "X \<in> Pow\<^bsup>M\<^esup>(Y)" for Y X
     using jump_cardinal_closed_aux1[of X] that transM[of _ "Pow\<^bsup>M\<^esup>(Y)"]
-      ordertype_closed' transM[of _ "Pow\<^bsup>M\<^esup>(X\<times>X)"]
+      ordertype_closed transM[of _ "Pow\<^bsup>M\<^esup>(X\<times>X)"]
     unfolding jump_cardinal_body_def
     by auto
   moreover from \<open>M(K)\<close>
@@ -1430,7 +1429,7 @@ proof -
       ordertype_rel_abs transM[of _ "Pow\<^bsup>M\<^esup>(K)"] transM[of _ "Pow\<^bsup>M\<^esup>(K\<times>K)"]
       def_jump_cardinal_rel_aux jump_cardinal_body_closed ordertype_closed
     unfolding jump_cardinal_rel_def jump_cardinal_body_def
-    apply(intro equalityI subsetI,auto dest:transM)
+    apply(intro equalityI subsetI,auto dest:transM[of _ "Pow\<^bsup>M\<^esup>(K)"])
     by(rule_tac x="{z . xa \<in> Pow\<^bsup>M\<^esup>(K \<times> K), M(z) \<and> well_ord(y, xa) \<and> z = ordertype(y, xa)}" in bexI,auto)
 qed
 
