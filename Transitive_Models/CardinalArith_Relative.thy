@@ -38,9 +38,6 @@ locale M_pre_cardinal_arith = M_cardinals +
     wfrec_pred_replacement:"M(A) \<Longrightarrow> M(r) \<Longrightarrow>
       wfrec_replacement(M, \<lambda>x f z. z = f `` Order.pred(A, x, r), r)"
 
-text\<open>Our M_cardinal_arith.ordertype_replacement follows from a much simpler
-  replacement instance (modulo absoluteness) and a separation one.\<close>
-
 relativize_tm "\<exists>x' y' x y. z = \<langle>\<langle>x', y'\<rangle>, x, y\<rangle> \<and> (\<langle>x', x\<rangle> \<in> r \<or> x' = x \<and> \<langle>y', y\<rangle> \<in> s)"
   "is_rmultP"
 
