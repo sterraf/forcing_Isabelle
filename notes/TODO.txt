@@ -58,6 +58,12 @@ General Tasks
 - Move general results proved in some context to the definition
   of the context.
 
+- Revise locale assumptions of separation and replacemente. They
+  should involve relativized concepts. We are not clear if we need
+  them to be even relationalized (which would make them closer to the
+  internalized versions). This discussion surely depends on is_iff
+  theorems.
+
 
 Tidying up sources for release
 ==============================
