@@ -1918,7 +1918,29 @@ lemma separation_dist: "separation(M, \<lambda> x . \<exists>a. \<exists>b . x=\
   using separation_Pair separation_neg separation_eq lam_replacement_fst lam_replacement_snd
   by simp
 
+lemma curry_closed :
+  assumes "M(f)" "M(A)" "M(B)"
+  shows "M(curry(A,B,f))"
+  using assms lam_replacement_apply_const_id
+    lam_apply_replacement lam_replacement_iff_lam_closed
+  unfolding curry_def
+  by auto
+
 end \<comment> \<open>\<^locale>\<open>M_replacement\<close>\<close>
+
+locale M_Pi_replacement = M_Pi + M_replacement
+
+begin
+lemma curry_rel_exp :
+  assumes "M(f)" "M(A)" "M(B)" "M(C)" "f \<in> A \<times> B \<rightarrow> C"
+  shows "curry(A,B,f) \<in> A \<rightarrow>\<^bsup>M\<^esup> (B \<rightarrow>\<^bsup>M\<^esup> C)"
+  using assms transM[of _ A] lam_closed[OF apply_replacement2]
+    lam_replacement_apply_const_id
+    lam_apply_replacement lam_replacement_iff_lam_closed
+  unfolding curry_def
+  by (intro lam_type mem_function_space_rel_abs[THEN iffD2],auto)
+
+end \<comment> \<open>\<^locale>\<open>M_Pi_replacement\<close>\<close>
 
 locale M_replacement_extra = M_replacement +
   assumes

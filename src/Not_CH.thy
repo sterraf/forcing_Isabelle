@@ -32,16 +32,19 @@ lemma (in M_aleph) Aleph_rel2_closed[intro,simp]: "M(\<aleph>\<^bsub>2\<^esub>\<
 
 locale M_master = M_cohen + M_library_DC +
   assumes
-  UN_lepoll_assumptions:
-  "M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> M(A') \<Longrightarrow> separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x\<in>if_range_F_else_F((`)(A), b, f, i)\<rangle>)"
+    UN_lepoll_assumptions:
+    "M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> M(A') \<Longrightarrow> separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x\<in>if_range_F_else_F((`)(A), b, f, i)\<rangle>)"
 
 subsection\<open>Non-absolute concepts between extensions\<close>
+
+sublocale M_master \<subseteq> M_Pi_replacement
+  by unfold_locales
 
 locale M_master_sub = M_master + N:M_aleph N for N +
   assumes
     M_imp_N: "M(x) \<Longrightarrow> N(x)" and
     Ord_iff: "Ord(x) \<Longrightarrow> M(x) \<longleftrightarrow> N(x)"
-(* TODO: update ground replacement assms in M_ZF4: those stemming from
+    (* TODO: update ground replacement assms in M_ZF4: those stemming from
   M_DC, M_cardinal_library, and M_seqspace should no longer be needed
   (5 total). *)
 
@@ -53,7 +56,7 @@ begin
 
 lemma cardinal_rel_le_cardinal_rel: "M(X) \<Longrightarrow> |X|\<^bsup>N\<^esup> \<le> |X|\<^bsup>M\<^esup>"
   using M_imp_N N.lepoll_rel_cardinal_rel_le[OF lepoll_rel_transfer Card_rel_is_Ord]
-      cardinal_rel_eqpoll_rel[THEN eqpoll_rel_sym, THEN eqpoll_rel_imp_lepoll_rel]
+    cardinal_rel_eqpoll_rel[THEN eqpoll_rel_sym, THEN eqpoll_rel_imp_lepoll_rel]
   by simp
 
 lemma Aleph_rel_sub_closed: "Ord(\<alpha>) \<Longrightarrow> M(\<alpha>) \<Longrightarrow> N(\<aleph>\<^bsub>\<alpha>\<^esub>\<^bsup>M\<^esup>)"
@@ -110,17 +113,17 @@ next
   then
   show ?case
     using M_imp_N Aleph_rel_limit N.Aleph_rel_limit
-     by simp (blast dest: transM intro!:le_implies_UN_le_UN)
+    by simp (blast dest: transM intro!:le_implies_UN_le_UN)
 qed
 
 end \<comment> \<open>\<^locale>\<open>M_master_sub\<close>\<close>
 
 lemmas (in M_ZF3_trans) sep_instances =
- separation_insnd_ballPair
- separation_ifrangeF_body separation_ifrangeF_body2 separation_ifrangeF_body3
- separation_ifrangeF_body4 separation_ifrangeF_body5 separation_ifrangeF_body6
- separation_ifrangeF_body7 separation_cardinal_rel_lesspoll_rel
- separation_is_dcwit_body
+  separation_insnd_ballPair
+  separation_ifrangeF_body separation_ifrangeF_body2 separation_ifrangeF_body3
+  separation_ifrangeF_body4 separation_ifrangeF_body5 separation_ifrangeF_body6
+  separation_ifrangeF_body7 separation_cardinal_rel_lesspoll_rel
+  separation_is_dcwit_body
 
 lemmas (in M_ZF3_trans) repl_instances = lam_replacement_inj_rel
   lam_replacement_cardinal replacement_trans_apply_image
@@ -217,17 +220,17 @@ proof (rule ccontr)
   have "\<beta> \<in> \<alpha> \<Longrightarrow> |F`\<beta>|\<^bsup>M\<^esup> \<le> \<aleph>\<^bsub>0\<^esub>\<^bsup>M\<^esup>" for \<beta>
     using Aleph_rel_zero by simp
   have "w \<in> F ` x \<Longrightarrow> x \<in> M" for w x
-    proof -
-      fix w x
-      assume "w \<in> F`x"
-      then
-      have "x \<in> domain(F)"
-        using apply_0 by auto
-      with \<open>F:\<alpha>\<rightarrow>Pow\<^bsup>M\<^esup>(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)\<close> \<open>\<alpha> \<in> M\<close>
-      show "x \<in> M" using domain_of_fun
-        by (auto dest:transM)
-    qed
-    with \<open>\<alpha> \<in> M\<close> \<open>F:\<alpha>\<rightarrow>Pow\<^bsup>M\<^esup>(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)\<close> \<open>F\<in>M\<close>
+  proof -
+    fix w x
+    assume "w \<in> F`x"
+    then
+    have "x \<in> domain(F)"
+      using apply_0 by auto
+    with \<open>F:\<alpha>\<rightarrow>Pow\<^bsup>M\<^esup>(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)\<close> \<open>\<alpha> \<in> M\<close>
+    show "x \<in> M" using domain_of_fun
+      by (auto dest:transM)
+  qed
+  with \<open>\<alpha> \<in> M\<close> \<open>F:\<alpha>\<rightarrow>Pow\<^bsup>M\<^esup>(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)\<close> \<open>F\<in>M\<close>
   interpret M_cardinal_UN_lepoll "##M" "\<lambda>\<beta>. F`\<beta>" \<alpha>
     using UN_lepoll_assumptions lepoll_assumptions
       lam_replacement_apply lam_replacement_inj_rel
@@ -358,7 +361,7 @@ lemma domain_f_G: assumes "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "
 proof -
   from assms
   have "Add = Fn\<^bsup>M\<^esup>(\<omega>,\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>\<times>\<omega>,2)"
-    using Fn_nat_abs  by auto
+    using Fn_nat_abs by auto
   moreover from this
   have "Fnle(\<omega>,\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>\<times>\<omega>,2) = Fnle\<^bsup>M\<^esup>(\<omega>,\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>\<times>\<omega>,2)"
     unfolding Fnle_rel_def Fnle_def by auto
@@ -378,16 +381,14 @@ lemma f_G_funtype:
   includes G_generic1_lemmas
   shows "f\<^bsub>G\<^esub> : \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega> \<rightarrow> 2"
   using generic domain_f_G Pi_iff Un_filter_is_function generic
-    unfolding M_generic_def
-proof (auto)
-  show "x \<in> B \<Longrightarrow> B \<in> G \<Longrightarrow> x \<in> (\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>) \<times> 2" for B x
-    using Fn_nat_subset_Pow by blast
-qed
+    subset_trans[OF filter_subset_notion Fn_nat_subset_Pow]
+  unfolding M_generic_def
+  by force
 
 lemma inj_dense_closed[intro,simp]:
   "w \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> inj_dense(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>,2,w,x) \<in> M"
   using transM[OF _ Aleph_rel2_closed] separation_conj separation_bex
-    lam_replacement_hcomp2[OF _ _  _ _ lam_replacement_Pair]
+    lam_replacement_Pair[THEN [5] lam_replacement_hcomp2]
     separation_in lam_replacement_fst lam_replacement_snd lam_replacement_constant
     lam_replacement_hcomp[OF lam_replacement_snd lam_replacement_restrict']
     separation_bex separation_conj
@@ -428,36 +429,16 @@ definition
 lemma h_G_in_MG[simp]:
   includes G_generic1_lemmas
   shows "h\<^bsub>G\<^esub> \<in> M[G]"
-  using ext.lam_apply_replacement ext.apply_replacement2
-    ext.lam_apply_replacement[unfolded lam_replacement_def]
-    ext.Union_closed[simplified, OF G_in_MG]
-    \<comment> \<open>The “simplified” here is because of
-        the \<^term>\<open>setclass\<close> ocurrences\<close>
-    ext.nat_into_M
+  using ext.curry_closed[unfolded curry_def] G_in_MG
   unfolding h_G_def
-  by (rule_tac ext.lam_closed[simplified] |
-      auto dest:transM del:ext.cexp_rel_closed[simplified])+
+  by simp
 
 lemma h_G_inj_Aleph_rel2_reals: "h\<^bsub>G\<^esub> \<in> inj\<^bsup>M[G]\<^esup>(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2)"
-  using Aleph_rel_sub_closed
-proof (intro ext.mem_inj_abs[THEN iffD2],simp_all)
-  show "h\<^bsub>G\<^esub> \<in> inj(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2)"
-    unfolding inj_def
-   proof (intro ballI CollectI impI)
-    show "h\<^bsub>G\<^esub> \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<rightarrow> \<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2"
-      using f_G_funtype G_in_MG ext.nat_into_M
-        ext.transM[OF _ Aleph_rel_sub_closed] ext.lam_closed[simplified,OF ext.apply_replacement2]
-       unfolding h_G_def
-       by (intro lam_type ext.mem_function_space_rel_abs[THEN iffD2], auto)
-   next
-    fix w x
-    assume "w \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>" "h\<^bsub>G\<^esub> ` w = h\<^bsub>G\<^esub> ` x"
-    then
-    show "w = x"
-      unfolding h_G_def using Aleph_rel2_new_reals by auto
-  qed
-qed
-
+  using Aleph_rel_sub_closed f_G_funtype G_in_MG Aleph_rel_sub_closed
+    ext.curry_rel_exp[unfolded curry_def] ext.curry_closed[unfolded curry_def]
+    ext.mem_function_space_rel_abs
+  by (intro ext.mem_inj_abs[THEN iffD2],simp_all)
+      (auto simp: inj_def h_G_def dest:Aleph_rel2_new_reals)
 
 lemma Aleph2_extension_le_continuum_rel:
   includes G_generic1_lemmas

@@ -183,4 +183,14 @@ lemma Finite_imp_lesspoll_nat:
     n_lesspoll_nat eq_lesspoll_trans
   unfolding Finite_def lesspoll_def by auto
 
+definition curry :: "[i,i,i] \<Rightarrow> i" where
+  "curry(A,B,f) \<equiv> \<lambda>x\<in>A . \<lambda>y\<in>B . f`\<langle>x,y\<rangle>"
+
+lemma curry_type :
+  assumes "f \<in> A\<times>B \<rightarrow> C"
+  shows "curry(A,B,f) \<in> A \<rightarrow> (B \<rightarrow> C)"
+  using assms lam_funtype
+  unfolding curry_def
+  by auto
+
 end

@@ -234,7 +234,7 @@ proof -
     by simp
   moreover from this
   have "G \<subseteq> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<rightharpoonup>\<^bsup>##M\<^esup> (\<omega> \<rightarrow>\<^bsup>M\<^esup> 2)"
-    using assms  unfolding Fn_rel_def
+    using assms unfolding Fn_rel_def
     by auto
   ultimately
   show ?thesis
@@ -282,7 +282,7 @@ lemma surj_dense_closed[intro,simp]:
   using separation_in_range transM[of x] by simp
 
 lemma reals_sub_image_f_G:
-  assumes "x\<in>\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"
+  assumes "x \<in> \<omega> \<rightarrow>\<^bsup>M\<^esup> 2"
   shows "\<exists>\<alpha>\<in>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>. f\<^bsub>G\<^esub> ` \<alpha> = x"
 proof -
   from assms
@@ -303,20 +303,14 @@ qed
 
 lemma f_G_surj_Aleph_rel1_reals: "f\<^bsub>G\<^esub> \<in> surj\<^bsup>M[G]\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2)"
   using Aleph_rel_sub_closed
-proof (intro ext.mem_surj_abs[THEN iffD2])
+proof (intro ext.mem_surj_abs[THEN iffD2],simp_all)
   show "f\<^bsub>G\<^esub> \<in> surj(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2)"
+    using f_G_funtype G_in_MG ext.nat_into_M f_G_in_MG
+      reals_sub_image_f_G succ_omega_closed_Coll
+      succ_omega_closed_imp_no_new_reals
     unfolding surj_def
-  proof (intro ballI CollectI impI)
-    show "f\<^bsub>G\<^esub> \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<rightarrow> \<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2"
-      using f_G_funtype G_in_MG ext.nat_into_M f_G_in_MG by simp
-    fix x
-    assume "x \<in> \<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2"
-    then
-    show "\<exists>\<alpha>\<in>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>. f\<^bsub>G\<^esub> ` \<alpha> = x"
-      using reals_sub_image_f_G succ_omega_closed_Coll
-        f_G_funtype succ_omega_closed_imp_no_new_reals by simp
-  qed
-qed simp_all
+    by auto
+qed
 
 lemma continuum_rel_le_Aleph1_extension:
   includes G_generic1_lemmas
@@ -330,7 +324,7 @@ proof -
       f_G_in_MG unfolding lepoll_rel_def by auto
   with \<open>Ord(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)\<close>
   have "|\<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2|\<^bsup>M[G]\<^esup> \<le> |\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>|\<^bsup>M[G]\<^esup>"
-    using  M_subset_MG[OF one_in_G, OF generic] Aleph_rel_closed[of 1]
+    using M_subset_MG[OF one_in_G, OF generic] Aleph_rel_closed[of 1]
     by (rule_tac ext.lepoll_rel_imp_cardinal_rel_le) simp_all
   ultimately
   have "2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup> \<le> |\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup>|\<^bsup>M[G]\<^esup>"

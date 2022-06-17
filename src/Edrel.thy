@@ -70,12 +70,10 @@ proof -
 qed
 
 text\<open>term\<open>ed\<close> is the well-founded relation on which \<^term>\<open>val\<close> is defined.\<close>
-definition
-  ed :: "[i,i] \<Rightarrow> o" where
+definition  ed :: "[i,i] \<Rightarrow> o" where
   "ed(x,y) \<equiv> x \<in> domain(y)"
 
-definition
-  edrel :: "i \<Rightarrow> i" where
+definition edrel :: "i \<Rightarrow> i" where
   "edrel(A) \<equiv> Rrel(ed,A)"
 
 lemma edI[intro!]: "t\<in>domain(x) \<Longrightarrow> ed(t,x)"

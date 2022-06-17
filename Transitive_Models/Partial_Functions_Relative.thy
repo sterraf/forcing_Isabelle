@@ -288,7 +288,7 @@ proof(simp_all)
   qed
 qed
 
-context M_cardinals
+context M_Pi
 begin
 
 lemma mem_function_space_relD:
@@ -475,7 +475,7 @@ proof -
     using FiniteFunI by simp
 qed
 
-end \<comment> \<open>\<^locale>\<open>M_cardinals\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_Pi\<close>\<close>
 
 (* Fn_rel should be the relativization *)
 definition
