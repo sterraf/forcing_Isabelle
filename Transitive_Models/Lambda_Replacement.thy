@@ -20,6 +20,44 @@ lemma separation_univ :
   shows "separation(M,M)"
   unfolding separation_def by auto
 
+context M_trivial
+begin
+
+lemma lam_replacement_iff_lam_closed:
+  assumes "\<forall>x[M]. M(b(x))"
+  shows "lam_replacement(M, b) \<longleftrightarrow>  (\<forall>A[M]. M(\<lambda>x\<in>A. b(x)))"
+  using assms lam_closed lam_funtype[of _ b, THEN Pi_memberD]
+  unfolding lam_replacement_def strong_replacement_def
+  by (auto intro:lamI dest:transM)
+    (rule lam_closed, auto simp add:strong_replacement_def dest:transM)
+
+lemma lam_replacement_imp_lam_closed:
+  assumes "lam_replacement(M, b)" "M(A)" "\<forall>x\<in>A. M(b(x))"
+  shows "M(\<lambda>x\<in>A. b(x))"
+  using assms unfolding lam_replacement_def
+  by (rule_tac lam_closed, auto simp add:strong_replacement_def dest:transM)
+
+lemma lam_replacement_cong:
+  assumes "lam_replacement(M,f)" "\<forall>x[M]. f(x) = g(x)" "\<forall>x[M]. M(f(x))"
+  shows "lam_replacement(M,g)"
+proof -
+  note assms
+  moreover from this
+  have "\<forall>A[M]. M(\<lambda>x\<in>A. f(x))"
+    using lam_replacement_iff_lam_closed
+    by simp
+  moreover from calculation
+  have "(\<lambda>x\<in>A . f(x)) = (\<lambda>x\<in>A . g(x))" if "M(A)" for A
+    using lam_cong[OF refl,of A f g] transM[OF _ that]
+    by simp
+  ultimately
+  show ?thesis
+    using lam_replacement_iff_lam_closed
+    by simp
+qed
+
+end \<comment> \<open>\<^locale>\<open>M_trivial\<close>\<close>
+
 context M_basic
 begin
 
@@ -65,39 +103,6 @@ proof -
   ultimately
   show ?thesis
     using separation_iff Collect_abs
-    by simp
-qed
-
-lemma lam_replacement_iff_lam_closed:
-  assumes "\<forall>x[M]. M(b(x))"
-  shows "lam_replacement(M, b) \<longleftrightarrow>  (\<forall>A[M]. M(\<lambda>x\<in>A. b(x)))"
-  using assms lam_closed lam_funtype[of _ b, THEN Pi_memberD]
-  unfolding lam_replacement_def strong_replacement_def
-  by (auto intro:lamI dest:transM)
-    (rule lam_closed, auto simp add:strong_replacement_def dest:transM)
-
-lemma lam_replacement_imp_lam_closed:
-  assumes "lam_replacement(M, b)" "M(A)" "\<forall>x\<in>A. M(b(x))"
-  shows "M(\<lambda>x\<in>A. b(x))"
-  using assms unfolding lam_replacement_def
-  by (rule_tac lam_closed, auto simp add:strong_replacement_def dest:transM)
-
-lemma lam_replacement_cong:
-  assumes "lam_replacement(M,f)" "\<forall>x[M]. f(x) = g(x)" "\<forall>x[M]. M(f(x))"
-  shows "lam_replacement(M,g)"
-proof -
-  note assms
-  moreover from this
-  have "\<forall>A[M]. M(\<lambda>x\<in>A. f(x))"
-    using lam_replacement_iff_lam_closed
-    by simp
-  moreover from calculation
-  have "(\<lambda>x\<in>A . f(x)) = (\<lambda>x\<in>A . g(x))" if "M(A)" for A
-    using lam_cong[OF refl,of A f g] transM[OF _ that]
-    by simp
-  ultimately
-  show ?thesis
-    using lam_replacement_iff_lam_closed
     by simp
 qed
 
