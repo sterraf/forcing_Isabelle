@@ -119,7 +119,6 @@ qed
 end \<comment> \<open>\<^locale>\<open>M_master_sub\<close>\<close>
 
 lemmas (in M_ZF3_trans) sep_instances =
-  separation_insnd_ballPair
   separation_ifrangeF_body separation_ifrangeF_body2 separation_ifrangeF_body3
   separation_ifrangeF_body4 separation_ifrangeF_body5 separation_ifrangeF_body6
   separation_ifrangeF_body7 separation_cardinal_rel_lesspoll_rel

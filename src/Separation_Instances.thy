@@ -197,11 +197,4 @@ lemma (in M_ZF1_trans) separation_sndfst_eq_fstsnd:
   unfolding sndfst_eq_fstsnd_def
   by simp
 
-lemma (in M_replacement) separation_insnd_ballPair:
- "M(B) \<Longrightarrow> M(A) \<Longrightarrow> separation(M, \<lambda>p. \<forall>x\<in>B. x \<in> snd(p) \<longleftrightarrow> (\<forall>s\<in>fst(p). \<langle>s, x\<rangle> \<in> A))"
-  using lam_replacement_fst lam_replacement_snd lam_replacement_hcomp
-  lam_replacement_Pair[THEN [5] lam_replacement_hcomp2] lam_replacement_constant[of A]
-  by(rule_tac separation_ball,simp_all,rule_tac separation_iff',rule_tac separation_in,auto)
-  (rule_tac separation_all,auto,rule_tac separation_in,auto)
-
 end

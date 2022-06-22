@@ -333,8 +333,6 @@ locale M_cardinal_library = M_library + M_replacement +
   assumes
     lam_replacement_inj_rel:"lam_replacement(M, \<lambda>x. inj\<^bsup>M\<^esup>(fst(x),snd(x)))"
     and
-    cdlt_assms: "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> separation(M, \<lambda>p. \<forall>x\<in>G. x \<in> snd(p) \<longleftrightarrow> (\<forall>s\<in>fst(p). \<langle>s, x\<rangle> \<in> Q))"
-    and
     cardinal_lib_assms1:
     "M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow>
        separation(M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>x. if M(x) then x else 0,b,f,i)\<rangle>)"
@@ -354,6 +352,13 @@ locale M_cardinal_library = M_library + M_replacement +
       strong_replacement(M, \<lambda>x y. x\<in>\<beta> \<and> y = \<langle>x, transrec(x, \<lambda>a g. f ` (g `` a))\<rangle>)"
 
 begin
+
+lemma cdlt_assms: "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> separation(M, \<lambda>p. \<forall>x\<in>G. x \<in> snd(p) \<longleftrightarrow> (\<forall>s\<in>fst(p). \<langle>s, x\<rangle> \<in> Q))"
+  using lam_replacement_snd lam_replacement_fst lam_replacement_hcomp separation_in
+    lam_replacement_Pair[THEN [5] lam_replacement_hcomp2]
+  by (rule_tac separation_ball,simp_all,rule_tac separation_iff',auto)
+    (rule_tac separation_all,auto simp:lam_replacement_constant)
+
 
 lemma cardinal_lib_assms5 :
   "M(\<gamma>) \<Longrightarrow> Ord(\<gamma>) \<Longrightarrow> separation(M, \<lambda>Z . cardinal_rel(M,Z) < \<gamma>)"
