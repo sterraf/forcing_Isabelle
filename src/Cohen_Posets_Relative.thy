@@ -16,9 +16,6 @@ lemmas zero_lesspoll_kappa = zero_lesspoll[OF zero_lt_kappa]
 
 end \<comment> \<open>\<^locale>\<open>cohen_data\<close>\<close>
 
-context forcing_notion
-begin
-
 abbreviation
   inj_dense :: "[i,i,i,i]\<Rightarrow>i" where
   "inj_dense(I,J,w,x) \<equiv>
@@ -61,8 +58,6 @@ proof -
   show ?thesis
     using \<open>p \<in> _\<close> by (intro bexI) auto
 qed
-
-end \<comment> \<open>\<^locale>\<open>forcing_notion\<close>\<close>
 
 locale add_reals = cohen_data nat _ 2
 
