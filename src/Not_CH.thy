@@ -304,7 +304,6 @@ begin
 
 notation Leq (infixl "\<preceq>" 50)
 notation Incompatible (infixl "\<bottom>" 50)
-notation GenExt_at_P ("_[_]" [71,1])
 
 lemma Add_subs_preserves_Aleph_succ: "Ord(z) \<Longrightarrow> z\<in>M \<Longrightarrow> Card\<^bsup>M[G]\<^esup>(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)"
   using ccc_preserves_Aleph_succ ccc_Add_subs_Aleph_2

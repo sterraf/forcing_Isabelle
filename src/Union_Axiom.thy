@@ -104,23 +104,23 @@ proof -
 qed
 
 lemma Union_MG_Eq :
-  assumes "a \<in> M[G]" and "a = val(P,G,\<tau>)" and "filter(G)" and "\<tau> \<in> M"
-  shows "\<Union> a = val(P,G,Union_name(P,leq,\<tau>))"
+  assumes "a \<in> M[G]" and "a = val(G,\<tau>)" and "filter(G)" and "\<tau> \<in> M"
+  shows "\<Union> a = val(G,Union_name(P,leq,\<tau>))"
 proof (intro equalityI subsetI)
   fix x
   assume "x \<in> \<Union> a"
   with \<open>a=_\<close>
-  have "x\<in> \<Union> (val(P,G,\<tau>))"
+  have "x\<in> \<Union> (val(G,\<tau>))"
     by simp
   then
-  obtain i where "i \<in> val(P,G,\<tau>)" "x \<in> i"
+  obtain i where "i \<in> val(G,\<tau>)" "x \<in> i"
     by blast
   with \<open>\<tau> \<in> M\<close>
-  obtain \<sigma> q where "q \<in> G" "\<langle>\<sigma>,q\<rangle> \<in> \<tau>" "val(P,G,\<sigma>) = i" "\<sigma> \<in> M"
+  obtain \<sigma> q where "q \<in> G" "\<langle>\<sigma>,q\<rangle> \<in> \<tau>" "val(G,\<sigma>) = i" "\<sigma> \<in> M"
     using elem_of_val_pair domain_trans[OF trans_M]
     by blast
   moreover from this \<open>x \<in> i\<close>
-  obtain \<theta> r where "r \<in> G" "\<langle>\<theta>,r\<rangle> \<in> \<sigma>" "val(P,G,\<theta>) = x" "\<theta> \<in> M"
+  obtain \<theta> r where "r \<in> G" "\<langle>\<theta>,r\<rangle> \<in> \<sigma>" "val(G,\<theta>) = x" "\<theta> \<in> M"
     using elem_of_val_pair domain_trans[OF trans_M] by blast
   moreover from calculation
   have "\<theta> \<in> domain(\<Union>(domain(\<tau>)))"
@@ -136,18 +136,18 @@ proof (intro equalityI subsetI)
     unfolding Union_name_def Union_name_body_def
     by auto
   moreover from this \<open>p\<in>P\<close> \<open>p\<in>G\<close>
-  have "val(P,G,\<theta>) \<in> val(P,G,Union_name(P,leq,\<tau>))"
+  have "val(G,\<theta>) \<in> val(G,Union_name(P,leq,\<tau>))"
     using val_of_elem by simp
   ultimately
-  show "x \<in> val(P,G,Union_name(P,leq,\<tau>))"
+  show "x \<in> val(G,Union_name(P,leq,\<tau>))"
     by simp
 next
   fix x
-  assume "x \<in> (val(P,G,Union_name(P,leq,\<tau>)))"
+  assume "x \<in> (val(G,Union_name(P,leq,\<tau>)))"
   moreover
-  note \<open>filter(G)\<close> \<open>a=val(P,G,\<tau>)\<close>
+  note \<open>filter(G)\<close> \<open>a=val(G,\<tau>)\<close>
   moreover from calculation
-  obtain \<theta> p where "p \<in> G" "\<langle>\<theta>,p\<rangle> \<in> Union_name(P,leq,\<tau>)" "val(P,G,\<theta>) = x"
+  obtain \<theta> p where "p \<in> G" "\<langle>\<theta>,p\<rangle> \<in> Union_name(P,leq,\<tau>)" "val(G,\<theta>) = x"
     using elem_of_val_pair by blast
   moreover from calculation
   have "p\<in>P"
@@ -160,10 +160,10 @@ next
   have "r \<in> G" "q \<in> G"
     using filter_leqD by auto
   moreover from this \<open>\<langle>\<theta>,r\<rangle> \<in> \<sigma>\<close> \<open>\<langle>\<sigma>,q\<rangle>\<in>\<tau>\<close> \<open>q\<in>P\<close> \<open>r\<in>P\<close>
-  have "val(P,G,\<sigma>) \<in> val(P,G,\<tau>)" "val(P,G,\<theta>) \<in> val(P,G,\<sigma>)"
+  have "val(G,\<sigma>) \<in> val(G,\<tau>)" "val(G,\<theta>) \<in> val(G,\<sigma>)"
     using val_of_elem by simp+
   moreover from this
-  have "val(P,G,\<theta>) \<in> \<Union> val(P,G,\<tau>)"
+  have "val(G,\<theta>) \<in> \<Union> val(G,\<tau>)"
     by blast
   ultimately
   show "x \<in> \<Union> a"
@@ -183,10 +183,10 @@ proof(clarsimp)
   interpret mgtrans : M_trans "##M[G]"
     using transitivity_MG by (unfold_locales; auto)
   from calculation
-  obtain \<tau> where "\<tau> \<in> M" "a=val(P,G,\<tau>)"
+  obtain \<tau> where "\<tau> \<in> M" "a=val(G,\<tau>)"
     using GenExtD by blast
   moreover from this
-  have "val(P,G,Union_name(P,leq,\<tau>)) \<in> M[G]"
+  have "val(G,Union_name(P,leq,\<tau>)) \<in> M[G]"
     using GenExtI Union_name_closed P_in_M leq_in_M by simp
   ultimately
   show "\<exists>z\<in>M[G] . big_union(##M[G],a,z)"

@@ -138,21 +138,21 @@ proof -
   moreover
   note \<open>q\<in>P\<close> \<open>f_dot\<in>M\<close> \<open>B\<in>M\<close> \<open>A\<in>M\<close>
   moreover from this
-  have "map(val(P, G), [f_dot, A\<^sup>v, B\<^sup>v]) \<in> list(M[G])" by simp
+  have "map(val( G), [f_dot, A\<^sup>v, B\<^sup>v]) \<in> list(M[G])" by simp
   moreover from calculation
-  have "val(P,G,f_dot) : A \<rightarrow>\<^bsup>M[G]\<^esup> B"
+  have "val(G,f_dot) : A \<rightarrow>\<^bsup>M[G]\<^esup> B"
     using truth_lemma[of "\<cdot>0:1\<rightarrow>2\<cdot>" G "[f_dot, A\<^sup>v, B\<^sup>v]", THEN iffD1]
       typed_function_type arity_typed_function_fm valcheck[OF one_in_G one_in_P]
     by (auto simp: union_abs2 union_abs1 ext.mem_function_space_rel_abs)
   moreover
   note \<open>a \<in> M\<close>
   moreover from calculation and \<open>a\<in>A\<close>
-  have "val(P,G,f_dot) ` a \<in> B" (is "?b \<in> B")
+  have "val(G,f_dot) ` a \<in> B" (is "?b \<in> B")
     by (simp add: ext.mem_function_space_rel_abs)
   moreover from calculation
   have "?b \<in> M" by (auto dest:transM)
   moreover from calculation
-  have "M[G], map(val(P,G), [f_dot, a\<^sup>v, ?b\<^sup>v]) \<Turnstile> \<cdot>0`1 is 2\<cdot>"
+  have "M[G], map(val(G), [f_dot, a\<^sup>v, ?b\<^sup>v]) \<Turnstile> \<cdot>0`1 is 2\<cdot>"
     by simp
   moreover
   note \<open>M_generic(G)\<close>
@@ -374,7 +374,7 @@ proof (intro equalityI; clarsimp simp add:
   fix f
   assume "f \<in> A \<rightarrow> B" "f \<in> M[G]"
   moreover from this
-  obtain \<tau> where "val(P,G,\<tau>) = f" "\<tau> \<in> M"
+  obtain \<tau> where "val(G,\<tau>) = f" "\<tau> \<in> M"
     using GenExtD by force
   moreover from calculation and \<open>A\<in>M\<close> \<open>B\<in>M\<close>
   obtain r where "r \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [\<tau>, A\<^sup>v, B\<^sup>v]" "r\<in>G"
@@ -394,7 +394,7 @@ proof (intro equalityI; clarsimp simp add:
     using generic_inter_dense_below[of ?D G r, OF _ generic] by blast
   note \<open>q \<tturnstile> \<cdot>0 = 1\<cdot> [\<tau>, h\<^sup>v]\<close> \<open>\<tau>\<in>M\<close> \<open>h\<in>A \<rightarrow>\<^bsup>M\<^esup> B\<close> \<open>A\<in>M\<close> \<open>B\<in>M\<close> \<open>q\<in>G\<close>
   moreover from this
-  have "map(val(P, G), [\<tau>, h\<^sup>v]) \<in> list(M[G])" "h\<in>M"
+  have "map(val( G), [\<tau>, h\<^sup>v]) \<in> list(M[G])" "h\<in>M"
     by (auto dest:transM)
   ultimately
   have "h = f"
@@ -580,14 +580,14 @@ proof -
     proof (intro definition_of_forcing[THEN iffD2] allI impI,
         simp_all add:union_abs2 union_abs1 del:app_Cons)
       fix G
-      let ?f="val(P,G,f_dot)"
+      let ?f="val(G,f_dot)"
       assume "M_generic(G) \<and> r \<in> G"
       moreover from this
       interpret g:G_generic1 _ _ _ _ _ G
         by unfold_locales simp
       note \<open>r\<in>P\<close> \<open>f_dot\<in>M\<close> \<open>B\<in>M\<close>
       moreover from this
-      have "map(val(P, G), [f_dot, \<omega>\<^sup>v, B\<^sup>v]) \<in> list(M[G])"
+      have "map(val( G), [f_dot, \<omega>\<^sup>v, B\<^sup>v]) \<in> list(M[G])"
         by simp
       moreover from calculation and \<open>r \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, \<omega>\<^sup>v, B\<^sup>v]\<close>
       have "?f : \<omega> \<rightarrow> B"
@@ -615,7 +615,7 @@ proof -
         have "?h`n \<in> M"
           by (auto dest:transM)
         moreover
-        note \<open>f_dot \<in> M\<close> \<open>r \<in> P\<close> \<open>M_generic(G) \<and> r \<in> G\<close> \<open>map(val(P, G), [f_dot, \<omega>\<^sup>v, B\<^sup>v]) \<in> list(M[G])\<close>
+        note \<open>f_dot \<in> M\<close> \<open>r \<in> P\<close> \<open>M_generic(G) \<and> r \<in> G\<close> \<open>map(val( G), [f_dot, \<omega>\<^sup>v, B\<^sup>v]) \<in> list(M[G])\<close>
         moreover from calculation
         have "[?f, n, ?h`n] \<in> list(M[G])"
           using M_subset_MG nat_into_M[of n] one_in_G by (auto dest:transM)
@@ -632,7 +632,7 @@ proof -
         using function_space_rel_char
         by (rule_tac fun_extension[of ?h \<omega> "\<lambda>_.B" ?f]) auto
       ultimately
-      show "?f = val(P, G, ?h\<^sup>v)"
+      show "?f = val( G, ?h\<^sup>v)"
         using valcheck one_in_G one_in_P generic by simp
     qed
     ultimately

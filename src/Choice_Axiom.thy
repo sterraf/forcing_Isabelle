@@ -151,16 +151,16 @@ lemma opair_name_closed :
   unfolding opair_name_def
   using upair_name_closed by simp
 
-lemma val_upair_name : "val(P,G,upair_name(\<tau>,\<rho>,\<one>)) = {val(P,G,\<tau>),val(P,G,\<rho>)}"
+lemma val_upair_name : "val(G,upair_name(\<tau>,\<rho>,\<one>)) = {val(G,\<tau>),val(G,\<rho>)}"
   unfolding upair_name_def
   using val_Upair Upair_eq_cons generic one_in_G one_in_P
   by simp
 
-lemma val_opair_name : "val(P,G,opair_name(\<tau>,\<rho>,\<one>)) = \<langle>val(P,G,\<tau>),val(P,G,\<rho>)\<rangle>"
+lemma val_opair_name : "val(G,opair_name(\<tau>,\<rho>,\<one>)) = \<langle>val(G,\<tau>),val(G,\<rho>)\<rangle>"
   unfolding opair_name_def Pair_def
   using val_upair_name by simp
 
-lemma val_RepFun_one: "val(P,G,{\<langle>f(x),\<one>\<rangle> . x\<in>a}) = {val(P,G,f(x)) . x\<in>a}"
+lemma val_RepFun_one: "val(G,{\<langle>f(x),\<one>\<rangle> . x\<in>a}) = {val(G,f(x)) . x\<in>a}"
 proof -
   let ?A = "{f(x) . x \<in> a}"
   let ?Q = "\<lambda>\<langle>x,p\<rangle> . p = \<one>"
@@ -168,16 +168,16 @@ proof -
   have "{\<langle>f(x),\<one>\<rangle> . x \<in> a} = {t \<in> ?A \<times> P . ?Q(t)}"
     using one_in_P by force
   then
-  have "val(P,G,{\<langle>f(x),\<one>\<rangle>  . x \<in> a}) = val(P,G,{t \<in> ?A \<times> P . ?Q(t)})"
+  have "val(G,{\<langle>f(x),\<one>\<rangle>  . x \<in> a}) = val(G,{t \<in> ?A \<times> P . ?Q(t)})"
     by simp
   also
-  have "... = {z . t \<in> ?A , (\<exists>p\<in>P\<inter>G . ?Q(\<langle>t,p\<rangle>)) \<and> z= val(P,G,t)}"
+  have "... = {z . t \<in> ?A , (\<exists>p\<in>P\<inter>G . ?Q(\<langle>t,p\<rangle>)) \<and> z= val(G,t)}"
     using val_of_name_alt by simp
   also
-  have "... = {val(P,G,t) . t \<in> ?A }"
+  have "... = {val(G,t) . t \<in> ?A }"
     using \<open>\<one>\<in>P\<inter>G\<close> by force
   also
-  have "... = {val(P,G,f(x)) . x \<in> a}"
+  have "... = {val(G,f(x)) . x \<in> a}"
     by auto
   finally
   show ?thesis
@@ -242,7 +242,7 @@ proof -
     fix a
     assume "a\<in>M[G]"
     then
-    obtain \<tau> where "\<tau>\<in>M" "val(P,G,\<tau>) = a"
+    obtain \<tau> where "\<tau>\<in>M" "val(G,\<tau>) = a"
       using GenExt_def by auto
     with \<open>\<tau>\<in>M\<close>
     have "domain(\<tau>)\<in>M"
@@ -263,7 +263,7 @@ proof -
     let ?f_dot="{\<langle>opair_name(check(\<beta>),s`\<beta>,\<one>),\<one>\<rangle>. \<beta>\<in>\<alpha>}"
     have "?f_dot = ?g \<times> {\<one>}" by blast
     define f where
-      "f \<equiv> val(P,G,?f_dot)"
+      "f \<equiv> val(G,?f_dot)"
     from \<open>?g\<in>M\<close> \<open>?f_dot = ?g\<times>{\<one>}\<close>
     have "?f_dot\<in>M"
       using cartprod_closed singleton_closed one_in_M
@@ -272,16 +272,16 @@ proof -
     have "f \<in> M[G]"
       unfolding f_def
       by (blast intro:GenExtI)
-    have "f = {val(P,G,opair_name(check(\<beta>),s`\<beta>,\<one>)) . \<beta>\<in>\<alpha>}"
+    have "f = {val(G,opair_name(check(\<beta>),s`\<beta>,\<one>)) . \<beta>\<in>\<alpha>}"
       unfolding f_def
       using val_RepFun_one
       by simp
     also
-    have "... = {\<langle>\<beta>,val(P,G,s`\<beta>)\<rangle> . \<beta>\<in>\<alpha>}"
+    have "... = {\<langle>\<beta>,val(G,s`\<beta>)\<rangle> . \<beta>\<in>\<alpha>}"
       using val_opair_name valcheck generic one_in_G one_in_P
       by simp
     finally
-    have "f = {\<langle>\<beta>,val(P,G,s`\<beta>)\<rangle> . \<beta>\<in>\<alpha>}" .
+    have "f = {\<langle>\<beta>,val(G,s`\<beta>)\<rangle> . \<beta>\<in>\<alpha>}" .
     then
     have 1: "domain(f) = \<alpha>" "function(f)"
       unfolding function_def by auto
@@ -290,18 +290,18 @@ proof -
       fix y
       assume
         "y \<in> a"
-      with \<open>val(P,G,\<tau>) = a\<close>
-      obtain \<sigma> where  "\<sigma>\<in>domain(\<tau>)" "val(P,G,\<sigma>) = y"
+      with \<open>val(G,\<tau>) = a\<close>
+      obtain \<sigma> where  "\<sigma>\<in>domain(\<tau>)" "val(G,\<sigma>) = y"
         using elem_of_val[of y _ \<tau>]
         by blast
       with \<open>s\<in>surj(\<alpha>,domain(\<tau>))\<close>
       obtain \<beta> where "\<beta>\<in>\<alpha>" "s`\<beta> = \<sigma>"
         unfolding surj_def
         by auto
-      with \<open>val(P,G,\<sigma>) = y\<close>
-      have "val(P,G,s`\<beta>) = y"
+      with \<open>val(G,\<sigma>) = y\<close>
+      have "val(G,s`\<beta>) = y"
         by simp
-      with \<open>f = {\<langle>\<beta>,val(P,G,s`\<beta>)\<rangle> . \<beta>\<in>\<alpha>}\<close> \<open>\<beta>\<in>\<alpha>\<close>
+      with \<open>f = {\<langle>\<beta>,val(G,s`\<beta>)\<rangle> . \<beta>\<in>\<alpha>}\<close> \<open>\<beta>\<in>\<alpha>\<close>
       have "\<langle>\<beta>,y\<rangle>\<in>f"
         by auto
       with \<open>function(f)\<close>

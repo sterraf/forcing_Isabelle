@@ -9,7 +9,7 @@ context forcing_data1
 begin
 
 lemma val_Upair :
-  "\<one> \<in> G \<Longrightarrow> val(P,G,{\<langle>\<tau>,\<one>\<rangle>,\<langle>\<rho>,\<one>\<rangle>}) = {val(P,G,\<tau>),val(P,G,\<rho>)}"
+  "\<one> \<in> G \<Longrightarrow> val(G,{\<langle>\<tau>,\<one>\<rangle>,\<langle>\<rho>,\<one>\<rangle>}) = {val(G,\<tau>),val(G,\<rho>)}"
   by (insert one_in_P, rule trans, subst def_val,auto)
 
 lemma pairing_in_MG :
@@ -26,7 +26,7 @@ proof -
     moreover
     assume "x \<in> M[G]" "y \<in> M[G]"
     moreover from this
-    obtain \<tau> \<rho> where "val(P,G,\<tau>) = x" "val(P,G,\<rho>) = y" "\<rho> \<in> M"  "\<tau> \<in> M"
+    obtain \<tau> \<rho> where "val(G,\<tau>) = x" "val(G,\<rho>) = y" "\<rho> \<in> M"  "\<tau> \<in> M"
       using GenExtD by blast
     moreover from types this
     have "\<langle>\<tau>,\<one>\<rangle> \<in> M" "\<langle>\<rho>,\<one>\<rangle>\<in>M"
@@ -35,10 +35,10 @@ proof -
     have "{\<langle>\<tau>,\<one>\<rangle>,\<langle>\<rho>,\<one>\<rangle>} \<in> M" (is "?\<sigma> \<in> _")
       using upair_in_M_iff by simp
     moreover from this
-    have "val(P,G,?\<sigma>) \<in> M[G]"
+    have "val(G,?\<sigma>) \<in> M[G]"
       using GenExtI by simp
     moreover from calculation
-    have "{val(P,G,\<tau>),val(P,G,\<rho>)} \<in> M[G]"
+    have "{val(G,\<tau>),val(G,\<rho>)} \<in> M[G]"
       using val_Upair assms one_in_G by simp
     ultimately
     have "{x,y} \<in> M[G]"

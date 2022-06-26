@@ -145,7 +145,6 @@ interpretation sp:forcing_notion "2\<^bsup><\<omega>\<^esup>" "seqle" "0"
 
 notation sp.Leq (infixl "\<preceq>s" 50)
 notation sp.Incompatible (infixl "\<bottom>s" 50)
-notation sp.GenExt_at_P ("_\<^bsup>s\<^esup>[_]" [71,1])
 
 lemma seqspace_separative:
   assumes "f\<in>2\<^bsup><\<omega>\<^esup>"
@@ -231,7 +230,7 @@ next
     using seqle_in_M .
 qed
 
-lemma cohen_extension_is_proper: "\<exists>G. M_generic(G) \<and> M \<noteq> M\<^bsup>2\<^bsup><\<omega>\<^esup>\<^esup>[G]"
+lemma cohen_extension_is_proper: "\<exists>G. M_generic(G) \<and> M \<noteq> M[G]"
   using proper_extension generic_filter_existence zero_in_seqspace
   by force
 

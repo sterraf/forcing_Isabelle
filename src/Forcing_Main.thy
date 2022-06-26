@@ -12,12 +12,12 @@ subsection\<open>The generic extension is countable\<close>
 
 lemma (in forcing_data1) surj_nat_MG : "\<exists>f. f \<in> surj(\<omega>,M[G])"
 proof -
-  let ?f="\<lambda>n\<in>\<omega>. val(P,G,enum`n)"
-  have "x \<in> \<omega> \<Longrightarrow> val(P,G, enum ` x)\<in> M[G]" for x
+  let ?f="\<lambda>n\<in>\<omega>. val(G,enum`n)"
+  have "x \<in> \<omega> \<Longrightarrow> val(G, enum ` x)\<in> M[G]" for x
     using GenExt_iff[THEN iffD2, of _ G] bij_is_fun[OF M_countable] by force
   then
   have "?f: \<omega> \<rightarrow> M[G]"
-    using lam_type[of \<omega> "\<lambda>n. val(P,G,enum`n)" "\<lambda>_.M[G]"] by simp
+    using lam_type[of \<omega> "\<lambda>n. val(G,enum`n)" "\<lambda>_.M[G]"] by simp
   moreover
   have "\<exists>n\<in>\<omega>. ?f`n = x" if "x\<in>M[G]" for x
     using that GenExt_iff[of _ G] bij_is_surj[OF M_countable]
@@ -92,43 +92,43 @@ proof -
   interpret forcing_data1 "2\<^bsup><\<omega>\<^esup>" seqle 0 M enum
     using nat_into_M seqspace_closed seqle_in_M
     by unfold_locales simp
-  obtain G where "M_generic(G)" "M \<noteq> M\<^bsup>s\<^esup>[G]"
+  obtain G where "M_generic(G)" "M \<noteq> M[G]"
     using cohen_extension_is_proper
     by blast
-  text\<open>Recall that \<^term>\<open>M\<^bsup>s\<^esup>[G]\<close> denotes the generic extension
+  text\<open>Recall that \<^term>\<open>M[G]\<close> denotes the generic extension
   of \<^term>\<open>M\<close> using the poset of sequences \<^term>\<open>2\<^bsup><\<omega>\<^esup>\<close>.\<close>
   then
   interpret G_generic1 "2\<^bsup><\<omega>\<^esup>" seqle 0 _ enum G by unfold_locales
-  interpret MG: M_Z_basic "M\<^bsup>s\<^esup>[G]"
+  interpret MG: M_Z_basic "M[G]"
     using generic pairing_in_MG
       Union_MG  extensionality_in_MG power_in_MG
       foundation_in_MG replacement_assm_MG
       separation_in_MG infinity_in_MG replacement_ax1
     by unfold_locales simp
-  have "M, []\<Turnstile> \<cdot>AC\<cdot> \<Longrightarrow> M\<^bsup>s\<^esup>[G], [] \<Turnstile> \<cdot>AC\<cdot>"
+  have "M, []\<Turnstile> \<cdot>AC\<cdot> \<Longrightarrow> M[G], [] \<Turnstile> \<cdot>AC\<cdot>"
   proof -
     assume "M, [] \<Turnstile> \<cdot>AC\<cdot>"
     then
     have "choice_ax(##M)"
       unfolding ZF_choice_fm_def using ZF_choice_auto by simp
     then
-    have "choice_ax(##M\<^bsup>s\<^esup>[G])" using choice_in_MG by simp
+    have "choice_ax(##M[G])" using choice_in_MG by simp
     then
-    show "M\<^bsup>s\<^esup>[G], [] \<Turnstile> \<cdot>AC\<cdot>"
+    show "M[G], [] \<Turnstile> \<cdot>AC\<cdot>"
       using ZF_choice_auto sats_ZFC_iff_sats_ZF_AC
       unfolding ZF_choice_fm_def by simp
   qed
   moreover
-  note \<open>M \<noteq> M\<^bsup>s\<^esup>[G]\<close> \<open>M \<Turnstile> { \<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in> \<Phi>}\<close> \<open>\<Phi> \<subseteq> formula\<close>
+  note \<open>M \<noteq> M[G]\<close> \<open>M \<Turnstile> { \<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in> \<Phi>}\<close> \<open>\<Phi> \<subseteq> formula\<close>
   moreover
-  have "Transset(M\<^bsup>s\<^esup>[G])" using Transset_MG .
+  have "Transset(M[G])" using Transset_MG .
   moreover
-  have "M \<subseteq> M\<^bsup>s\<^esup>[G]" using M_subset_MG[OF one_in_G] generic by simp
+  have "M \<subseteq> M[G]" using M_subset_MG[OF one_in_G] generic by simp
   ultimately
   show ?thesis
     using Ord_MG_iff MG_eqpoll_nat ext.M_satT_Zermelo_fms
       satT_ground_repl_fm_imp_satT_ZF_replacement_fm[of \<Phi>]
-    by (rule_tac x="M\<^bsup>s\<^esup>[G]" in exI, auto)
+    by (rule_tac x="M[G]" in exI, auto)
 qed
 
 lemma ZF_replacement_instances12_sub_ZF: "{\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms} \<subseteq> ZF"

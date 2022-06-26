@@ -108,7 +108,7 @@ lemma Pow_inter_MG:
   shows "Pow(a) \<inter> M[G] \<in> M[G]"
 proof -
   from assms
-  obtain \<tau> where "\<tau> \<in> M" "val(P,G, \<tau>) = a"
+  obtain \<tau> where "\<tau> \<in> M" "val(G, \<tau>) = a"
     using GenExtD by auto
   let ?Q="Pow(domain(\<tau>)\<times>P) \<inter> M"
   from \<open>\<tau>\<in>M\<close>
@@ -136,7 +136,7 @@ proof -
       using \<open>Q\<in>M\<close> by simp
   qed
   let ?\<pi>="?Q\<times>{\<one>}"
-  let ?b="val(P,G,?\<pi>)"
+  let ?b="val(G,?\<pi>)"
   from \<open>?Q\<in>M\<close>
   have "?\<pi>\<in>M"
     using one_in_P P_in_M transitivity
@@ -149,7 +149,7 @@ proof -
     fix c
     assume "c \<in> Pow(a) \<inter> M[G]"
     then
-    obtain \<chi> where "c\<in>M[G]" "\<chi> \<in> M" "val(P,G,\<chi>) = c"
+    obtain \<chi> where "c\<in>M[G]" "\<chi> \<in> M" "val(G,\<chi>) = c"
       using GenExt_iff by auto
     let ?\<theta>="{\<langle>\<sigma>,p\<rangle> \<in>domain(\<tau>)\<times>P . p \<tturnstile> \<cdot>0 \<in> 1\<cdot> [\<sigma>,\<chi>] }"
     have "arity(forces(Member(0,1))) = 6"
@@ -161,15 +161,15 @@ proof -
     then
     have "?\<theta> \<in> ?Q" by auto
     then
-    have "val(P,G,?\<theta>) \<in> ?b"
+    have "val(G,?\<theta>) \<in> ?b"
       using one_in_G one_in_P generic val_of_elem [of ?\<theta> \<one> ?\<pi> G]
       by auto
-    have "val(P,G,?\<theta>) = c"
+    have "val(G,?\<theta>) = c"
     proof(intro equalityI subsetI)
       fix x
-      assume "x \<in> val(P,G,?\<theta>)"
+      assume "x \<in> val(G,?\<theta>)"
       then
-      obtain \<sigma> p where 1: "\<langle>\<sigma>,p\<rangle>\<in>?\<theta>" "p\<in>G" "val(P,G,\<sigma>) =  x"
+      obtain \<sigma> p where 1: "\<langle>\<sigma>,p\<rangle>\<in>?\<theta>" "p\<in>G" "val(G,\<sigma>) =  x"
         using elem_of_val_pair
         by blast
       moreover from \<open>\<langle>\<sigma>,p\<rangle>\<in>?\<theta>\<close> \<open>?\<theta> \<in> M\<close>
@@ -179,14 +179,14 @@ proof -
       have "p \<tturnstile> \<cdot>0 \<in> 1\<cdot> [\<sigma>,\<chi>]" "p\<in>P"
         by simp_all
       moreover
-      note \<open>val(P,G,\<chi>) = c\<close> \<open>\<chi> \<in> M\<close>
+      note \<open>val(G,\<chi>) = c\<close> \<open>\<chi> \<in> M\<close>
       ultimately
       have "M[G], [x, c] \<Turnstile> \<cdot>0 \<in> 1\<cdot>"
         using generic definition_of_forcing[where \<phi>="\<cdot>0 \<in> 1\<cdot>"] ord_simp_union
         by auto
       moreover from \<open>\<sigma>\<in>M\<close> \<open>\<chi>\<in>M\<close>
       have "x\<in>M[G]"
-        using \<open>val(P,G,\<sigma>) = x\<close> GenExtI by blast
+        using \<open>val(G,\<sigma>) = x\<close> GenExtI by blast
       ultimately
       show "x\<in>c"
         using \<open>c\<in>M[G]\<close> by simp
@@ -196,13 +196,13 @@ proof -
       with \<open>c \<in> Pow(a) \<inter> M[G]\<close>
       have "x \<in> a" "c\<in>M[G]" "x\<in>M[G]"
         using transitivity_MG by auto
-      with \<open>val(P,G, \<tau>) = a\<close>
-      obtain \<sigma> where "\<sigma>\<in>domain(\<tau>)" "val(P,G,\<sigma>) = x"
+      with \<open>val(G, \<tau>) = a\<close>
+      obtain \<sigma> where "\<sigma>\<in>domain(\<tau>)" "val(G,\<sigma>) = x"
         using elem_of_val by blast
       moreover
-      note \<open>x\<in>c\<close> \<open>val(P,G,\<chi>) = c\<close> \<open>c\<in>M[G]\<close> \<open>x\<in>M[G]\<close>
+      note \<open>x\<in>c\<close> \<open>val(G,\<chi>) = c\<close> \<open>c\<in>M[G]\<close> \<open>x\<in>M[G]\<close>
       moreover from calculation
-      have "val(P,G,\<sigma>) \<in> val(P,G,\<chi>)"
+      have "val(G,\<sigma>) \<in> val(G,\<chi>)"
         by simp
       moreover from calculation
       have "M[G], [x, c] \<Turnstile> \<cdot>0 \<in> 1\<cdot>"
@@ -229,11 +229,11 @@ proof -
       ultimately
       have "\<langle>\<sigma>,p\<rangle>\<in>?\<theta>"
         using \<open>\<sigma>\<in>domain(\<tau>)\<close> by simp
-      with \<open>val(P,G,\<sigma>) =  x\<close> \<open>p\<in>G\<close>
-      show "x\<in>val(P,G,?\<theta>)"
+      with \<open>val(G,\<sigma>) =  x\<close> \<open>p\<in>G\<close>
+      show "x\<in>val(G,?\<theta>)"
         using val_of_elem [of _ _ "?\<theta>"] by auto
     qed
-    with \<open>val(P,G,?\<theta>) \<in> ?b\<close>
+    with \<open>val(G,?\<theta>) \<in> ?b\<close>
     show "c\<in>?b"
       by simp
   qed

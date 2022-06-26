@@ -114,10 +114,15 @@ some \<^term>\<open>\<tau>\<in>M\<close> such that \<^term>\<open>x=val(P,G,\<ta
 
 text\<open>It should be clear that to prove that some set \<^term>\<open>X\<close> is in
 \<^term>\<open>M[G]\<close> one has to propose a name, say \<^term>\<open>\<tau>\<close> and prove
-\<^term>\<open>X = val(P,G,\<tau>)\<close>. \<^term>\<open>val\<close> is defined by recursion:\<close>
+\<^term>\<open>X = val(P,G,\<tau>)\<close>. \<^term>\<open>val\<close> is defined by recursion on
+the relation \<^term>\<open>x\<in>domain(y)\<close>:\<close>
 
 lemma def_val' : "val(P,G,x) = {val(P,G,t) . t \<in> x-``(P\<inter>G)}"
   using def_val[of G x] by auto
+
+text\<open>The restriction of the domain to those elements paired with an
+element of $G$ shows that we only evaluate proper names which are
+those elements of $M$ satisfying:\<close>
 
 text\<open>Every element of $M$ has a canonical name given by 
 @{thm

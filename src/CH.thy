@@ -174,7 +174,6 @@ begin
 
 notation Leq (infixl "\<preceq>" 50)
 notation Incompatible (infixl "\<bottom>" 50)
-notation GenExt_at_P ("_[_]" [71,1])
 
 abbreviation
   f_G :: "i" (\<open>f\<^bsub>G\<^esub>\<close>) where

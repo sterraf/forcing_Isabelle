@@ -94,12 +94,12 @@ proof -
          instances, one for \<^term>\<open>M\<close> and one for \<^term>\<open>M[G]\<close> *)
     assume "q\<in>G"
     with assms \<open>M_generic(G)\<close>
-    have "M[G], map(val(P,G),[f,a,b'\<^sup>v]) \<Turnstile> \<cdot>0`1 is 2\<cdot>"
+    have "M[G], map(val(G),[f,a,b'\<^sup>v]) \<Turnstile> \<cdot>0`1 is 2\<cdot>"
       using truth_lemma[of "\<cdot>0`1 is 2\<cdot>" G "[f,a,b'\<^sup>v]"]
       by (auto simp add:ord_simp_union arity_fun_apply_fm
           fun_apply_type)
     with \<open>b \<noteq> b'\<close> types
-    have "M[G], map(val(P,G),[f,a,b\<^sup>v]) \<Turnstile> \<cdot>\<not>\<cdot>0`1 is 2\<cdot>\<cdot>"
+    have "M[G], map(val(G),[f,a,b\<^sup>v]) \<Turnstile> \<cdot>\<not>\<cdot>0`1 is 2\<cdot>\<cdot>"
       using GenExtI by auto
   }
   with types
@@ -233,7 +233,7 @@ declare mg_sharp_intros[rule del, simplified setclass_iff, intro]
 
 \<comment> \<open>Kunen IV.2.31\<close>
 lemma forces_below_filter:
-  assumes "M[G], map(val(P,G),env) \<Turnstile> \<phi>" "p \<in> G"
+  assumes "M[G], map(val(G),env) \<Turnstile> \<phi>" "p \<in> G"
     "arity(\<phi>) \<le> length(env)" "\<phi> \<in> formula" "env \<in> list(M)"
   shows "\<exists>q\<in>G. q \<preceq> p \<and> q \<tturnstile> \<phi> env"
 proof -
@@ -369,7 +369,7 @@ lemma ccc_fun_approximation_lemma:
     "\<exists>F\<in>M. F : A \<rightarrow> Pow\<^bsup>M\<^esup>(B) \<and> (\<forall>a\<in>A. f`a \<in> F`a \<and> |F`a|\<^bsup>M\<^esup> \<le> \<omega>)"
 proof -
   from \<open>f\<in>M[G]\<close>
-  obtain f_dot where "f = val(P,G,f_dot)" "f_dot\<in>M" using GenExtD by force
+  obtain f_dot where "f = val(G,f_dot)" "f_dot\<in>M" using GenExtD by force
   with assms
   obtain p where "p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, A\<^sup>v, B\<^sup>v]" "p\<in>G" "p\<in>M"
     using transitivity[OF M_genericD P_in_M]
@@ -393,9 +393,9 @@ proof -
     have "M[G], [f, a, f`a] \<Turnstile> \<cdot>0`1 is 2\<cdot>"
       by (auto dest:transM)
     moreover
-    note \<open>B\<in>M\<close> \<open>f = val(P,G,f_dot)\<close>
+    note \<open>B\<in>M\<close> \<open>f = val(G,f_dot)\<close>
     moreover from calculation
-    have "a\<in>M" "val(P,G, f_dot)`a\<in>M"
+    have "a\<in>M" "val(G, f_dot)`a\<in>M"
       by (auto dest:transM)
     moreover
     note \<open>f_dot\<in>M\<close> \<open>p\<in>G\<close>
