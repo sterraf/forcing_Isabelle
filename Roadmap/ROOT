@@ -1,0 +1,15 @@
+chapter "ZF"
+
+session "Roadmap_Forcing" in "." =  "Independence_CH" +
+  description "This session contains a roadmap to understand our mechanization
+of forcing and the proof of the independence of CH."  
+  options [timeout=300, document = pdf, document_output = "output",
+  	   document_variants = "document:outline=/proof,/ML"]
+  theories
+    "Roadmap"
+  document_files
+    "root.tex"
+    "root.bib"
+    "root.bst"
+
+(* Emmanuel Gunther <mailto:gunther@famaf.unc.edu.ar>, Miguel Pagano <https://cs.famaf.unc.edu.ar/~mpagano/>, Pedro Sánchez Terraf <https://cs.famaf.unc.edu.ar/~pedro>, and Matías Steinberg <mailto:matias.steinberg@mi.unc.edu.ar> *)
