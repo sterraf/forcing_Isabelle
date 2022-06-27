@@ -488,7 +488,7 @@ lemma relation_rcheck : "x\<in>M \<Longrightarrow> relation(rcheck(x))"
 lemma check_in_M : "x\<in>M \<Longrightarrow> check(x) \<in> M"
   unfolding transrec_def
   using wfrec_Hcheck[of x] check_trancl wf_rcheck trans_rcheck relation_rcheck rcheck_in_M
-    Hcheck_closed relation2_Hcheck trans_wfrec_closed[of "rcheck(x)" x "is_Hcheck(##M,\<one>)" Hcheck]
+    Hcheck_closed relation2_Hcheck trans_wfrec_closed[of "rcheck(x)"]
   by (simp flip: setclass_iff)
 
 (* Internalization and absoluteness of rcheck\<close> *)
@@ -515,17 +515,26 @@ proof -
     by (simp flip: setclass_iff)
 qed
 
-lemma check_replacement: "{check(x). x\<in>P} \<in> M"
+lemma check_lam_replacement: "lam_replacement(##M,check)"
 proof -
-  have "arity(check_fm(0,2,1)) = 3"
+  have "arity(check_fm(2,0,1)) = 3"
     by (simp add:ord_simp_union arity)
   then
+  have "Lambda(A, check) \<in> M" if "A\<in>M" for A
+    using that check_in_M transitivity[of _ A] one_in_M P_in_M
+    using sats_check_fm check_abs P_in_M check_in_M one_in_M  zero_in_M
+      check_fm_type replacement_ax1(17)
+    by(rule_tac Lambda_in_M [of "check_fm(2,0,1)" "[\<one>]"],simp_all)
+  then
   show ?thesis
-    using sats_check_fm check_abs P_in_M check_in_M one_in_M transitivity zero_in_M
-      Replace_relativized_in_M[of "check_fm(0,2,1)" "[\<one>]" _ "is_check(##M,\<one>)" check]
-      check_fm_type replacement_ax1(12)
+    using check_in_M lam_replacement_iff_lam_closed[THEN iffD2]
     by simp
 qed
+
+lemma check_replacement: "{check(x). x\<in>P} \<in> M"
+  using lam_replacement_imp_strong_replacement_aux[OF check_lam_replacement]
+transitivity P_in_M check_in_M RepFun_closed
+    by simp_all
 
 lemma M_subset_MG :  "\<one> \<in> G \<Longrightarrow> M \<subseteq> M[G]"
   using check_in_M one_in_P GenExtI
@@ -539,7 +548,7 @@ definition
 lemma G_dot_in_M : "G_dot \<in> M"
 proof -
   let ?is_pcheck = "\<lambda>x y. \<exists>ch\<in>M. is_check(##M,\<one>,x,ch) \<and> pair(##M,ch,x,y)"
-  let ?pcheck_fm = "Exists(And(check_fm(1,3,0),pair_fm(0,1,2)))"
+  let ?pcheck_fm = "Exists(And(check_fm(3,1,0),pair_fm(0,1,2)))"
   have "sats(M,?pcheck_fm,[x,y,\<one>]) \<longleftrightarrow> ?is_pcheck(x,y)" if "x\<in>M" "y\<in>M" for x y
     using sats_check_fm that one_in_M zero_in_M by simp
   moreover
@@ -559,7 +568,7 @@ proof -
   show ?thesis
     unfolding G_dot_def
     using one_in_M P_in_M transitivity Replace_relativized_in_M[of ?pcheck_fm "[\<one>]"]
-      replacement_ax1(13)
+      replacement_ax1(12)
     by simp
 qed
 

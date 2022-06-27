@@ -186,16 +186,16 @@ lemma separation_check_snd_aux:
 proof -
   note types = assms leq_in_M P_in_M one_in_M
   let ?f_fm="fst_fm(1,0)"
-  let ?g_fm="hcomp_fm(check_fm'(6),snd_fm,2,0)"
+  let ?g_fm="hcomp_fm(check_fm(6),snd_fm,2,0)"
   have "?f_fm \<in> formula" "arity(?f_fm) \<le> 7" "?g_fm \<in> formula" "arity(?g_fm) \<le> 8"
     using ord_simp_union
-    unfolding hcomp_fm_def check_fm'_def
+    unfolding hcomp_fm_def
     by (simp_all add:arity)
   then
   show ?thesis
     using separation_sat_after_function assms types
     using fst_abs snd_abs types sats_snd_fm sats_check_fm check_abs check_in_M
-    unfolding hcomp_fm_def check_fm'_def
+    unfolding hcomp_fm_def
     by simp
 qed
 
@@ -208,11 +208,11 @@ proof -
   let ?\<phi>=" (\<cdot>\<exists>(\<cdot>\<exists>(\<cdot>\<exists>(\<cdot>\<exists>(\<cdot>\<exists>(\<cdot>\<exists>\<cdot>\<cdot>0 = 11\<cdot> \<and> \<cdot>\<cdot>1 = 7\<cdot> \<and> \<cdot>\<cdot>2 = 8\<cdot> \<and> \<cdot>\<cdot>3 = 9\<cdot> \<and> \<cdot>\<cdot>4 = 10\<cdot> \<and> \<cdot>\<cdot>5 = 6\<cdot> \<and>
     (\<lambda>p. incr_bv(p)`6)^6 (\<chi>) \<cdot>\<cdot>\<cdot>\<cdot>\<cdot>\<cdot>\<cdot>)\<cdot>)\<cdot>)\<cdot>)\<cdot>)\<cdot>)"
   note types = assms leq_in_M P_in_M one_in_M
-  let ?f_fm="hcomp_fm(check_fm'(5),fst_fm,1,0)"
-  let ?g_fm="hcomp_fm(check_fm'(6),snd_fm,2,0)"
+  let ?f_fm="hcomp_fm(check_fm(5),fst_fm,1,0)"
+  let ?g_fm="hcomp_fm(check_fm(6),snd_fm,2,0)"
   have "?f_fm \<in> formula" "arity(?f_fm) \<le> 7" "?g_fm \<in> formula" "arity(?g_fm) \<le> 8"
     using ord_simp_union
-    unfolding hcomp_fm_def check_fm'_def
+    unfolding hcomp_fm_def
     by (simp_all add:arity)
   moreover from assms
   have fm:"?\<phi>\<in>formula" by simp
@@ -227,7 +227,7 @@ proof -
   have sep:"separation(##M,\<lambda>z. M,?\<rho>'(z)\<Turnstile>?\<phi>)"
     using separation_sat_after_function assms types sats_check_fm check_abs check_in_M
       fst_abs snd_abs
-    unfolding hcomp_fm_def check_fm'_def
+    unfolding hcomp_fm_def
     by simp
   moreover
   have "?\<rho>(z) \<in> list(M)" if "(##M)(z)" for z
@@ -255,15 +255,15 @@ proof -
   proof -
     note types = assms leq_in_M P_in_M one_in_M
     let ?f_fm="hcomp_fm(snd_fm,fst_fm,1,0)"
-    let ?g_fm="hcomp_fm(check_fm'(6),snd_fm,2,0)"
+    let ?g_fm="hcomp_fm(check_fm(6),snd_fm,2,0)"
     have "?f_fm \<in> formula" "arity(?f_fm) \<le> 7" "?g_fm \<in> formula" "arity(?g_fm) \<le> 8"
       using ord_simp_union
-      unfolding hcomp_fm_def check_fm'_def
+      unfolding hcomp_fm_def
       by (simp_all add:arity)
     then
     show ?thesis
       using separation_sat_after_function assms types sats_check_fm check_abs fst_abs snd_abs that
-      unfolding hcomp_fm_def check_fm'_def
+      unfolding hcomp_fm_def
       by simp
   qed
   then
@@ -290,8 +290,8 @@ proof -
     note types = assms leq_in_M P_in_M one_in_M
     let ?f_fm="hcomp_fm(snd_fm,fst_fm,1,0)"
     let ?g="\<lambda>z . (\<Union>(fst(fst(fst(fst(z))))))\<^sup>v"
-    let ?g_fm="hcomp_fm(check_fm'(6),hcomp_fm(big_union_fm,hcomp_fm(fst_fm,hcomp_fm(fst_fm,hcomp_fm(fst_fm,fst_fm)))),2,0)"
-    let ?h_fm="hcomp_fm(check_fm'(7),snd_fm,3,0)"
+    let ?g_fm="hcomp_fm(check_fm(6),hcomp_fm(big_union_fm,hcomp_fm(fst_fm,hcomp_fm(fst_fm,hcomp_fm(fst_fm,fst_fm)))),2,0)"
+    let ?h_fm="hcomp_fm(check_fm(7),snd_fm,3,0)"
     have f_fm_facts:"?f_fm \<in> formula" "arity(?f_fm) \<le> 6"
       using ord_simp_union
       unfolding hcomp_fm_def
@@ -299,13 +299,13 @@ proof -
     moreover from types
     have "?g_fm \<in> formula" "arity(?g_fm) \<le> 7" "?h_fm \<in> formula" "arity(?h_fm) \<le> 8"
       using ord_simp_union
-      unfolding hcomp_fm_def check_fm'_def
+      unfolding hcomp_fm_def
       by (simp_all add:arity)
     ultimately
     show ?thesis
       using separation_sat_after_function3[OF _ _ _ f_fm_facts] check_abs
         types assms sats_check_fm that fst_abs snd_abs
-      unfolding hcomp_fm_def check_fm'_def
+      unfolding hcomp_fm_def
       by simp
   qed
   then
@@ -331,18 +331,18 @@ proof -
     "\<chi>\<in>formula" "arity(\<chi>) \<le> 6" for \<chi>
   proof -
     let ?f_fm="fst_fm(1,0)"
-    let ?g_fm="hcomp_fm(check_fm'(6),snd_fm,2,0)"
+    let ?g_fm="hcomp_fm(check_fm(6),snd_fm,2,0)"
     note types = assms leq_in_M P_in_M one_in_M
     moreover
     have "?f_fm \<in> formula" "arity(?f_fm) \<le> 6" "?g_fm \<in> formula" "arity(?g_fm) \<le> 7"
       using ord_simp_union
-      unfolding hcomp_fm_def check_fm'_def
+      unfolding hcomp_fm_def
       by (simp_all add:arity)
     ultimately
     show ?thesis
       using separation_sat_after_function_1 assms sats_fst_fm that
         fst_abs snd_abs types sats_snd_fm sats_check_fm check_abs check_in_M
-      unfolding hcomp_fm_def check_fm'_def
+      unfolding hcomp_fm_def
       by simp
   qed
   then

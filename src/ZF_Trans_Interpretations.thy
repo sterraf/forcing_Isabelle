@@ -328,12 +328,12 @@ locale M_ZF4 = M_ZF3 +
     "ground_replacement_assm(M,env,trans_repl_HVFrom_fm)"
     "ground_replacement_assm(M,env,wfrec_Hcheck_fm)"
     "ground_replacement_assm(M,env,repl_PHcheck_fm)"
-    "ground_replacement_assm(M,env,check_replacement_fm)"
     "ground_replacement_assm(M,env,G_dot_in_M_fm)"
     "ground_replacement_assm(M,env,repl_opname_check_fm)"
     "ground_replacement_assm(M,env,tl_repl_intf_fm)"
     "ground_replacement_assm(M,env,formula_repl1_intf_fm)"
     "ground_replacement_assm(M,env,eclose_repl1_intf_fm)"
+    "ground_replacement_assm(M,env,Lambda_in_M_fm(check_fm(2,0,1),1))"
     "ground_replacement_assm(M,env,replacement_is_omega_funspace_fm)"
     "ground_replacement_assm(M,env,replacement_HAleph_wfrec_repl_body_fm)"
     "ground_replacement_assm(M,env,replacement_is_fst2_snd2_fm)"
@@ -373,7 +373,6 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(trans_repl_HVFrom_fm),
     ground_repl_fm(wfrec_Hcheck_fm),
     ground_repl_fm(repl_PHcheck_fm),
-    ground_repl_fm(check_replacement_fm),
     ground_repl_fm(G_dot_in_M_fm),
     ground_repl_fm(repl_opname_check_fm),
     ground_repl_fm(tl_repl_intf_fm),
@@ -400,7 +399,8 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(LambdaPair_in_M_fm(is_RepFun_body_fm(0,1,2),0)),
     ground_repl_fm(LambdaPair_in_M_fm(composition_fm(0,1,2),0)),
     ground_repl_fm(Lambda_in_M_fm(is_converse_fm(0,1),0)),
-    ground_repl_fm(Lambda_in_M_fm(domain_fm(0,1),0)) }"
+    ground_repl_fm(Lambda_in_M_fm(domain_fm(0,1),0)),
+    ground_repl_fm(Lambda_in_M_fm(check_fm(2,0,1),1)) }"
 
 text\<open>This set has 43 internalized formulas, corresponding to the total count
 of previous replacement instances.\<close>

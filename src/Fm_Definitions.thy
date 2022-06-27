@@ -128,7 +128,7 @@ definition
 \<comment> \<open>Finally, we internalize the formula.\<close>
 definition
   check_fm :: "[i,i,i] \<Rightarrow> i" where
-  "check_fm(x,o,z) \<equiv> Exists(And(is_rcheck_fm(1+\<^sub>\<omega>x,0),
+  "check_fm(o,x,z) \<equiv> Exists(And(is_rcheck_fm(1+\<^sub>\<omega>x,0),
                       is_wfrec_fm(is_Hcheck_fm(6+\<^sub>\<omega>o,2,1,0),0,1+\<^sub>\<omega>x,1+\<^sub>\<omega>z)))"
 
 lemma check_fm_type[TC]: "x\<in>nat \<Longrightarrow> o\<in>nat \<Longrightarrow> z\<in>nat \<Longrightarrow> check_fm(x,o,z) \<in> formula"
@@ -138,7 +138,7 @@ lemma sats_check_fm :
   assumes
     "o\<in>nat" "x\<in>nat" "z\<in>nat" "env\<in>list(M)" "0\<in>M"
   shows
-    "(M , env \<Turnstile> check_fm(x,o,z)) \<longleftrightarrow> is_check(##M,nth(o,env),nth(x,env),nth(z,env))"
+    "(M , env \<Turnstile> check_fm(o,x,z)) \<longleftrightarrow> is_check(##M,nth(o,env),nth(x,env),nth(z,env))"
 proof -
   have sats_is_Hcheck_fm:
     "\<And>a0 a1 a2 a3 a4 a6. \<lbrakk> a0\<in>M; a1\<in>M; a2\<in>M; a3\<in>M; a4\<in>M;a6 \<in>M\<rbrakk> \<Longrightarrow>
@@ -162,7 +162,7 @@ qed
 lemma iff_sats_check_fm[iff_sats] :
   assumes
     "nth(o, env) = oa" "nth(x, env) = xa" "nth(z, env) = za" "o \<in> nat" "x \<in> nat" "z \<in> nat" "env \<in> list(A)" "0 \<in> A"
-  shows "is_check(##A, oa,xa, za) \<longleftrightarrow> A, env \<Turnstile> check_fm(x,o, z)"
+  shows "is_check(##A, oa,xa, za) \<longleftrightarrow> A, env \<Turnstile> check_fm(o,x,z)"
   using assms sats_check_fm[symmetric]
   by auto
 
@@ -1012,8 +1012,7 @@ definition wfrec_rank_fm where "wfrec_rank_fm \<equiv> (\<cdot>\<exists>\<cdot>p
 definition trans_repl_HVFrom_fm where "trans_repl_HVFrom_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(is_HVfrom_fm(8, 2, 1, 0), 4, 1, 0) \<cdot>\<cdot>)"
 definition wfrec_Hcheck_fm where "wfrec_Hcheck_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(is_Hcheck_fm(8, 2, 1, 0), 4, 1, 0) \<cdot>\<cdot>) "
 definition repl_PHcheck_fm where "repl_PHcheck_fm \<equiv> PHcheck_fm(2,3,0,1)"
-definition check_replacement_fm where "check_replacement_fm \<equiv> \<cdot>check_fm(0,2,1) \<and> \<cdot>0 \<in> 3\<cdot>\<cdot>"
-definition G_dot_in_M_fm where "G_dot_in_M_fm \<equiv>  \<cdot>(\<cdot>\<exists>\<cdot>\<cdot>1\<^sup>v3 is 0\<cdot> \<and> pair_fm(0, 1, 2) \<cdot>\<cdot>) \<and> \<cdot>0 \<in> 3\<cdot>\<cdot>"
+definition G_dot_in_M_fm where "G_dot_in_M_fm \<equiv>  \<cdot>(\<cdot>\<exists>\<cdot>\<cdot>3\<^sup>v1 is 0\<cdot> \<and> pair_fm(0, 1, 2) \<cdot>\<cdot>) \<and> \<cdot>0 \<in> 3\<cdot>\<cdot>"
 definition repl_opname_check_fm where "repl_opname_check_fm \<equiv> \<cdot>is_opname_check_fm(3,2,0,1) \<and> \<cdot>0 \<in> 4\<cdot>\<cdot>"
 definition tl_repl_intf_fm where "tl_repl_intf_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(iterates_MH_fm(tl_fm(1,0), 9, 2, 1, 0), 3, 1, 0) \<cdot>\<cdot>)"
 definition formula_repl1_intf_fm where "formula_repl1_intf_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(iterates_MH_fm(formula_functor_fm(1,0), 9, 2, 1, 0), 3, 1, 0) \<cdot>\<cdot>)"

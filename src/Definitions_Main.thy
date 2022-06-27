@@ -533,7 +533,7 @@ instances1_fms \<equiv>
 { wfrec_Hfrc_at_fm, list_repl1_intf_fm, list_repl2_intf_fm,
  formula_repl2_intf_fm, eclose_repl2_intf_fm, powapply_repl_fm,
  phrank_repl_fm, wfrec_rank_fm, trans_repl_HVFrom_fm, wfrec_Hcheck_fm,
- repl_PHcheck_fm, check_replacement_fm, G_dot_in_M_fm, repl_opname_check_fm,
+ repl_PHcheck_fm, G_dot_in_M_fm, repl_opname_check_fm,
  tl_repl_intf_fm, formula_repl1_intf_fm, eclose_repl1_intf_fm }
 *)
 

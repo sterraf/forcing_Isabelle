@@ -251,12 +251,6 @@ qed
 
 subsection\<open>Preservation by ccc forcing notions\<close>
 
-\<comment> \<open>This definition has the arguments in the expected order by most of the lemmas:
-first the parameters, the only argument in the penultimate place and the result in
-the last place.\<close>
-definition check_fm' where
-  "check_fm'(ofm,arg,res) \<equiv> check_fm(arg,ofm,res)"
-
 lemma ccc_fun_closed_lemma_aux:
   assumes "f_dot\<in>M" "p\<in>M" "a\<in>M" "b\<in>M"
   shows "{q \<in> P . q \<preceq> p \<and> (M, [q, P, leq, \<one>, f_dot, a\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))} \<in> M"
@@ -275,7 +269,7 @@ proof -
     if "\<tau>\<in>M" for \<tau>
   proof -
     let ?f_fm="snd_fm(1,0)"
-    let ?g_fm="hcomp_fm(check_fm'(6),hcomp_fm(fst_fm,fst_fm),2,0)"
+    let ?g_fm="hcomp_fm(check_fm(6),hcomp_fm(fst_fm,fst_fm),2,0)"
     note types = assms leq_in_M P_in_M one_in_M
     have "arity(forces(\<cdot>0`1 is 2\<cdot> )) \<le> 7"
       using arity_fun_apply_fm union_abs1 arity_forces[of "\<cdot>0`1 is 2\<cdot> "]
@@ -283,13 +277,13 @@ proof -
     moreover
     have "?f_fm \<in> formula" "arity(?f_fm) \<le> 7" "?g_fm \<in> formula" "arity(?g_fm) \<le> 8"
       using ord_simp_union
-      unfolding hcomp_fm_def check_fm'_def
+      unfolding hcomp_fm_def
       by (simp_all add:arity)
     ultimately
     show ?thesis
       using separation_sat_after_function types that sats_fst_fm
         snd_abs types sats_snd_fm sats_check_fm check_abs check_in_M fst_abs
-      unfolding hcomp_fm_def check_fm'_def
+      unfolding hcomp_fm_def
       by simp
   qed
   then
@@ -312,21 +306,22 @@ proof -
     note types = assms leq_in_M P_in_M one_in_M
     let ?f_fm="snd_fm(1,0)"
     let ?g="\<lambda>z . fst(fst(fst(z)))\<^sup>v"
-    let ?g_fm="hcomp_fm(check_fm'(6),hcomp_fm(fst_fm,hcomp_fm(fst_fm,fst_fm)),2,0)"
-    let ?h_fm="hcomp_fm(check_fm'(7),hcomp_fm(snd_fm,fst_fm),3,0)"
+    let ?g_fm="hcomp_fm(check_fm(6),hcomp_fm(fst_fm,hcomp_fm(fst_fm,fst_fm)),2,0)"
+    let ?h_fm="hcomp_fm(check_fm(7),hcomp_fm(snd_fm,fst_fm),3,0)"
     have "arity(forces(\<cdot>0`1 is 2\<cdot> )) \<le> 7"
-      using arity_fun_apply_fm union_abs1 arity_forces[of "\<cdot>0`1 is 2\<cdot> "] by simp
+      using arity_fun_apply_fm union_abs1 arity_forces[of "\<cdot>0`1 is 2\<cdot> "]
+      sorry
     moreover
     have "?f_fm \<in> formula" "arity(?f_fm) \<le> 6" "?g_fm \<in> formula" "arity(?g_fm) \<le> 7"
       "?h_fm \<in> formula" "arity(?h_fm) \<le> 8"
       using ord_simp_union
-      unfolding hcomp_fm_def check_fm'_def
+      unfolding hcomp_fm_def
       by (simp_all add:arity)
     ultimately
     show ?thesis
       using separation_sat_after_function3 assms types sats_check_fm check_abs check_in_M
         fst_abs snd_abs
-      unfolding hcomp_fm_def check_fm'_def
+      unfolding hcomp_fm_def
       by simp
   qed
   moreover
@@ -334,7 +329,7 @@ proof -
     if "\<tau>\<in>M" for \<tau>
   proof -
     let ?f_fm="snd_fm(1,0)"
-    let ?g_fm="hcomp_fm(check_fm'(6),fst_fm,2,0)"
+    let ?g_fm="hcomp_fm(check_fm(6),fst_fm,2,0)"
     note types = assms leq_in_M P_in_M one_in_M
     have "arity(forces(\<cdot>0`1 is 2\<cdot> )) \<le> 7"
       using arity_forces[of "\<cdot>0`1 is 2\<cdot> "] arity_fun_apply_fm union_abs1
@@ -342,13 +337,13 @@ proof -
     moreover
     have "?f_fm \<in> formula" "arity(?f_fm) \<le> 7" "?g_fm \<in> formula" "arity(?g_fm) \<le> 8"
       using ord_simp_union
-      unfolding hcomp_fm_def check_fm'_def
+      unfolding hcomp_fm_def
       by (simp_all add:arity)
     ultimately
     show ?thesis
       using separation_sat_after_function assms types that fst_abs
         snd_abs types sats_check_fm check_abs check_in_M
-      unfolding hcomp_fm_def check_fm'_def
+      unfolding hcomp_fm_def
       by simp
   qed
   ultimately
