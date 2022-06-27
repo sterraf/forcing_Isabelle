@@ -308,7 +308,7 @@ proof -
     let ?h_fm="hcomp_fm(check_fm(7),hcomp_fm(snd_fm,fst_fm),3,0)"
     have "arity(forces(\<cdot>0`1 is 2\<cdot> )) \<le> 7"
       using arity_fun_apply_fm union_abs1 arity_forces[of "\<cdot>0`1 is 2\<cdot> "]
-      sorry
+      by simp
     moreover
     have "?f_fm \<in> formula" "arity(?f_fm) \<le> 6" "?g_fm \<in> formula" "arity(?g_fm) \<le> 7"
       "?h_fm \<in> formula" "arity(?h_fm) \<le> 8"
