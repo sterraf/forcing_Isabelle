@@ -524,7 +524,7 @@ proof -
   have "Lambda(A, check) \<in> M" if "A\<in>M" for A
     using that check_in_M transitivity[of _ A] one_in_M P_in_M
     using sats_check_fm check_abs P_in_M check_in_M one_in_M  zero_in_M
-      check_fm_type replacement_ax1(16)
+      check_fm_type replacement_ax1(15)
     by(rule_tac Lambda_in_M [of "check_fm(2,0,1)" "[\<one>]"],simp_all)
   then
   show ?thesis

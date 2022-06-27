@@ -10,6 +10,14 @@ theory Choice_Axiom
 begin
 
 definition
+  upair_name :: "i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i" where
+  "upair_name(\<tau>,\<rho>,on) \<equiv> Upair(\<langle>\<tau>,on\<rangle>,\<langle>\<rho>,on\<rangle>)"
+
+definition
+  opair_name :: "i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i" where
+  "opair_name(\<tau>,\<rho>,on) \<equiv> upair_name(upair_name(\<tau>,\<tau>,on),upair_name(\<tau>,\<rho>,on),on)"
+
+definition
   induced_surj :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i" where
   "induced_surj(f,a,e) \<equiv> f-``(range(f)-a)\<times>{e} \<union> restrict(f,f-``a)"
 
@@ -123,33 +131,31 @@ proof (intro CollectI ballI)
     "\<exists>x\<in>\<alpha>. induced_surj(f, a, e) ` x = y" by auto
 qed
 
-context G_generic1
-begin
-
-lemma upair_name_abs :
-  assumes "x\<in>M" "y\<in>M" "z\<in>M" "o\<in>M"
-  shows "is_upair_name(##M,x,y,o,z) \<longleftrightarrow> z = upair_name(x,y,o)"
-  unfolding is_upair_name_def upair_name_def
-  using assms zero_in_M pair_in_M_iff Upair_eq_cons
-  by simp
-
-lemma upair_name_closed :
+lemma (in M_ZF1_trans) upair_name_closed :
   "\<lbrakk> x\<in>M; y\<in>M ; o\<in>M\<rbrakk> \<Longrightarrow> upair_name(x,y,o)\<in>M"
   unfolding upair_name_def
   using upair_in_M_iff pair_in_M_iff Upair_eq_cons
   by simp
 
-lemma opair_name_abs :
-  assumes "x\<in>M" "y\<in>M" "z\<in>M" "o\<in>M"
-  shows "is_opair_name(##M,x,y,o,z) \<longleftrightarrow> z = opair_name(x,y,o)"
-  unfolding is_opair_name_def opair_name_def
-  using assms upair_name_abs upair_name_closed
-  by simp
+context G_generic1
+begin
 
-lemma opair_name_closed :
-  "\<lbrakk> x\<in>M; y\<in>M ; o\<in>M \<rbrakk> \<Longrightarrow> opair_name(x,y,o)\<in>M"
-  unfolding opair_name_def
-  using upair_name_closed by simp
+\<comment> \<open>NOTE: The following bundled additions to the simpset might be of
+    use later on, perhaps add them globally to some appropriate
+    locale.\<close>
+lemmas generic_simps = generic[THEN one_in_G, THEN valcheck, OF one_in_P]
+  generic[THEN one_in_G, THEN M_subset_MG, THEN subsetD]
+  check_in_M GenExtI P_in_M
+lemmas generic_dests = M_genericD[OF generic] M_generic_compatD[OF generic]
+
+bundle G_generic1_lemmas = generic_simps[simp] generic_dests[dest]
+
+end\<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>
+
+locale G_generic2 = G_generic1 + forcing_data2
+
+context G_generic2
+begin
 
 lemma val_upair_name : "val(G,upair_name(\<tau>,\<rho>,\<one>)) = {val(G,\<tau>),val(G,\<rho>)}"
   unfolding upair_name_def
@@ -184,17 +190,7 @@ proof -
     by simp
 qed
 
-\<comment> \<open>NOTE: The following bundled additions to the simpset might be of
-    use later on, perhaps add them globally to some appropriate
-    locale.\<close>
-lemmas generic_simps = generic[THEN one_in_G, THEN valcheck, OF one_in_P]
-  generic[THEN one_in_G, THEN M_subset_MG, THEN subsetD]
-  check_in_M GenExtI P_in_M
-lemmas generic_dests = M_genericD[OF generic] M_generic_compatD[OF generic]
-
-bundle G_generic1_lemmas = generic_simps[simp] generic_dests[dest]
-
-end\<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>
+end\<comment> \<open>\<^locale>\<open>G_generic2\<close>\<close>
 
 subsection\<open>$M[G]$ is a transitive model of ZF\<close>
 
@@ -204,37 +200,26 @@ sublocale G_generic1 \<subseteq> ext:M_Z_trans "M[G]"
     replacement_assm_MG separation_in_MG infinity_in_MG
     replacement_ax1 by unfold_locales
 
-context G_generic1
-begin
-
-lemma opname_check_abs :
-  assumes "s\<in>M" "x\<in>M" "y\<in>M"
-  shows "is_opname_check(##M,\<one>,s,x,y) \<longleftrightarrow> y = opair_name(check(x),s`x,\<one>)"
-  unfolding is_opname_check_def
-  using assms check_abs check_in_M opair_name_abs apply_abs apply_closed one_in_M
+lemma (in M_replacement) upair_name_lam_replacement : "M(z) \<Longrightarrow> lam_replacement(M,\<lambda>x . upair_name(fst(x),snd(x),z))"
+  using lam_replacement_Upair[THEN [5] lam_replacement_hcomp2]
+    lam_replacement_Pair[THEN [5] lam_replacement_hcomp2]
+    lam_replacement_fst lam_replacement_snd lam_replacement_constant
+  unfolding upair_name_def
   by simp
 
-lemma repl_opname_check :
+lemma (in forcing_data2) repl_opname_check :
   assumes "A\<in>M" "f\<in>M"
   shows "{opair_name(check(x),f`x,\<one>). x\<in>A}\<in>M"
-proof -
-  have "arity(is_opname_check_fm(3,2,0,1))= 4"
-    using arity_is_opname_check_fm
-    by (simp add:ord_simp_union arity)
-  moreover
-  have "opair_name(check(x), f ` x,\<one>)\<in>M" if "x\<in>A" for x
-    using assms opair_name_closed apply_closed transitivity check_in_M one_in_M that
+    using assms lam_replacement_constant check_lam_replacement lam_replacement_identity
+      upair_name_lam_replacement[THEN [5] lam_replacement_hcomp2]
+      lam_replacement_apply2[THEN [5] lam_replacement_hcomp2]
+      check_in_M lam_replacement_imp_strong_replacement_aux
+      transitivity P_in_M check_in_M RepFun_closed
+      one_in_M upair_name_closed apply_closed
+    unfolding opair_name_def
     by simp
-  ultimately
-  show ?thesis
-    using assms opname_check_abs[of f] is_opname_check_iff_sats
-      one_in_M zero_in_M transitivity
-      Replace_relativized_in_M[of "is_opname_check_fm(3,2,0,1)"
-        "[f,\<one>]" _ "is_opname_check(##M,\<one>,f)"] replacement_ax1(12)
-    by simp
-qed
 
-theorem choice_in_MG:
+theorem (in G_generic2) choice_in_MG:
   assumes "choice_ax(##M)"
   shows "choice_ax(##M[G])"
 proof -
@@ -346,9 +331,9 @@ proof -
     by simp
 qed
 
-end \<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>
+locale G_generic2_AC = G_generic1_AC + G_generic2 + M_ctm2_AC
 
-sublocale G_generic1_AC \<subseteq> ext:M_ZC_basic "M[G]"
+sublocale G_generic2_AC \<subseteq> ext:M_ZC_basic "M[G]"
   using choice_ax choice_in_MG
   by unfold_locales
 

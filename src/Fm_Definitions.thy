@@ -176,31 +176,6 @@ lemma arity_check_fm[arity]:
 
 notation check_fm (\<open>\<cdot>_\<^sup>v_ is _\<cdot>\<close>)
 
-subsection\<open>Names for forcing the Axiom of Choice.\<close>
-definition
-  upair_name :: "i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i" where
-  "upair_name(\<tau>,\<rho>,on) \<equiv> Upair(\<langle>\<tau>,on\<rangle>,\<langle>\<rho>,on\<rangle>)"
-
-relativize "upair_name" "is_upair_name"
-synthesize "upair_name" from_definition "is_upair_name"
-arity_theorem for "upair_name_fm"
-
-definition
-  opair_name :: "i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i" where
-  "opair_name(\<tau>,\<rho>,on) \<equiv> upair_name(upair_name(\<tau>,\<tau>,on),upair_name(\<tau>,\<rho>,on),on)"
-
-relativize "opair_name" "is_opair_name"
-synthesize "opair_name" from_definition "is_opair_name"
-arity_theorem for "opair_name_fm"
-
-definition
-  is_opname_check :: "[i\<Rightarrow>o,i,i,i,i] \<Rightarrow> o" where
-  "is_opname_check(M,on,s,x,y) \<equiv> \<exists>chx[M]. \<exists>sx[M]. is_check(M,on,x,chx) \<and>
-        fun_apply(M,s,x,sx) \<and> is_opair_name(M,chx,sx,on,y)"
-
-synthesize "is_opname_check" from_definition assuming "nonempty"
-arity_theorem for "is_opname_check_fm"
-
 \<comment> \<open>The pair of elements belongs to some set. The intended set is the preorder.\<close>
 definition
   is_leq :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
@@ -1012,8 +987,6 @@ definition wfrec_rank_fm where "wfrec_rank_fm \<equiv> (\<cdot>\<exists>\<cdot>p
 definition trans_repl_HVFrom_fm where "trans_repl_HVFrom_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(is_HVfrom_fm(8, 2, 1, 0), 4, 1, 0) \<cdot>\<cdot>)"
 definition wfrec_Hcheck_fm where "wfrec_Hcheck_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(is_Hcheck_fm(8, 2, 1, 0), 4, 1, 0) \<cdot>\<cdot>) "
 definition repl_PHcheck_fm where "repl_PHcheck_fm \<equiv> PHcheck_fm(2,3,0,1)"
-definition G_dot_in_M_fm where "G_dot_in_M_fm \<equiv>  \<cdot>(\<cdot>\<exists>\<cdot>\<cdot>3\<^sup>v1 is 0\<cdot> \<and> pair_fm(0, 1, 2) \<cdot>\<cdot>) \<and> \<cdot>0 \<in> 3\<cdot>\<cdot>"
-definition repl_opname_check_fm where "repl_opname_check_fm \<equiv> \<cdot>is_opname_check_fm(3,2,0,1) \<and> \<cdot>0 \<in> 4\<cdot>\<cdot>"
 definition tl_repl_intf_fm where "tl_repl_intf_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(iterates_MH_fm(tl_fm(1,0), 9, 2, 1, 0), 3, 1, 0) \<cdot>\<cdot>)"
 definition formula_repl1_intf_fm where "formula_repl1_intf_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(iterates_MH_fm(formula_functor_fm(1,0), 9, 2, 1, 0), 3, 1, 0) \<cdot>\<cdot>)"
 definition eclose_repl1_intf_fm where "eclose_repl1_intf_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(iterates_MH_fm(big_union_fm(1,0), 9, 2, 1, 0), 3, 1, 0) \<cdot>\<cdot>)"

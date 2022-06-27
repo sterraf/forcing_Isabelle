@@ -98,7 +98,7 @@ proof -
   text\<open>Recall that \<^term>\<open>M[G]\<close> denotes the generic extension
   of \<^term>\<open>M\<close> using the poset of sequences \<^term>\<open>2\<^bsup><\<omega>\<^esup>\<close>.\<close>
   then
-  interpret G_generic1 "2\<^bsup><\<omega>\<^esup>" seqle 0 _ enum G by unfold_locales
+  interpret G_generic2 "2\<^bsup><\<omega>\<^esup>" seqle 0 _ enum G by unfold_locales
   interpret MG: M_Z_basic "M[G]"
     using generic pairing_in_MG
       Union_MG  extensionality_in_MG power_in_MG

@@ -335,7 +335,6 @@ locale M_ZF4 = M_ZF3 +
     "ground_replacement_assm(M,env,trans_repl_HVFrom_fm)"
     "ground_replacement_assm(M,env,wfrec_Hcheck_fm)"
     "ground_replacement_assm(M,env,repl_PHcheck_fm)"
-    "ground_replacement_assm(M,env,repl_opname_check_fm)"
     "ground_replacement_assm(M,env,tl_repl_intf_fm)"
     "ground_replacement_assm(M,env,formula_repl1_intf_fm)"
     "ground_replacement_assm(M,env,eclose_repl1_intf_fm)"
@@ -379,7 +378,6 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(trans_repl_HVFrom_fm),
     ground_repl_fm(wfrec_Hcheck_fm),
     ground_repl_fm(repl_PHcheck_fm),
-    ground_repl_fm(repl_opname_check_fm),
     ground_repl_fm(tl_repl_intf_fm),
     ground_repl_fm(formula_repl1_intf_fm),
     ground_repl_fm(eclose_repl1_intf_fm),
