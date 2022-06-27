@@ -423,6 +423,10 @@ locale M_ZFC2 = M_ZFC1 + M_ZF2
 
 locale M_ZFC2_trans = M_ZFC1_trans + M_ZF2_trans + M_ZFC2
 
+locale M_ctm2 = M_ctm1 + M_ZF2_trans
+
+locale M_ctm2_AC = M_ctm2 + M_ZFC2_trans
+
 lemma (in M_ZF2_trans) lam_replacement_domain : "lam_replacement(##M, domain)"
   using lam_replacement_iff_lam_closed[THEN iffD2,of domain]
     Lambda_in_M[where \<phi>="domain_fm(0,1)" and env="[]"] domain_type domain_abs

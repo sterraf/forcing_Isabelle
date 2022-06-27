@@ -179,7 +179,7 @@ proof -
     using map_app_distrib append1_eq_iff by auto
   ultimately
   have aux:"(\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =\<langle>\<theta>,p\<rangle> \<and> (p\<in>G \<longrightarrow> M[G], [val(G,\<theta>)] @ env @ [val(G,\<pi>)] \<Turnstile> ?\<chi>))"
-   (is "(\<exists>\<theta>\<in>M. \<exists>p\<in>P. _ ( _ \<longrightarrow> _, ?vals(\<theta>) \<Turnstile> _))")
+   (is "(\<exists>\<theta>\<in>M. \<exists>p\<in>P. _ ( _ \<longrightarrow> M[G] , ?vals(\<theta>) \<Turnstile> _))")
    if "u \<in> domain(\<pi>) \<times> P" "u \<in> M"  "M, [u]@ ?Pl1 @[\<pi>] @ nenv \<Turnstile> ?\<psi>" for u
     using Equivalence[THEN iffD1, OF that] generic by force
   moreover

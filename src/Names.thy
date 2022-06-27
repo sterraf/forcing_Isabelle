@@ -4,6 +4,7 @@ theory Names
   imports
     Forcing_Data
     FrecR_Arities
+    ZF_Trans_Interpretations
 begin
 
 definition
@@ -523,7 +524,7 @@ proof -
   have "Lambda(A, check) \<in> M" if "A\<in>M" for A
     using that check_in_M transitivity[of _ A] one_in_M P_in_M
     using sats_check_fm check_abs P_in_M check_in_M one_in_M  zero_in_M
-      check_fm_type replacement_ax1(17)
+      check_fm_type replacement_ax1(16)
     by(rule_tac Lambda_in_M [of "check_fm(2,0,1)" "[\<one>]"],simp_all)
   then
   show ?thesis
@@ -533,7 +534,7 @@ qed
 
 lemma check_replacement: "{check(x). x\<in>P} \<in> M"
   using lam_replacement_imp_strong_replacement_aux[OF check_lam_replacement]
-transitivity P_in_M check_in_M RepFun_closed
+    transitivity P_in_M check_in_M RepFun_closed
     by simp_all
 
 lemma M_subset_MG :  "\<one> \<in> G \<Longrightarrow> M \<subseteq> M[G]"
@@ -545,34 +546,15 @@ definition
   G_dot :: "i" where
   "G_dot \<equiv> {\<langle>check(p),p\<rangle> . p\<in>P}"
 
-lemma G_dot_in_M : "G_dot \<in> M"
-proof -
-  let ?is_pcheck = "\<lambda>x y. \<exists>ch\<in>M. is_check(##M,\<one>,x,ch) \<and> pair(##M,ch,x,y)"
-  let ?pcheck_fm = "Exists(And(check_fm(3,1,0),pair_fm(0,1,2)))"
-  have "sats(M,?pcheck_fm,[x,y,\<one>]) \<longleftrightarrow> ?is_pcheck(x,y)" if "x\<in>M" "y\<in>M" for x y
-    using sats_check_fm that one_in_M zero_in_M by simp
-  moreover
-  have "?is_pcheck(x,y) \<longleftrightarrow> y = \<langle>check(x),x\<rangle>" if "x\<in>M" "y\<in>M" for x y
-    using that check_abs check_in_M by simp
-  moreover
-  have "?pcheck_fm\<in>formula"
-    by simp
-  moreover
-  have "arity(?pcheck_fm)=3"
-    by (simp add:ord_simp_union arity)
-  moreover
-  from P_in_M check_in_M pair_in_M_iff P_sub_M
-  have "\<langle>check(p),p\<rangle> \<in> M" if "p\<in>P" for p
-    using that by auto
-  ultimately
-  show ?thesis
-    unfolding G_dot_def
-    using one_in_M P_in_M transitivity Replace_relativized_in_M[of ?pcheck_fm "[\<one>]"]
-      replacement_ax1(12)
-    by simp
-qed
+lemma (in forcing_data2) G_dot_in_M : "G_dot \<in> M"
+  using lam_replacement_Pair[THEN [5] lam_replacement_hcomp2,OF
+    check_lam_replacement lam_replacement_identity]
+    check_in_M lam_replacement_imp_strong_replacement_aux
+    transitivity P_in_M check_in_M RepFun_closed pair_in_M_iff
+  unfolding G_dot_def
+  by simp
 
-lemma val_G_dot :
+lemma (in forcing_data2) val_G_dot :
   assumes "G \<subseteq> P" "\<one> \<in> G"
   shows "val(G,G_dot) = G"
 proof (intro equalityI subsetI)
@@ -597,7 +579,7 @@ next
     using P_sub_M valcheck by auto
 qed
 
-lemma G_in_Gen_Ext :
+lemma (in forcing_data2) G_in_Gen_Ext :
   assumes "G \<subseteq> P" "\<one> \<in> G"
   shows   "G \<in> M[G]"
   using assms val_G_dot GenExtI[of _ G] G_dot_in_M

@@ -230,7 +230,7 @@ proof -
     using assms opname_check_abs[of f] is_opname_check_iff_sats
       one_in_M zero_in_M transitivity
       Replace_relativized_in_M[of "is_opname_check_fm(3,2,0,1)"
-        "[f,\<one>]" _ "is_opname_check(##M,\<one>,f)"] replacement_ax1(13)
+        "[f,\<one>]" _ "is_opname_check(##M,\<one>,f)"] replacement_ax1(12)
     by simp
 qed
 

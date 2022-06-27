@@ -54,7 +54,6 @@ locale M_ZF1 = M_Z_basic +
     "replacement_assm(M,env,trans_repl_HVFrom_fm)"
     "replacement_assm(M,env,wfrec_Hcheck_fm)"
     "replacement_assm(M,env,repl_PHcheck_fm)"
-    "replacement_assm(M,env,G_dot_in_M_fm)"
     "replacement_assm(M,env,repl_opname_check_fm)"
     "replacement_assm(M,env,tl_repl_intf_fm)"
     "replacement_assm(M,env,formula_repl1_intf_fm)"
@@ -73,7 +72,6 @@ definition instances1_fms where "instances1_fms \<equiv>
     trans_repl_HVFrom_fm,
     wfrec_Hcheck_fm,
     repl_PHcheck_fm,
-    G_dot_in_M_fm,
     repl_opname_check_fm,
     tl_repl_intf_fm,
     formula_repl1_intf_fm,
@@ -88,7 +86,7 @@ lemmas replacement_instances1_defs = tl_repl_intf_fm_def formula_repl1_intf_fm_d
   list_repl1_intf_fm_def list_repl2_intf_fm_def formula_repl2_intf_fm_def
   eclose_repl2_intf_fm_def powapply_repl_fm_def phrank_repl_fm_def wfrec_rank_fm_def
   trans_repl_HVFrom_fm_def wfrec_Hcheck_fm_def repl_PHcheck_fm_def
-  G_dot_in_M_fm_def repl_opname_check_fm_def
+  repl_opname_check_fm_def
 
 lemma instances1_fms_type[TC]: "instances1_fms \<subseteq> formula"
   using Lambda_in_M_fm_type
@@ -677,7 +675,7 @@ lemma (in M_ZF1_trans) formula_repl1_intf :
   "iterates_replacement(##M, is_formula_functor(##M), 0)"
   using arity_formula_functor_fm zero_in_M ord_simp_union
     iterates_repl_intf[where is_F_fm="formula_functor_fm(1,0)"]
-    replacement_ax1(15)[unfolded replacement_assm_def]
+    replacement_ax1(14)[unfolded replacement_assm_def]
   by simp
 
 arity_theorem for "Inl_fm"
@@ -692,7 +690,7 @@ lemma (in M_ZF1_trans) tl_repl_intf:
   shows "iterates_replacement(##M,\<lambda>l' t. is_tl(##M,l',t),l)"
   using assms arity_tl_fm ord_simp_union
     iterates_repl_intf[where is_F_fm="tl_fm(1,0)"]
-    replacement_ax1(14)[unfolded replacement_assm_def]
+    replacement_ax1(13)[unfolded replacement_assm_def]
   by simp
 
 arity_theorem for "big_union_fm"
@@ -702,7 +700,7 @@ lemma (in M_ZF1_trans) eclose_repl1_intf:
   shows "iterates_replacement(##M, big_union(##M), A)"
   using assms arity_big_union_fm
     iterates_repl_intf[where is_F_fm="big_union_fm(1,0)"]
-    replacement_ax1(16)[unfolded replacement_assm_def]
+    replacement_ax1(15)[unfolded replacement_assm_def]
     ord_simp_union
   by simp
 

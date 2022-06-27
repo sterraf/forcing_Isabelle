@@ -3,7 +3,8 @@ section\<open>Further instances of axiom-schemes\<close>
 theory ZF_Trans_Interpretations
   imports
     Internal_ZFC_Axioms
-    Succession_Poset
+    Replacement_Instances
+
 begin
 
 locale M_ZF3 = M_ZF2 +
@@ -40,6 +41,12 @@ locale M_ZFC3_trans = M_ZFC2_trans + M_ZF3_trans
 locale M_ctm3 = M_ctm2 + M_ZF3_trans + M_ZF2_trans
 
 locale M_ctm3_AC = M_ctm3 + M_ctm1_AC + M_ZFC3_trans
+
+locale M_ctm2 = M_ctm1 + M_ZF2_trans
+
+locale M_ctm2_AC = M_ctm2 + M_ZFC2_trans
+
+locale forcing_data2 = forcing_data1 + M_ctm2
 
 locale forcing_data3 = forcing_data2 + M_ctm3_AC
 
@@ -289,7 +296,7 @@ sublocale M_ZF3_trans \<subseteq> M_aleph "##M"
   by unfold_locales
 
 sublocale M_ZF2_trans \<subseteq> M_FiniteFun "##M"
-  using separation_is_function
+  using separation_is_function replacement_omega_funspace
   by unfold_locales simp
 
 sublocale M_ZFC1_trans \<subseteq> M_AC "##M"
@@ -328,7 +335,6 @@ locale M_ZF4 = M_ZF3 +
     "ground_replacement_assm(M,env,trans_repl_HVFrom_fm)"
     "ground_replacement_assm(M,env,wfrec_Hcheck_fm)"
     "ground_replacement_assm(M,env,repl_PHcheck_fm)"
-    "ground_replacement_assm(M,env,G_dot_in_M_fm)"
     "ground_replacement_assm(M,env,repl_opname_check_fm)"
     "ground_replacement_assm(M,env,tl_repl_intf_fm)"
     "ground_replacement_assm(M,env,formula_repl1_intf_fm)"
@@ -373,7 +379,6 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(trans_repl_HVFrom_fm),
     ground_repl_fm(wfrec_Hcheck_fm),
     ground_repl_fm(repl_PHcheck_fm),
-    ground_repl_fm(G_dot_in_M_fm),
     ground_repl_fm(repl_opname_check_fm),
     ground_repl_fm(tl_repl_intf_fm),
     ground_repl_fm(formula_repl1_intf_fm),

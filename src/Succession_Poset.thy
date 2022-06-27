@@ -2,7 +2,7 @@ section\<open>A poset of successions\<close>
 
 theory Succession_Poset
   imports
-    Replacement_Instances
+    ZF_Trans_Interpretations
     Proper_Extension
 begin
 
@@ -190,12 +190,6 @@ lemma (in M_ctm1) seqleR_fm_sats :
   unfolding seqleR_fm_def
   using assms trans_M sats_subset_fm pair_iff_sats
   by auto
-
-locale M_ctm2 = M_ctm1 + M_ZF2_trans
-
-locale M_ctm2_AC = M_ctm2 + M_ZFC2_trans
-
-locale forcing_data2 = forcing_data1 + M_ctm2
 
 context M_ctm2
 begin

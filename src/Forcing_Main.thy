@@ -4,7 +4,7 @@ theory Forcing_Main
   imports
     Ordinals_In_MG
     Choice_Axiom
-    ZF_Trans_Interpretations
+    Succession_Poset
 
 begin
 
