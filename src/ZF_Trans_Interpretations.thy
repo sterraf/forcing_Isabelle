@@ -46,10 +46,6 @@ locale M_ctm2 = M_ctm1 + M_ZF2_trans
 
 locale M_ctm2_AC = M_ctm2 + M_ZFC2_trans
 
-locale forcing_data2 = forcing_data1 + M_ctm2
-
-locale forcing_data3 = forcing_data2 + M_ctm3_AC
-
 lemmas (in M_ZF2_trans) separation_instances =
   separation_well_ord
   separation_obase_equals separation_is_obase
@@ -436,8 +432,6 @@ locale M_ZFC4_trans = M_ZFC3_trans + M_ZF4_trans
 locale M_ctm4 = M_ctm3 + M_ZF4_trans
 
 locale M_ctm4_AC = M_ctm4 + M_ctm1_AC + M_ZFC4_trans
-
-locale forcing_data4 = forcing_data3 + M_ctm4_AC
 
 lemma M_satT_imp_M_ZF2: "(M \<Turnstile> ZF) \<Longrightarrow> M_ZF2(M)"
 proof -

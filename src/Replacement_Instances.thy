@@ -423,6 +423,12 @@ locale M_ZFC2 = M_ZFC1 + M_ZF2
 
 locale M_ZFC2_trans = M_ZFC1_trans + M_ZF2_trans + M_ZFC2
 
+locale M_ctm1 = M_ZF1_trans +
+  fixes enum
+  assumes M_countable:      "enum\<in>bij(nat,M)"
+
+locale M_ctm1_AC = M_ctm1 + M_ZFC1_trans
+
 locale M_ctm2 = M_ctm1 + M_ZF2_trans
 
 locale M_ctm2_AC = M_ctm2 + M_ZFC2_trans

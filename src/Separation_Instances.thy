@@ -2,7 +2,7 @@ subsection\<open>More Instances of Separation\<close>
 
 theory Separation_Instances
   imports
-    Forcing_Data
+    Interface
 begin
 
 text\<open>The following instances are mostly the same repetitive task; and we just
