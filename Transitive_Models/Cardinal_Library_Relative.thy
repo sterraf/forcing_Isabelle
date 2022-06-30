@@ -701,21 +701,7 @@ qed
 
 subsection\<open>Applications of transfinite recursive constructions\<close>
 
-definition
-  rec_constr :: "[i,i] \<Rightarrow> i" where
-  "rec_constr(f,\<alpha>) \<equiv> transrec(\<alpha>,\<lambda>a g. f`(g``a))"
-
-text\<open>The function \<^term>\<open>rec_constr\<close> allows to perform \<^emph>\<open>recursive
-     constructions\<close>: given a choice function on the powerset of some
-     set, a transfinite sequence is created by successively choosing
-     some new element.
-
-     The next result explains its use.\<close>
-
-lemma rec_constr_unfold: "rec_constr(f,\<alpha>) = f`({rec_constr(f,\<beta>). \<beta>\<in>\<alpha>})"
-  using def_transrec[OF rec_constr_def, of f \<alpha>] image_lam by simp
-
-lemma rec_constr_type:
+lemma rec_constr_type_rel:
   assumes "f:Pow_rel(M,G)\<rightarrow>\<^bsup>M\<^esup> G" "Ord(\<alpha>)" "M(G)"
   shows "M(\<alpha>) \<Longrightarrow> rec_constr(f,\<alpha>) \<in> G"
   using assms(2)
@@ -773,13 +759,13 @@ qed
 lemma rec_constr_closed :
   assumes "f:Pow_rel(M,G)\<rightarrow>\<^bsup>M\<^esup> G" "Ord(\<alpha>)" "M(G)" "M(\<alpha>)"
   shows "M(rec_constr(f,\<alpha>))"
-  using transM[OF rec_constr_type \<open>M(G)\<close>] assms by auto
+  using transM[OF rec_constr_type_rel \<open>M(G)\<close>] assms by auto
 
 lemma lambda_rec_constr_closed :
   assumes "Ord(\<gamma>)" "M(\<gamma>)" "M(f)" "f:Pow_rel(M,G)\<rightarrow>\<^bsup>M\<^esup> G" "M(G)"
   shows "M(\<lambda>\<alpha>\<in>\<gamma> . rec_constr(f,\<alpha>))"
   using lam_closed2[OF cardinal_lib_assms6,unfolded rec_constr_def[symmetric],of f \<gamma>]
-    rec_constr_type[OF \<open>f\<in>_\<close> Ord_in_Ord[of \<gamma>]] transM[OF _ \<open>M(G)\<close>] assms
+    rec_constr_type_rel[OF \<open>f\<in>_\<close> Ord_in_Ord[of \<gamma>]] transM[OF _ \<open>M(G)\<close>] assms
   by simp
 
 text\<open>The next lemma is an application of recursive constructions.
@@ -870,7 +856,7 @@ proof -
   from \<open>f \<union> Cb: Pow_rel(M,G) \<rightarrow>\<^bsup>M\<^esup> G\<close> \<open>Card_rel(M,\<gamma>)\<close> \<open>M(\<gamma>)\<close> \<open>M(G)\<close>
   have "S : \<gamma> \<rightarrow> G" "M(f \<union> Cb)"
     unfolding S_def
-    using Ord_in_Ord[OF Card_rel_is_Ord] rec_constr_type lam_type transM[OF _ \<open>M(\<gamma>)\<close>]
+    using Ord_in_Ord[OF Card_rel_is_Ord] rec_constr_type_rel lam_type transM[OF _ \<open>M(\<gamma>)\<close>]
       function_space_rel_char
     by auto
   moreover from \<open>f\<union>Cb \<in> _\<rightarrow>\<^bsup>M\<^esup> G\<close> \<open>Card_rel(M,\<gamma>)\<close> \<open>M(\<gamma>)\<close> \<open>M(G)\<close> \<open>M(f \<union> Cb)\<close> \<open>Ord(\<gamma>)\<close>

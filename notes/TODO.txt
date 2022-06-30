@@ -1,9 +1,3 @@
-DELTA SYSTEM LEMMA
-==================
-
-- Move definition of rec_constr earlier (so it is independent of AC).
-
-
 FIXMEs
 ======
 

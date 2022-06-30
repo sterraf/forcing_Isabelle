@@ -5,46 +5,6 @@ theory Delta_System_Relative
     Cardinal_Library_Relative
 begin
 
-(* FIXME: The following code (definition and 3 lemmas) is extracted
-   from Delta_System where it is unnecesarily under the context of AC *)
-definition
-  delta_system :: "i \<Rightarrow> o" where
-  "delta_system(D) \<equiv> \<exists>r. \<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = r"
-
-lemma delta_systemI[intro]:
-  assumes "\<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = r"
-  shows "delta_system(D)"
-  using assms unfolding delta_system_def by simp
-
-lemma delta_systemD[dest]:
-  "delta_system(D) \<Longrightarrow> \<exists>r. \<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = r"
-  unfolding delta_system_def by simp
-
-lemma delta_system_root_eq_Inter:
-  assumes "delta_system(D)"
-  shows "\<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = \<Inter>D"
-proof (clarify, intro equalityI, auto)
-  fix A' B' x C
-  assume hyp:"A'\<in>D" "B'\<in> D" "A'\<noteq>B'" "x\<in>A'" "x\<in>B'" "C\<in>D"
-  with assms
-  obtain r where delta:"\<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = r"
-    by auto
-  show "x \<in> C"
-  proof (cases "C=A'")
-    case True
-    with hyp and assms
-    show ?thesis by simp
-  next
-    case False
-    moreover
-    note hyp
-    moreover from calculation and delta
-    have "r = C \<inter> A'" "A' \<inter> B' = r" "x\<in>r" by auto
-    ultimately
-    show ?thesis by simp
-  qed
-qed
-
 relativize functional "delta_system" "delta_system_rel" external
 
 locale M_delta = M_cardinal_library +
