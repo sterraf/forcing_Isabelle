@@ -448,7 +448,7 @@ definition
   factor_rec :: "[i,i] \<Rightarrow> i" where
   "factor_rec(\<beta>,h) \<equiv>  \<mu> x. factor_body(\<beta>,h,x)"
 
-txt\<open>\<^term>\<open>factor_rec\<close> is the inductive step for the definition by transfinite
+text\<open>\<^term>\<open>factor_rec\<close> is the inductive step for the definition by transfinite
 recursion of the \<^emph>\<open>factor\<close> function (called \<^term>\<open>g\<close> above), which in
 turn is obtained by minimizing the predicate \<^term>\<open>factor_body\<close>. Next we show
 that this predicate is monotonous.\<close>
