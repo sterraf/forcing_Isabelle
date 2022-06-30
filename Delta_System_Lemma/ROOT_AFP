@@ -10,7 +10,8 @@ session Delta_System_Lemma (AFP) =  "ZF-Constructible" +
     condition for Cohen posets. We work in the set theory framework of
     Isabelle/ZF, using the Axiom of Choice as needed.
   "  
-  options [document = pdf, 
+  options [timeout = 600,
+  	   document = pdf, 
   	   document_variants = "document:outline=/proof,/ML"]
   theories
     "Konig"
