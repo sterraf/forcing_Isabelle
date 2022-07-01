@@ -42,10 +42,6 @@ locale M_ctm3 = M_ctm2 + M_ZF3_trans + M_ZF2_trans
 
 locale M_ctm3_AC = M_ctm3 + M_ctm1_AC + M_ZFC3_trans
 
-locale M_ctm2 = M_ctm1 + M_ZF2_trans
-
-locale M_ctm2_AC = M_ctm2 + M_ZFC2_trans
-
 lemmas (in M_ZF2_trans) separation_instances =
   separation_well_ord
   separation_obase_equals separation_is_obase
@@ -401,14 +397,14 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(Lambda_in_M_fm(domain_fm(0,1),0)),
     ground_repl_fm(Lambda_in_M_fm(check_fm(2,0,1),1)) }"
 
-text\<open>This set has 43 internalized formulas, corresponding to the total count
+text\<open>This set has 41 internalized formulas, corresponding to the total count
 of previous replacement instances.\<close>
 
 definition overhead where
   "overhead \<equiv> instances1_fms \<union> instances2_fms \<union> instances3_fms \<union> instances4_fms"
 
 text\<open>Hence, the “overhead” to force $\CH$ and its negation consists
-of 86 replacement instances.\<close>
+of 84 replacement instances.\<close>
 
 lemma instances3_fms_type[TC] : "instances3_fms \<subseteq> formula"
   unfolding instances3_fms_def replacement_is_order_body_fm_def
