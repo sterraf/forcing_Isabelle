@@ -358,10 +358,14 @@ proof -
   from \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead}\<close>
   interpret M_ZFC4 M
     using M_satT_overhead_imp_M_ZF4 by simp
-  from \<open>Transset(M)\<close>
-  interpret M_ZFC4_trans M
-    using M_satT_imp_M_ZF4
-    by unfold_locales
+  from \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead}\<close>
+  have "M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms \<union> instances_ground_fms }"
+    unfolding overhead_def ZC_def
+    by auto
+  with \<open>Transset(M)\<close>
+  interpret M_ZF_ground M
+    using M_satT_imp_M_ZF_ground
+    by simp
   from \<open>M \<approx> \<omega>\<close>
   obtain enum where "enum \<in> bij(\<omega>,M)"
     using eqpoll_sym unfolding eqpoll_def by blast

@@ -40,20 +40,21 @@ arity_theorem for "omega_funspace_fm"
 definition HAleph_wfrec_repl_body where
   "HAleph_wfrec_repl_body(N,mesa,x,z) \<equiv> \<exists>y[N].
                    pair(N, x, y, z) \<and>
-                   (\<exists>f[N].
-                       (\<forall>z[N].
-                           z \<in> f \<longleftrightarrow>
-                           (\<exists>xa[N].
+                   (\<exists>g[N].
+                       (\<forall>u[N].
+                           u \<in> g \<longleftrightarrow>
+                           (\<exists>a[N].
                                \<exists>y[N].
-                                  \<exists>xaa[N].
+                                  \<exists>ax[N].
                                      \<exists>sx[N].
                                         \<exists>r_sx[N].
                                            \<exists>f_r_sx[N].
-                                              pair(N, xa, y, z) \<and>
-                                              pair(N, xa, x, xaa) \<and>
-                                              upair(N, xa, xa, sx) \<and>
-                                              pre_image(N, mesa, sx, r_sx) \<and> restriction(N, f, r_sx, f_r_sx) \<and> xaa \<in> mesa \<and> is_HAleph(N, xa, f_r_sx, y))) \<and>
-                       is_HAleph(N, x, f, y))"
+                                              pair(N, a, y, u) \<and>
+                                              pair(N, a, x, ax) \<and>
+                                              upair(N, a, a, sx) \<and>
+                                              pre_image(N, mesa, sx, r_sx) \<and>
+      restriction(N, g, r_sx, f_r_sx) \<and> ax \<in> mesa \<and> is_HAleph(N, a, f_r_sx, y))) \<and>
+                       is_HAleph(N, x, g, y))"
 
 (* MOVE THIS to an appropriate place *)
 arity_theorem for "ordinal_fm"
@@ -298,12 +299,12 @@ definition transrec_apply_image_body where
 synthesize "transrec_apply_image_body" from_definition assuming "nonempty"
 arity_theorem for "transrec_apply_image_body_fm"
 
-definition is_trans_apply_image_body where
+ definition is_trans_apply_image_body where
   "is_trans_apply_image_body(M,f,\<beta>,a,w) \<equiv> \<exists>z[M]. pair(M,a,z,w) \<and> a\<in>\<beta> \<and> (\<exists>sa[M].
-                \<exists>esa[M].
-                   \<exists>mesa[M].
+                 \<exists>esa[M].
+                    \<exists>mesa[M].
                       upair(M, a, a, sa) \<and>
-                      is_eclose(M, sa, esa) \<and>
+                       is_eclose(M, sa, esa) \<and>
                       membership(M, esa, mesa) \<and>
                       (\<exists>fa[M].
                           (\<forall>z[M].
@@ -322,11 +323,8 @@ definition is_trans_apply_image_body where
                                                  xa \<in> mesa \<and> is_trans_apply_image(M, f, x, f_r_sx, y))) \<and>
                           is_trans_apply_image(M, f, a, fa, z)))"
 
-manual_schematic "is_trans_apply_image_body_schematic" for "is_trans_apply_image_body"assuming "nonempty"
-  unfolding is_trans_apply_image_body_def
-  by (rule sep_rules is_eclose_iff_sats is_trans_apply_image_iff_sats | simp)+
 
-synthesize "is_trans_apply_image_body" from_schematic "is_trans_apply_image_body_schematic"
+synthesize "is_trans_apply_image_body" from_definition assuming "nonempty"
 arity_theorem for "is_trans_apply_image_body_fm"
 
 synthesize "is_converse" from_definition assuming "nonempty"
@@ -419,6 +417,30 @@ lemma instances2_fms_type[TC]: "instances2_fms \<subseteq> formula"
 
 locale M_ZF2_trans = M_ZF1_trans + M_ZF2
 
+text\<open>The following instances are needed only on the ground model. The
+first one corresponds to the recursive definition of forces for atomic
+formulas; the next two corresponds to \<^term>\<open>PHcheck\<close>; the following
+is used to get a generic filter using some form of choice.\<close>
+
+locale M_ZF_ground = M_ZF2_trans +
+  assumes
+    ZF_ground_replacements :
+      "replacement_assm(M,env,wfrec_Hfrc_at_fm)"
+      "replacement_assm(M,env,wfrec_Hcheck_fm)"
+      "replacement_assm(M,env,Lambda_in_M_fm(check_fm(2,0,1),1))"
+
+
+definition instances_ground_fms where "instances_ground_fms \<equiv>
+  { wfrec_Hfrc_at_fm,
+    wfrec_Hcheck_fm,
+    Lambda_in_M_fm(check_fm(2,0,1),1)
+}
+"
+
+lemma instances_ground_fms_type[TC]: "instances_ground_fms \<subseteq> formula"
+  using Lambda_in_M_fm_type
+  unfolding instances_ground_fms_def wfrec_Hfrc_at_fm_def wfrec_Hcheck_fm_def by simp
+
 locale M_ZFC2 = M_ZFC1 + M_ZF2
 
 locale M_ZFC2_trans = M_ZFC1_trans + M_ZF2_trans + M_ZFC2
@@ -429,64 +451,9 @@ locale M_ctm1 = M_ZF1_trans +
 
 locale M_ctm1_AC = M_ctm1 + M_ZFC1_trans
 
-locale M_ctm2 = M_ctm1 + M_ZF2_trans
+locale M_ctm2 = M_ctm1 + M_ZF_ground
 
 locale M_ctm2_AC = M_ctm2 + M_ZFC2_trans
-
-lemma (in M_ZF2_trans) lam_replacement_domain : "lam_replacement(##M, domain)"
-  using lam_replacement_iff_lam_closed[THEN iffD2,of domain]
-    Lambda_in_M[where \<phi>="domain_fm(0,1)" and env="[]"] domain_type domain_abs
-    Lambda_in_M_replacement2(2)
-    arity_domain_fm[of 0 1] ord_simp_union transitivity domain_closed
-  by simp
-
-lemma (in M_ZF2_trans) lam_replacement_converse : "lam_replacement(##M, converse)"
-  using lam_replacement_iff_lam_closed[THEN iffD2,of converse] nonempty
-    Lambda_in_M[where \<phi>="is_converse_fm(0,1)" and env="[]"]
-    is_converse_fm_type converse_abs
-    arity_is_converse_fm[of 0 1] ord_simp_union transitivity converse_closed
-    Lambda_in_M_replacement2(6)
-  by simp
-
-lemma (in M_ZF2_trans) lam_replacement_fst : "lam_replacement(##M, fst)"
-  using lam_replacement_iff_lam_closed[THEN iffD2,of fst]
-    Lambda_in_M[where \<phi>="fst_fm(0,1)" and env="[]"]
-    fst_iff_sats[symmetric] fst_abs fst_type
-    arity_fst_fm[of 0 1] ord_simp_union transitivity fst_closed
-    Lambda_in_M_replacement2(1)
-  by simp
-
-lemma (in M_ZF2_trans) lam_replacement_snd : "lam_replacement(##M, snd)"
-  using lam_replacement_iff_lam_closed[THEN iffD2,of snd]
-    Lambda_in_M[where \<phi>="snd_fm(0,1)" and env="[]"]
-    snd_iff_sats[symmetric] snd_abs snd_type
-    arity_snd_fm[of 0 1] ord_simp_union transitivity snd_closed
-    Lambda_in_M_replacement2(3)
-  by simp
-
-lemma (in M_ZF2_trans) lam_replacement_Union : "lam_replacement(##M, Union)"
-  using lam_replacement_iff_lam_closed[THEN iffD2,of Union]
-    Lambda_in_M[where \<phi>="big_union_fm(0,1)" and env="[]"] Union_abs
-    union_fm_def big_union_iff_sats[symmetric]
-    arity_big_union_fm[of 0 1] ord_simp_union transitivity Union_closed
-    Lambda_in_M_replacement2(4)
-  by simp
-
-lemma (in M_ZF2_trans) lam_replacement_image:
-  "lam_replacement(##M, \<lambda>p. fst(p) `` snd(p))"
-  using lam_replacement2_in_ctm[where \<phi>="image_fm(0,1,2)" and env="[]"]
-    image_type image_iff_sats image_abs
-    arity_image_fm[of 0 1 2] ord_simp_union transitivity image_closed fst_snd_closed
-    LambdaPair_in_M_replacement2(1)
-  by simp
-
-lemma (in M_ZF2_trans) lam_replacement_Diff:
-  "lam_replacement(##M, \<lambda>p. fst(p) - snd(p))"
-  using lam_replacement2_in_ctm[where \<phi>="setdiff_fm(0,1,2)" and env="[]"]
-    setdiff_fm_type setdiff_iff_sats setdiff_abs
-    arity_setdiff_fm[of 0 1 2] ord_simp_union transitivity Diff_closed fst_snd_closed
-    nonempty LambdaPair_in_M_replacement2(2)
-  by simp
 
 lemma is_minimum_eq :
   "M(R) \<Longrightarrow> M(X) \<Longrightarrow> M(u) \<Longrightarrow> is_minimum(M,R,X,u) \<longleftrightarrow> is_minimum'(M,R,X,u)"
@@ -509,7 +476,84 @@ is_iff_rel for "minimum"
 
 end \<comment> \<open>\<^locale>\<open>M_trivial\<close>\<close>
 
-lemma (in M_ZF2_trans) lam_replacement_minimum:
+lemma dcwit_replacement:"Ord(na) \<Longrightarrow>
+    N(na) \<Longrightarrow>
+    N(A) \<Longrightarrow>
+    N(a) \<Longrightarrow>
+    N(s) \<Longrightarrow>
+    N(R) \<Longrightarrow>
+    transrec_replacement
+     (N, \<lambda>n f ntc.
+            is_nat_case
+             (N, a,
+              \<lambda>m bmfm.
+                 \<exists>fm[N]. \<exists>cp[N].
+                    is_apply(N, f, m, fm) \<and>
+                    is_Collect(N, A, \<lambda>x. \<exists>fmx[N]. (N(x) \<and> fmx \<in> R) \<and> pair(N, fm, x, fmx), cp) \<and>
+                    is_apply(N, s, cp, bmfm),
+              n, ntc),na)"
+  unfolding transrec_replacement_def wfrec_replacement_def oops
+
+context M_ZF2_trans
+begin
+
+lemma lam_replacement_domain : "lam_replacement(##M, domain)"
+  using lam_replacement_iff_lam_closed[THEN iffD2,of domain]
+    Lambda_in_M[where \<phi>="domain_fm(0,1)" and env="[]"] domain_type domain_abs
+    Lambda_in_M_replacement2(2)
+    arity_domain_fm[of 0 1] ord_simp_union transitivity domain_closed
+  by simp
+
+lemma lam_replacement_converse : "lam_replacement(##M, converse)"
+  using lam_replacement_iff_lam_closed[THEN iffD2,of converse] nonempty
+    Lambda_in_M[where \<phi>="is_converse_fm(0,1)" and env="[]"]
+    is_converse_fm_type converse_abs
+    arity_is_converse_fm[of 0 1] ord_simp_union transitivity converse_closed
+    Lambda_in_M_replacement2(6)
+  by simp
+
+lemma lam_replacement_fst : "lam_replacement(##M, fst)"
+  using lam_replacement_iff_lam_closed[THEN iffD2,of fst]
+    Lambda_in_M[where \<phi>="fst_fm(0,1)" and env="[]"]
+    fst_iff_sats[symmetric] fst_abs fst_type
+    arity_fst_fm[of 0 1] ord_simp_union transitivity fst_closed
+    Lambda_in_M_replacement2(1)
+  by simp
+
+lemma lam_replacement_snd : "lam_replacement(##M, snd)"
+  using lam_replacement_iff_lam_closed[THEN iffD2,of snd]
+    Lambda_in_M[where \<phi>="snd_fm(0,1)" and env="[]"]
+    snd_iff_sats[symmetric] snd_abs snd_type
+    arity_snd_fm[of 0 1] ord_simp_union transitivity snd_closed
+    Lambda_in_M_replacement2(3)
+  by simp
+
+lemma lam_replacement_Union : "lam_replacement(##M, Union)"
+  using lam_replacement_iff_lam_closed[THEN iffD2,of Union]
+    Lambda_in_M[where \<phi>="big_union_fm(0,1)" and env="[]"] Union_abs
+    union_fm_def big_union_iff_sats[symmetric]
+    arity_big_union_fm[of 0 1] ord_simp_union transitivity Union_closed
+    Lambda_in_M_replacement2(4)
+  by simp
+
+lemma lam_replacement_image:
+  "lam_replacement(##M, \<lambda>p. fst(p) `` snd(p))"
+  using lam_replacement2_in_ctm[where \<phi>="image_fm(0,1,2)" and env="[]"]
+    image_type image_iff_sats image_abs
+    arity_image_fm[of 0 1 2] ord_simp_union transitivity image_closed fst_snd_closed
+    LambdaPair_in_M_replacement2(1)
+  by simp
+
+lemma lam_replacement_Diff:
+  "lam_replacement(##M, \<lambda>p. fst(p) - snd(p))"
+  using lam_replacement2_in_ctm[where \<phi>="setdiff_fm(0,1,2)" and env="[]"]
+    setdiff_fm_type setdiff_iff_sats setdiff_abs
+    arity_setdiff_fm[of 0 1 2] ord_simp_union transitivity Diff_closed fst_snd_closed
+    nonempty LambdaPair_in_M_replacement2(2)
+  by simp
+
+
+lemma lam_replacement_minimum:
   "lam_replacement(##M, \<lambda>p. minimum(fst(p), snd(p)))"
   using lam_replacement2_in_ctm[where \<phi>="minimum_fm(0,1,2)" and env="[]"]
     minimum_iff_sats[symmetric] is_minimum_iff minimum_abs is_minimum_eq
@@ -517,42 +561,42 @@ lemma (in M_ZF2_trans) lam_replacement_minimum:
     minimum_closed zero_in_M LambdaPair_in_M_replacement2(3)
   by simp
 
-lemma (in M_ZF2_trans) lam_replacement_Upair: "lam_replacement(##M, \<lambda>p. Upair(fst(p), snd(p)))"
+lemma lam_replacement_Upair: "lam_replacement(##M, \<lambda>p. Upair(fst(p), snd(p)))"
   using lam_replacement2_in_ctm[where \<phi>="upair_fm(0,1,2)" and env="[]" and f="Upair"]
     Upair_closed upair_type upair_iff_sats Upair_eq_cons
     arity_upair_fm[of 0 1 2,simplified] ord_simp_union LambdaPair_in_M_replacement2(4)
   by simp
 
-lemma (in M_ZF2_trans) lam_replacement_comp:
+lemma lam_replacement_comp:
   "lam_replacement(##M, \<lambda>p. comp(fst(p), snd(p)))"
   using lam_replacement2_in_ctm[where \<phi>="composition_fm(0,1,2)" and env="[]" and f="comp"]
     comp_closed composition_fm_type composition_iff_sats
     arity_composition_fm[of 0 1 2] ord_simp_union LambdaPair_in_M_replacement2(6)
   by simp
 
-lemma (in M_ZF2_trans) omega_funspace_abs:
+lemma omega_funspace_abs:
   "B\<in>M \<Longrightarrow> n\<in>M \<Longrightarrow> z\<in>M \<Longrightarrow> is_omega_funspace(##M,B,n,z) \<longleftrightarrow> n\<in>\<omega> \<and> is_funspace(##M,n,B,z)"
   unfolding is_omega_funspace_def using nat_in_M by simp
 
-lemma (in M_ZF2_trans) replacement_is_omega_funspace:
+lemma replacement_is_omega_funspace:
   "B\<in>M \<Longrightarrow> strong_replacement(##M, is_omega_funspace(##M,B))"
   using strong_replacement_rel_in_ctm[where \<phi>="omega_funspace_fm(2,0,1)" and env="[B]"]
     zero_in_M arity_omega_funspace_fm ord_simp_union replacement_ax2(1)
   by simp
 
-lemma (in M_ZF2_trans) replacement_omega_funspace:
+lemma replacement_omega_funspace:
   "b\<in>M\<Longrightarrow>strong_replacement(##M, \<lambda>n z. n\<in>\<omega> \<and> is_funspace(##M,n,b,z))"
   using strong_replacement_cong[THEN iffD2,OF _ replacement_is_omega_funspace[of b]]
     omega_funspace_abs[of b] setclass_iff[THEN iffD1]
   by (simp del:setclass_iff)
 
-lemma (in M_ZF2_trans) replacement_HAleph_wfrec_repl_body:
+lemma replacement_HAleph_wfrec_repl_body:
   "B\<in>M \<Longrightarrow> strong_replacement(##M, HAleph_wfrec_repl_body(##M,B))"
   using strong_replacement_rel_in_ctm[where \<phi>="HAleph_wfrec_repl_body_fm(2,0,1)" and env="[B]"]
     zero_in_M arity_HAleph_wfrec_repl_body_fm replacement_ax2(2) ord_simp_union
   by simp
 
-lemma (in M_ZF2_trans) HAleph_wfrec_repl:
+lemma HAleph_wfrec_repl:
   "(##M)(sa) \<Longrightarrow>
         (##M)(esa) \<Longrightarrow>
         (##M)(mesa) \<Longrightarrow>
@@ -576,25 +620,8 @@ lemma (in M_ZF2_trans) HAleph_wfrec_repl:
                        is_HAleph(##M, x, f, y)))"
   using replacement_HAleph_wfrec_repl_body unfolding HAleph_wfrec_repl_body_def by simp
 
-lemma dcwit_replacement:"Ord(na) \<Longrightarrow>
-    N(na) \<Longrightarrow>
-    N(A) \<Longrightarrow>
-    N(a) \<Longrightarrow>
-    N(s) \<Longrightarrow>
-    N(R) \<Longrightarrow>
-    transrec_replacement
-     (N, \<lambda>n f ntc.
-            is_nat_case
-             (N, a,
-              \<lambda>m bmfm.
-                 \<exists>fm[N]. \<exists>cp[N].
-                    is_apply(N, f, m, fm) \<and>
-                    is_Collect(N, A, \<lambda>x. \<exists>fmx[N]. (N(x) \<and> fmx \<in> R) \<and> pair(N, fm, x, fmx), cp) \<and>
-                    is_apply(N, s, cp, bmfm),
-              n, ntc),na)"
-  unfolding transrec_replacement_def wfrec_replacement_def oops
 
-lemma (in M_ZF2_trans) replacement_dcwit_repl_body:
+lemma replacement_dcwit_repl_body:
   "(##M)(mesa) \<Longrightarrow> (##M)(A) \<Longrightarrow> (##M)(a) \<Longrightarrow> (##M)(s) \<Longrightarrow> (##M)(R) \<Longrightarrow>
    strong_replacement(##M, dcwit_repl_body(##M,mesa,A,a,s,R))"
   using strong_replacement_rel_in_ctm[where \<phi>="dcwit_repl_body_fm(6,5,4,3,2,0,1)"
@@ -602,7 +629,7 @@ lemma (in M_ZF2_trans) replacement_dcwit_repl_body:
     zero_in_M arity_dcwit_repl_body replacement_ax2(10)
   by simp
 
-lemma (in M_ZF2_trans) dcwit_repl:
+lemma dcwit_repl:
   "(##M)(sa) \<Longrightarrow>
         (##M)(esa) \<Longrightarrow>
         (##M)(mesa) \<Longrightarrow> (##M)(A) \<Longrightarrow> (##M)(a) \<Longrightarrow> (##M)(s) \<Longrightarrow> (##M)(R) \<Longrightarrow>
@@ -621,7 +648,7 @@ lemma (in M_ZF2_trans) dcwit_repl:
                                   mesa, x, y))"
   using replacement_dcwit_repl_body unfolding dcwit_repl_body_def by simp
 
-lemma (in M_ZF2_trans) replacement_fst2_snd2: "strong_replacement(##M, \<lambda>x y. y = \<langle>fst(fst(x)), snd(snd(x))\<rangle>)"
+lemma replacement_fst2_snd2: "strong_replacement(##M, \<lambda>x y. y = \<langle>fst(fst(x)), snd(snd(x))\<rangle>)"
   using strong_replacement_in_ctm[where \<phi>="is_fst2_snd2_fm(0,1)" and env="[]"]
     zero_in_M fst_snd_closed pair_in_M_iff
     arity_is_fst2_snd2_fm ord_simp_union fst2_snd2_abs replacement_ax2(3)
@@ -635,7 +662,7 @@ lemma (in M_trivial) sndfst_fst2_snd2_abs:
   using fst_rel_abs[symmetric] snd_rel_abs[symmetric] fst_abs snd_abs assms
   by simp
 
-lemma (in M_ZF2_trans) replacement_sndfst_fst2_snd2:
+lemma replacement_sndfst_fst2_snd2:
   "strong_replacement(##M, \<lambda>x y. y = \<langle>snd(fst(x)), fst(fst(x)), snd(snd(x))\<rangle>)"
   using strong_replacement_in_ctm[where \<phi>="is_sndfst_fst2_snd2_fm(0,1)" and env="[]"]
     zero_in_M fst_snd_closed pair_in_M_iff
@@ -643,19 +670,14 @@ lemma (in M_ZF2_trans) replacement_sndfst_fst2_snd2:
   unfolding sndfst_fst2_snd2_def
   by simp
 
-lemmas (in M_ZF2_trans) M_replacement_ZF_instances = lam_replacement_domain
+lemmas M_replacement_ZF_instances = lam_replacement_domain
   lam_replacement_fst lam_replacement_snd lam_replacement_Union
   lam_replacement_Upair lam_replacement_image
   lam_replacement_Diff lam_replacement_converse
   replacement_fst2_snd2 replacement_sndfst_fst2_snd2
   lam_replacement_comp
 
-lemmas (in M_ZF2_trans) M_separation_ZF_instances =  separation_fstsnd_in_sndsnd
-  separation_sndfst_eq_fstsnd
-
-sublocale M_ZF2_trans \<subseteq> M_replacement "##M"
-  using M_replacement_ZF_instances M_separation_ZF_instances
-  by unfold_locales simp
+lemmas M_separation_ZF_instances = separation_fstsnd_in_sndsnd separation_sndfst_eq_fstsnd
 
 lemma (in M_ZF1_trans) separation_is_dcwit_body:
   assumes "(##M)(A)" "(##M)(a)" "(##M)(g)" "(##M)(R)"
@@ -675,18 +697,29 @@ lemma (in M_trivial) RepFun_body_abs:
     univalent_triv transM[of _ u]
   by auto
 
-lemma (in M_ZF2_trans) RepFun_SigFun_closed: "x \<in> M \<Longrightarrow> z \<in> M \<Longrightarrow> {{\<langle>z, x\<rangle>} . x \<in> x} \<in> M"
+end
+
+sublocale M_ZF2_trans \<subseteq> M_replacement "##M"
+  using M_replacement_ZF_instances M_separation_ZF_instances
+  by unfold_locales simp
+
+context M_ZF2_trans
+begin
+
+lemma RepFun_SigFun_closed: "x \<in> M \<Longrightarrow> z \<in> M \<Longrightarrow> {{\<langle>z, x\<rangle>} . x \<in> x} \<in> M"
   using lam_replacement_sing_const_id lam_replacement_imp_strong_replacement RepFun_closed
     transitivity singleton_in_M_iff pair_in_M_iff
   by simp
 
-lemma (in M_ZF2_trans) replacement_RepFun_body:
+lemma replacement_RepFun_body:
   "lam_replacement(##M, \<lambda>p . {{\<langle>snd(p), x\<rangle>} . x \<in> fst(p)})"
   using lam_replacement2_in_ctm[where \<phi>="is_RepFun_body_fm(0,1,2)" and env="[]" and f="\<lambda>p q . {{\<langle>q, x\<rangle>} . x \<in> p}"]
     RepFun_SigFun_closed[OF fst_snd_closed[THEN conjunct1,simplified] fst_snd_closed[THEN conjunct2,simplified]]
     arity_RepFun ord_simp_union transitivity zero_in_M RepFun_body_def RepFun_body_abs RepFun_SigFun_closed
     LambdaPair_in_M_replacement2(5)
   by simp
+
+end
 
 sublocale M_ZF2_trans \<subseteq> M_replacement_extra "##M"
   by unfold_locales (simp_all add: replacement_RepFun_body
@@ -699,14 +732,17 @@ sublocale M_ZF2_trans \<subseteq> M_Perm "##M"
     Pi_replacement1 unfolding Sigfun_def
   by unfold_locales simp_all
 
-lemma (in M_ZF2_trans) replacement_is_order_eq_map:
+context M_ZF2_trans
+begin
+
+lemma replacement_is_order_eq_map:
   "A\<in>M \<Longrightarrow> r\<in>M \<Longrightarrow> strong_replacement(##M, order_eq_map(##M,A,r))"
   using strong_replacement_rel_in_ctm[where \<phi>="order_eq_map_fm(2,3,0,1)" and env="[A,r]"  and f="order_eq_map(##M,A,r)"]
     order_eq_map_iff_sats[where env="[_,_,A,r]"] zero_in_M fst_snd_closed pair_in_M_iff
     arity_order_eq_map_fm ord_simp_union replacement_ax2(5)
   by simp
 
-lemma (in M_ZF2_trans) banach_iterates:
+lemma banach_iterates:
   assumes "X\<in>M" "Y\<in>M" "f\<in>M" "g\<in>M" "W\<in>M"
   shows "iterates_replacement(##M, is_banach_functor(##M,X,Y,f,g), W)"
 proof -
@@ -723,7 +759,7 @@ proof -
     by simp
 qed
 
-lemma (in M_ZF2_trans) banach_replacement_iterates:
+lemma banach_replacement_iterates:
   assumes "X\<in>M" "Y\<in>M" "f\<in>M" "g\<in>M" "W\<in>M"
   shows "strong_replacement(##M, \<lambda>n y. n\<in>\<omega> \<and> is_iterates(##M,is_banach_functor(##M,X, Y, f, g),W,n,y))"
 proof -
@@ -740,7 +776,7 @@ proof -
     by simp
 qed
 
-lemma (in M_ZF2_trans) banach_replacement:
+lemma banach_replacement:
   assumes "(##M)(X)" "(##M)(Y)" "(##M)(f)" "(##M)(g)"
   shows "strong_replacement(##M, \<lambda>n y. n\<in>nat \<and> y = banach_functor(X, Y, f, g)^n (0))"
   using iterates_abs[OF banach_iterates banach_functor_abs,of X Y f g]
@@ -748,7 +784,7 @@ lemma (in M_ZF2_trans) banach_replacement:
     strong_replacement_cong[THEN iffD1,OF _ banach_replacement_iterates[of X Y f g 0]]
   by simp
 
-lemma (in M_ZF2_trans) lam_replacement_cardinal : "lam_replacement(##M, cardinal_rel(##M))"
+lemma lam_replacement_cardinal : "lam_replacement(##M, cardinal_rel(##M))"
   using lam_replacement_iff_lam_closed[THEN iffD2,of "cardinal_rel(##M)"]
     cardinal_rel_closed is_cardinal_iff
     Lambda_in_M[where \<phi>="is_cardinal_fm(0,1)" and env="[]",OF is_cardinal_fm_type[of 0 1]]
@@ -769,28 +805,28 @@ lemma (in M_basic) apply_image_closed':
   shows "M(f) \<Longrightarrow> \<forall>x[M]. \<forall>g[M]. M(trans_apply_image(f, x, g))"
   unfolding trans_apply_image_def by simp
 
-lemma (in M_ZF2_trans) replacement_transrec_apply_image_body :
+lemma replacement_transrec_apply_image_body :
   "(##M)(f) \<Longrightarrow> (##M)(mesa) \<Longrightarrow> strong_replacement(##M,transrec_apply_image_body(##M,f,mesa))"
   using strong_replacement_rel_in_ctm[where \<phi>="transrec_apply_image_body_fm(3,2,0,1)" and env="[mesa,f]"]
     zero_in_M arity_transrec_apply_image_body_fm ord_simp_union
     replacement_ax2(6)
   by simp
 
-lemma (in M_ZF2_trans) transrec_replacement_apply_image:
+lemma transrec_replacement_apply_image:
   assumes "(##M)(f)" "(##M)(\<alpha>)"
   shows "transrec_replacement(##M, is_trans_apply_image(##M, f), \<alpha>)"
-  unfolding transrec_replacement_def wfrec_replacement_def is_wfrec_def M_is_recfun_def
   using replacement_transrec_apply_image_body[unfolded transrec_apply_image_body_def] assms
     Memrel_closed singleton_closed eclose_closed
+  unfolding transrec_replacement_def wfrec_replacement_def is_wfrec_def M_is_recfun_def
   by simp
 
-lemma (in M_ZF2_trans) rec_trans_apply_image_abs:
+lemma rec_trans_apply_image_abs:
   assumes "(##M)(f)" "(##M)(x)" "(##M)(y)" "Ord(x)"
   shows "is_transrec(##M,is_trans_apply_image(##M, f),x,y) \<longleftrightarrow> y = transrec(x,trans_apply_image(f))"
   using transrec_abs[OF transrec_replacement_apply_image rel2_trans_apply] assms apply_image_closed
   by simp
 
-lemma (in M_ZF2_trans) replacement_is_trans_apply_image:
+lemma replacement_is_trans_apply_image:
   "(##M)(f) \<Longrightarrow> (##M)(\<beta>) \<Longrightarrow> strong_replacement(##M, \<lambda> x z .
     \<exists>y[##M]. pair(##M,x,y,z) \<and> x\<in>\<beta> \<and> (is_transrec(##M,is_trans_apply_image(##M, f),x,y)))"
   unfolding is_transrec_def is_wfrec_def M_is_recfun_def
@@ -802,7 +838,7 @@ lemma (in M_ZF2_trans) replacement_is_trans_apply_image:
     apply(simp_all add: arity_is_trans_apply_image_body_fm is_trans_apply_image_body_fm_type ord_simp_union)
   done
 
-lemma (in M_ZF2_trans) trans_apply_abs:
+lemma trans_apply_abs:
   "(##M)(f) \<Longrightarrow> (##M)(\<beta>) \<Longrightarrow> Ord(\<beta>) \<Longrightarrow> (##M)(x) \<Longrightarrow> (##M)(z) \<Longrightarrow>
     (x\<in>\<beta> \<and> z = \<langle>x, transrec(x, \<lambda>a g. f ` (g `` a)) \<rangle>) \<longleftrightarrow>
     (\<exists>y[##M]. pair(##M,x,y,z) \<and> x\<in>\<beta> \<and> (is_transrec(##M,is_trans_apply_image(##M, f),x,y)))"
@@ -812,12 +848,14 @@ lemma (in M_ZF2_trans) trans_apply_abs:
   unfolding trans_apply_image_def
   by auto
 
-lemma (in M_ZF2_trans) replacement_trans_apply_image:
+lemma replacement_trans_apply_image:
   "(##M)(f) \<Longrightarrow> (##M)(\<beta>) \<Longrightarrow> Ord(\<beta>) \<Longrightarrow>
   strong_replacement(##M, \<lambda>x y. x\<in>\<beta> \<and> y = \<langle>x, transrec(x, \<lambda>a g. f ` (g `` a))\<rangle>)"
   using strong_replacement_cong[THEN iffD1,OF _ replacement_is_trans_apply_image,simplified]
     trans_apply_abs Ord_in_Ord
   by simp
+
+end
 
 definition ifrFb_body where
   "ifrFb_body(M,b,f,x,i) \<equiv> x \<in>
@@ -1377,18 +1415,13 @@ lemma (in M_ZF2_trans) ifrangeF_body7_abs:
   shows "is_ifrangeF_body7(##M,A,B,D,G,r,s,x) \<longleftrightarrow> ifrangeF_body7(##M,A,B,D,G,r,s,x)"
 proof -
   from assms
-  have sep_dr: "y\<in>M \<Longrightarrow> separation(##M, \<lambda>d . \<exists>r\<in>M . r\<in>G\<and> y = restrict(r, B) \<and> d = domain(r))" for y
+  have sep_dr: "y\<in>M \<Longrightarrow> separation(##M, \<lambda>d . \<exists>r\<in>M . r\<in>G \<and> y = restrict(r, B) \<and> d = domain(r))" for y
     by(rule_tac separation_cong[where P'="\<lambda>d . \<exists>r\<in> M . r\<in>G \<and> y = restrict(r, B) \<and> d = domain(r)",THEN iffD1,OF _
           separation_restrict_eq_dom_eq[rule_format,of G B y]],auto simp:transitivity[of _ G])
-
   from assms
   have sep_dr'': "y\<in>M \<Longrightarrow> separation(##M, \<lambda>d . \<exists>r\<in>M. r \<in> G \<and> d = domain(r) \<and> converse(s) ` y = restrict(r, B))" for y
-    apply(rule_tac separation_cong[where P'="\<lambda>d . \<exists>r\<in> M . r\<in>G \<and> d = domain(r) \<and> converse(s) ` y = restrict(r, B)",THEN iffD1,OF _ separation_restrict_eq_dom_eq[rule_format,of G B "converse(s) ` y "]])
-    by(auto simp:transitivity[of _ G] apply_closed[simplified] converse_closed[simplified])
-  from assms
-  have sep_dr':"separation(##M, \<lambda>x. \<exists>r\<in>M. r \<in> G \<and> x = domain(r) \<and> 0 = restrict(r, B))"
-    apply(rule_tac separation_cong[where P'="\<lambda>d . \<exists>r\<in> M . r\<in>G \<and> d = domain(r) \<and> 0 = restrict(r, B)",THEN iffD1,OF _ separation_restrict_eq_dom_eq[rule_format,of G B 0]])
-    by(auto simp:transitivity[of _ G] zero_in_M)
+    by(rule_tac separation_cong[THEN iffD1,OF _ separation_restrict_eq_dom_eq[rule_format,of G B "converse(s) ` y "]],
+        auto simp:transitivity[of _ G] apply_closed[simplified] converse_closed[simplified])
   {
     fix a
     assume "a\<in>M"
@@ -1403,8 +1436,7 @@ proof -
       have "is_ifrFb_body7(##M, B,D,G, r, s, z, y) \<longleftrightarrow> ifrFb_body7(B,D,G, r, s, z, y)" if "y\<in>M" for y
         using If_abs apply_0
           separation_closed converse_closed apply_closed range_closed zero_in_M
-          separation_restrict_eq_dom_eq
-          transitivity[of _ D] transitivity[of _ G]  that sep_dr sep_dr' sep_dr''
+          transitivity[of _ D] transitivity[of _ G] that sep_dr sep_dr''
         unfolding ifrFb_body7_def is_ifrFb_body7_def
         by auto
       then

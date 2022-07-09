@@ -68,7 +68,7 @@ end \<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>
 
 theorem extensions_of_ctms:
   assumes
-    "M \<approx> \<omega>" "Transset(M)" "M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms}"
+    "M \<approx> \<omega>" "Transset(M)" "M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms \<union> instances_ground_fms}"
     "\<Phi> \<subseteq> formula" "M \<Turnstile> { \<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in> \<Phi>}"
   shows
     "\<exists>N.
@@ -76,19 +76,15 @@ theorem extensions_of_ctms:
       (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> (\<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)) \<and>
       ((M, []\<Turnstile> \<cdot>AC\<cdot>) \<longrightarrow> N, [] \<Turnstile> \<cdot>AC\<cdot>) \<and> N \<Turnstile> \<cdot>Z\<cdot> \<union> { \<cdot>Replacement(\<phi>)\<cdot> . \<phi> \<in> \<Phi>}"
 proof -
-  from \<open>M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms}\<close>
-  interpret M_ZF2 M
-    using M_satT_instances12_imp_M_ZF2
+  from \<open>M \<Turnstile> \<cdot>Z\<cdot> \<union> _\<close> \<open>Transset(M)\<close>
+  interpret M_ZF_ground M
+    using M_satT_imp_M_ZF_ground
     by simp
-  from \<open>Transset(M)\<close>
-  interpret M_ZF1_trans M
-    using M_satT_imp_M_ZF2
-    by unfold_locales
   from \<open>M \<approx> \<omega>\<close>
   obtain enum where "enum \<in> bij(\<omega>,M)"
     using eqpoll_sym unfolding eqpoll_def by blast
   then
-  interpret M_ctm2 M enum by unfold_locales simp_all
+  interpret M_ctm2 M enum by unfold_locales
   interpret forcing_data1 "2\<^bsup><\<omega>\<^esup>" seqle 0 M enum
     using nat_into_M seqspace_closed seqle_in_M
     by unfold_locales simp
@@ -131,8 +127,9 @@ proof -
     by (rule_tac x="M[G]" in exI, auto)
 qed
 
-lemma ZF_replacement_instances12_sub_ZF: "{\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms} \<subseteq> ZF"
-  using instances1_fms_type instances2_fms_type unfolding ZF_def ZF_schemes_def by auto
+lemma ZF_replacement_instances12_sub_ZF: "{\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms \<union> instances_ground_fms} \<subseteq> ZF"
+  using instances1_fms_type instances2_fms_type instances_ground_fms_type
+  unfolding ZF_def ZF_schemes_def by auto
 
 theorem extensions_of_ctms_ZF:
   assumes

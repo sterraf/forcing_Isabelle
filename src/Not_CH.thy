@@ -40,13 +40,15 @@ subsection\<open>Non-absolute concepts between extensions\<close>
 sublocale M_master \<subseteq> M_Pi_replacement
   by unfold_locales
 
+\<comment> \<open>Note that in L. 132 we interpret \<^locale>\<open>M_master\<close> from \<^locale>\<open>M_ZFC3_trans\<close>, so
+the assumption \<^locale>\<open>M_aleph\<close> for \<^term>\<open>N\<close> is misleading.\<close>
 locale M_master_sub = M_master + N:M_aleph N for N +
   assumes
     M_imp_N: "M(x) \<Longrightarrow> N(x)" and
     Ord_iff: "Ord(x) \<Longrightarrow> M(x) \<longleftrightarrow> N(x)"
     (* TODO: update ground replacement assms in M_ZF4: those stemming from
   M_DC, M_cardinal_library, and M_seqspace should no longer be needed
-  (5 total). *)
+  (5 total). At least M_cardinal_library is needed for CH and M_library for Not_CH. *)
 
 sublocale M_master_sub \<subseteq> M_N_Perm
   using M_imp_N by unfold_locales
@@ -480,7 +482,7 @@ relativize functional "ContHyp" "ContHyp_rel"
 notation ContHyp_rel (\<open>CH\<^bsup>_\<^esup>\<close>)
 relationalize "ContHyp_rel" "is_ContHyp"
 
-context M_master
+context M_ZF_library
 begin
 
 is_iff_rel for "ContHyp"
@@ -488,7 +490,7 @@ is_iff_rel for "ContHyp"
   unfolding is_ContHyp_def ContHyp_rel_def
   by (auto simp del:setclass_iff) (rule rexI[of _ _ M, OF _ nonempty], auto)
 
-end \<comment> \<open>\<^locale>\<open>M_master\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_ZF_library\<close>\<close>
 
 synthesize "is_ContHyp" from_definition assuming "nonempty"
 arity_theorem for "is_ContHyp_fm"
@@ -507,10 +509,14 @@ proof -
   from \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead}\<close>
   interpret M_ZFC4 M
     using M_satT_overhead_imp_M_ZF4 by simp
-  from \<open>Transset(M)\<close>
-  interpret M_ZFC4_trans M
-    using M_satT_imp_M_ZF4
-    by unfold_locales
+  from \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead}\<close>
+  have "M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms \<union> instances_ground_fms }"
+    unfolding overhead_def ZC_def
+    by auto
+  with \<open>Transset(M)\<close>
+  interpret M_ZF_ground M
+    using M_satT_imp_M_ZF_ground
+    by simp
   from \<open>M \<approx> \<omega>\<close>
   obtain enum where "enum \<in> bij(\<omega>,M)"
     using eqpoll_sym unfolding eqpoll_def by blast

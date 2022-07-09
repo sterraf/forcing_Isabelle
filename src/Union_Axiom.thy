@@ -4,54 +4,11 @@ theory Union_Axiom
 begin
 
 definition Union_name_body :: "[i,i,i,i] \<Rightarrow> o" where
-  "Union_name_body(P,leq,\<tau>,x) \<equiv> \<exists> \<sigma> . \<exists>q\<in>P . \<exists>r\<in>P .
+  "Union_name_body(P,leq,\<tau>,x) \<equiv> \<exists> \<sigma>\<in>domain(\<tau>) . \<exists>q\<in>P . \<exists>r\<in>P .
       \<langle>\<sigma>,q\<rangle> \<in> \<tau> \<and> \<langle>fst(x),r\<rangle> \<in> \<sigma> \<and> \<langle>snd(x),r\<rangle> \<in> leq \<and> \<langle>snd(x),q\<rangle> \<in> leq"
-
-relativize relational "Union_name_body" "is_Union_name_body"
-reldb_add functional "Union_name_body" "is_Union_name_body"
-synthesize "is_Union_name_body" from_definition assuming "nonempty"
-arity_theorem for "is_Union_name_body_fm"
 
 definition Union_name :: "[i,i,i] \<Rightarrow> i" where
   "Union_name(P,leq,\<tau>) \<equiv> {u \<in> domain(\<Union>(domain(\<tau>))) \<times> P . Union_name_body(P,leq,\<tau>,u)}"
-
-relativize functional "Union_name" "Union_name_rel"
-relativize relational "Union_name" "is_Union_name"
-synthesize "is_Union_name" from_definition assuming "nonempty"
-arity_theorem for "is_Union_name_fm"
-
-context M_basic
-begin
-
-is_iff_rel for "Union_name"
-  using transM[OF _ cartprod_closed] domain_closed Union_closed
-  unfolding is_Union_name_def Union_name_rel_def
-  by simp
-
-lemma Union_name_body_iff:
-  assumes "M(x)" "M(leq)" "M(P)" "M(\<tau>)"
-  shows "is_Union_name_body(M, P, leq, \<tau>, x) \<longleftrightarrow> Union_name_body(P, leq, \<tau>, x)"
-proof -
-  from \<open>M(\<tau>)\<close>
-  have "M(\<sigma>)" if "\<langle>\<sigma>,q\<rangle>\<in>\<tau>" for \<sigma> q
-    using transM[of _ \<tau>] transM[of _ "\<langle>\<sigma>,q\<rangle>"] that
-    unfolding Pair_def
-    by auto
-  then
-  show ?thesis
-    using assms transM[OF _ cartprod_closed] pair_abs fst_abs snd_abs
-    unfolding is_Union_name_body_def Union_name_body_def
-    by auto
-qed
-
-lemma Union_name_abs :
-  assumes "M(P)" "M(leq)" "M(\<tau>)"
-  shows "Union_name_rel(M,P,leq,\<tau>) = Union_name(P,leq,\<tau>)"
-  using assms transM[OF _ cartprod_closed] Union_name_body_iff
-  unfolding Union_name_rel_def Union_name_def
-  by auto
-
-end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
 
 context forcing_data1
 begin
@@ -60,46 +17,28 @@ lemma Union_name_closed :
   assumes "\<tau> \<in> M"
   shows "Union_name(P,leq,\<tau>) \<in> M"
 proof -
-  let ?\<phi>="is_Union_name_body_fm(3,2,1,0)"
-  let ?P="\<lambda> x . M,[x,\<tau>,leq,P] \<Turnstile> ?\<phi>"
   let ?Q="Union_name_body(P,leq,\<tau>)"
-  from \<open>\<tau>\<in>M\<close>
+  note lr_fst2 = lam_replacement_hcomp[OF lam_replacement_fst lam_replacement_fst]
+  moreover
+  note lr_fst3 = lam_replacement_hcomp[OF lr_fst2] lam_replacement_hcomp[OF lr_fst2 lr_fst2]
+  moreover
+  note \<open>\<tau>\<in>M\<close>
+  moreover from this
   have "domain(\<Union>(domain(\<tau>)))\<in>M" (is "?d \<in> _")
     using domain_closed Union_closed by simp
-  then
+  moreover from this
   have "?d \<times> P \<in> M"
     using cartprod_closed P_in_M by simp
   note types = leq_in_M P_in_M assms \<open>?d\<times>P \<in> M\<close> \<open>?d\<in>M\<close>
-  moreover
-  have "arity(?\<phi>)\<le>4"
-    using arity_is_Union_name_body_fm ord_simp_union by simp
-  moreover from calculation
-  have "separation(##M,?P)"
-    using separation_ax by simp
-  moreover from calculation
-  have closed:"{ u \<in> ?d \<times> P . ?P(u) } \<in> M"
-    using separation_iff by force
-  moreover from calculation
-  have "?P(x)\<longleftrightarrow> x\<in>M \<and> ?Q(x)" if "x\<in>?d\<times>P" for x
-  proof -
-    note calculation that
-    moreover from this
-    have "x = \<langle>fst(x),snd(x)\<rangle>" "x\<in>M"  "fst(x) \<in> M" "snd(x) \<in> M"
-      using Pair_fst_snd_eq transitivity[of x "?d\<times>P"] fst_snd_closed
-      by simp_all
-    ultimately
-    show "?P(x) \<longleftrightarrow> x\<in>M \<and> ?Q(x)"
-      using types zero_in_M is_Union_name_body_iff_sats Union_name_body_iff
-      by simp
-  qed
-  with \<open>?d \<times> P \<in> M\<close> types
-  have "Union_name_rel(##M,P,leq,\<tau>) \<in> M"
-    unfolding Union_name_rel_def
-    using transitivity[OF _ \<open>?d\<times>P\<in>_\<close>] Collect_cong closed Union_name_body_iff
-    by simp
   ultimately
   show ?thesis
-    using Union_name_abs
+    using domain_closed pair_in_M_iff fst_closed snd_closed separation_closed
+      lam_replacement_constant lam_replacement_hcomp
+      lam_replacement_fst lam_replacement_snd
+      lam_replacement_Pair[THEN [5] lam_replacement_hcomp2]
+      separation_bex separation_conj separation_in lr_fst2 lr_fst3
+      lam_replacement_hcomp[OF lr_fst3(1) lam_replacement_snd]
+    unfolding Union_name_body_def Union_name_def
     by simp
 qed
 

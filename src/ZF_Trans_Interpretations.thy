@@ -316,7 +316,6 @@ locale M_ZF4 = M_ZF3 +
     "ground_replacement_assm(M,env,wfrec_replacement_order_pred_fm)"
     "ground_replacement_assm(M,env,replacement_is_jump_cardinal_body_fm)"
     "ground_replacement_assm(M,env,LambdaPair_in_M_fm(is_inj_fm(0,1,2),0))"
-    "ground_replacement_assm(M,env,wfrec_Hfrc_at_fm)"
     "ground_replacement_assm(M,env,list_repl1_intf_fm)"
     "ground_replacement_assm(M,env,list_repl2_intf_fm)"
     "ground_replacement_assm(M,env,formula_repl2_intf_fm)"
@@ -325,12 +324,9 @@ locale M_ZF4 = M_ZF3 +
     "ground_replacement_assm(M,env,phrank_repl_fm)"
     "ground_replacement_assm(M,env,wfrec_rank_fm)"
     "ground_replacement_assm(M,env,trans_repl_HVFrom_fm)"
-    "ground_replacement_assm(M,env,wfrec_Hcheck_fm)"
-    "ground_replacement_assm(M,env,repl_PHcheck_fm)"
     "ground_replacement_assm(M,env,tl_repl_intf_fm)"
     "ground_replacement_assm(M,env,formula_repl1_intf_fm)"
     "ground_replacement_assm(M,env,eclose_repl1_intf_fm)"
-    "ground_replacement_assm(M,env,Lambda_in_M_fm(check_fm(2,0,1),1))"
     "ground_replacement_assm(M,env,replacement_is_omega_funspace_fm)"
     "ground_replacement_assm(M,env,replacement_HAleph_wfrec_repl_body_fm)"
     "ground_replacement_assm(M,env,replacement_is_fst2_snd2_fm)"
@@ -359,7 +355,6 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(wfrec_replacement_order_pred_fm),
     ground_repl_fm(replacement_is_jump_cardinal_body_fm),
     ground_repl_fm(LambdaPair_in_M_fm(is_inj_fm(0,1,2),0)),
-    ground_repl_fm(wfrec_Hfrc_at_fm),
     ground_repl_fm(list_repl1_intf_fm),
     ground_repl_fm(list_repl2_intf_fm),
     ground_repl_fm(formula_repl2_intf_fm),
@@ -368,8 +363,6 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(phrank_repl_fm),
     ground_repl_fm(wfrec_rank_fm),
     ground_repl_fm(trans_repl_HVFrom_fm),
-    ground_repl_fm(wfrec_Hcheck_fm),
-    ground_repl_fm(repl_PHcheck_fm),
     ground_repl_fm(tl_repl_intf_fm),
     ground_repl_fm(formula_repl1_intf_fm),
     ground_repl_fm(eclose_repl1_intf_fm),
@@ -394,14 +387,13 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(LambdaPair_in_M_fm(is_RepFun_body_fm(0,1,2),0)),
     ground_repl_fm(LambdaPair_in_M_fm(composition_fm(0,1,2),0)),
     ground_repl_fm(Lambda_in_M_fm(is_converse_fm(0,1),0)),
-    ground_repl_fm(Lambda_in_M_fm(domain_fm(0,1),0)),
-    ground_repl_fm(Lambda_in_M_fm(check_fm(2,0,1),1)) }"
+    ground_repl_fm(Lambda_in_M_fm(domain_fm(0,1),0)) }"
 
 text\<open>This set has 41 internalized formulas, corresponding to the total count
 of previous replacement instances.\<close>
 
 definition overhead where
-  "overhead \<equiv> instances1_fms \<union> instances2_fms \<union> instances3_fms \<union> instances4_fms"
+  "overhead \<equiv> instances1_fms \<union> instances2_fms \<union> instances3_fms \<union> instances4_fms \<union> instances_ground_fms"
 
 text\<open>Hence, the “overhead” to force $\CH$ and its negation consists
 of 84 replacement instances.\<close>
@@ -413,7 +405,7 @@ lemma instances3_fms_type[TC] : "instances3_fms \<subseteq> formula"
   by (auto simp del: Lambda_in_M_fm_def)
 
 lemma overhead_type: "overhead \<subseteq> formula"
-  using instances1_fms_type instances2_fms_type
+  using instances1_fms_type instances2_fms_type instances_ground_fms_type
   unfolding overhead_def instances3_fms_def instances4_fms_def
     replacement_instances1_defs replacement_instances2_defs replacement_instances3_defs
   using ground_repl_fm_type Lambda_in_M_fm_type
@@ -458,8 +450,9 @@ lemma M_satT_imp_M_ZFC2:
   shows "(M \<Turnstile> ZFC) \<longrightarrow> M_ZFC2(M)"
 proof -
   have "(M \<Turnstile> ZF) \<and> choice_ax(##M) \<longrightarrow> M_ZFC2(M)"
-    using M_satT_imp_M_ZF2[of M] unfolding M_ZF2_def M_ZFC1_def M_ZFC2_def
-      M_ZC_basic_def M_ZF1_def M_AC_def by auto
+    using M_satT_imp_M_ZF2[of M]
+    unfolding M_ZF2_def M_ZFC1_def M_ZFC2_def M_ZC_basic_def M_ZF1_def M_AC_def
+    by auto
   then
   show ?thesis
     unfolding ZFC_def by auto
@@ -501,6 +494,37 @@ proof -
   show ?thesis
     unfolding instances1_fms_def instances2_fms_def
     by unfold_locales (simp_all add:replacement_assm_def ground_replacement_assm_def)
+qed
+
+theorem M_satT_imp_M_ZF_ground:
+  assumes "Transset(M)" "M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms \<union> instances_ground_fms}"
+  shows "M_ZF_ground(M)"
+proof -
+  from \<open>M \<Turnstile> \<cdot>Z\<cdot> \<union> _\<close>
+  have "M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms}"
+       "M \<Turnstile> {\<cdot>Replacement(p)\<cdot> . p \<in> instances_ground_fms }"
+    by auto
+  then
+  interpret M_ZF2 M
+    using M_satT_instances12_imp_M_ZF2
+    by simp
+  from \<open>Transset(M)\<close>
+  interpret M_ZF1_trans M
+    using M_satT_imp_M_ZF2
+    by unfold_locales
+  {
+    fix \<phi> env
+    assume "\<phi> \<in> instances_ground_fms" "env\<in>list(M)"
+    moreover from this and \<open>M \<Turnstile> {\<cdot>Replacement(p)\<cdot> . p \<in> instances_ground_fms}\<close>
+    have "M, [] \<Turnstile> \<cdot>Replacement(\<phi>)\<cdot>" by auto
+    ultimately
+    have "arity(\<phi>) \<le> succ(succ(length(env))) \<Longrightarrow> strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,Cons(x,Cons(y, env))))"
+      using sats_ZF_replacement_fm_iff[of \<phi>] instances_ground_fms_type by auto
+  }
+  then
+  show ?thesis
+    unfolding instances_ground_fms_def
+    by unfold_locales (simp_all add:replacement_assm_def)
 qed
 
 lemma (in M_Z_basic) M_satT_Zermelo_fms: "M \<Turnstile> \<cdot>Z\<cdot>"

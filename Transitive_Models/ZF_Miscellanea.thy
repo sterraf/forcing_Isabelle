@@ -193,4 +193,38 @@ lemma curry_type :
   unfolding curry_def
   by auto
 
+lemma RepFun_apply_eq:
+  assumes "function(f)"
+  shows "{f`y . y \<in> A} = f``(A \<inter> domain(f)) \<union> (if A-domain(f) = 0 then 0 else {0})"
+proof -
+  consider "A-domain(f) = 0" | "A-domain(f) \<noteq> 0" by auto
+  then
+  show ?thesis
+  proof(cases)
+    case 1
+    then
+    have "A\<subseteq>domain(f)" by auto
+    with assms
+    have "{f`y . y\<in>A} = f``(A\<inter>domain(f))"
+      using imageI function_apply_equality
+      by(intro equalityI subsetI,auto,rule_tac imageI,auto)
+      (rule_tac x=xa in bexI,auto)
+    with 1
+    show ?thesis
+      by auto
+  next
+    case 2
+    then
+    obtain y where H:"y\<in>A" "y\<notin>domain(f)"  "f`y = 0"
+      using apply_0 by force
+    have "z\<in>domain(f)" if "f`z \<noteq> 0" for z
+      using apply_0 that by auto
+    with H assms 2
+    show ?thesis
+      using imageI function_apply_equality function_apply_Pair
+      by(intro equalityI subsetI,auto,rule_tac a=xa in imageI,auto,rule_tac x=xa in bexI,auto)
+      (rule_tac x=y in bexI,auto)
+  qed
+qed
+
 end

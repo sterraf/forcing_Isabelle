@@ -654,8 +654,8 @@ proof -
   have "?f\<in>formula" by simp
   ultimately
   have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,P,leq,forcerel(P,X)]))"
-    using replacement_ax1(1) 1 artyf \<open>X\<in>M\<close> forcerel_in_M P_in_M leq_in_M
-    unfolding replacement_assm_def by simp
+    using ZF_ground_replacements(1) 1 artyf \<open>X\<in>M\<close> forcerel_in_M P_in_M leq_in_M
+    unfolding replacement_assm_def wfrec_Hfrc_at_fm_def by simp
   then
   have "strong_replacement(##M,\<lambda>x z.
           \<exists>y\<in>M. pair(##M,x,y,z) & is_wfrec(##M, is_Hfrc_at(##M,P,leq),forcerel(P,X), x, y))"

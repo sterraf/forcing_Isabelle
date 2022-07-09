@@ -27,6 +27,12 @@ subsection\<open>Values and check-names\<close>
 context forcing_data1
 begin
 
+lemma name_components_in_M:
+  assumes "\<langle>\<sigma>,p\<rangle>\<in>\<theta>" "\<theta> \<in> M"
+  shows   "\<sigma>\<in>M" "p\<in>M"
+  using assms transitivity pair_in_M_iff
+  by auto
+
 definition
   Hcheck :: "[i,i] \<Rightarrow> i" where
   "Hcheck(z,f)  \<equiv> { \<langle>f`y,\<one>\<rangle> . y \<in> z}"
@@ -49,6 +55,9 @@ lemma check_trancl: "check(x) = wfrec(rcheck(x), x, Hcheck)"
 
 lemma rcheck_in_M : "x \<in> M \<Longrightarrow> rcheck(x) \<in> M"
   unfolding rcheck_def by (simp flip: setclass_iff)
+
+lemma rcheck_subset_M : "x \<in> M \<Longrightarrow> field(rcheck(x)) \<subseteq> eclose({x})"
+  unfolding rcheck_def using field_Memrel field_trancl by auto
 
 lemma  aux_def_check: "x \<in> y \<Longrightarrow>
   wfrec(Memrel(eclose({y})), x, Hcheck) =
@@ -388,7 +397,6 @@ proof -
     by auto
 qed
 
-
 (* instance of replacement for hcheck *)
 lemma wfrec_Hcheck :
   assumes "X\<in>M"
@@ -421,8 +429,8 @@ proof -
     by simp
   ultimately
   have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,\<one>,rcheck(X)]))"
-    using replacement_ax1(10) artyf \<open>X\<in>M\<close> rcheck_in_M one_in_M
-    unfolding replacement_assm_def by simp
+    using ZF_ground_replacements(2) artyf \<open>X\<in>M\<close> rcheck_in_M one_in_M
+    unfolding replacement_assm_def wfrec_Hcheck_fm_def by simp
   then
   have "strong_replacement(##M,\<lambda>x z.
           \<exists>y\<in>M. pair(##M,x,y,z) & is_wfrec(##M, is_Hcheck(##M,\<one>),rcheck(X), x, y))"
@@ -432,19 +440,34 @@ proof -
     unfolding wfrec_replacement_def by simp
 qed
 
+lemma Hcheck_closed' : "A\<in>M \<Longrightarrow> f\<in>M \<Longrightarrow> (f``(A \<inter> domain(f)) \<union> (if A-domain(f) = 0 then 0 else {0}))\<in>M"
+  using image_closed zero_in_M domain_closed Int_closed Un_closed
+    singleton_closed  Diff_closed
+  by auto
+
 lemma repl_PHcheck :
-  assumes "f\<in>M"
-  shows "strong_replacement(##M,PHcheck(##M,\<one>,f))"
+  assumes "f\<in>M" "function(f)"
+  shows "lam_replacement(##M,\<lambda>x. Hcheck(x,f))"
 proof -
-  from \<open>f\<in>M\<close>
-  have "strong_replacement(##M,\<lambda>x y. sats(M,PHcheck_fm(2,3,0,1),[x,y,\<one>,f]))"
-    using replacement_ax1(11) one_in_M unfolding replacement_assm_def
-    by (simp add:arity ord_simp_union)
-  with \<open>f\<in>M\<close>
+  have "Hcheck(x,f) = {f`y . y\<in>x}\<times>{\<one>}" for x
+    unfolding Hcheck_def by auto
+  moreover
+  note assms
+  moreover from this
+  have 1:"lam_replacement(##M, \<lambda>x . {f`y . y\<in>x}\<times>{\<one>})"
+    using lam_replacement_RepFun_apply
+          lam_replacement_CartProd[THEN [5] lam_replacement_hcomp2]
+       lam_replacement_constant
+       lam_replacement_fst lam_replacement_snd
+       image_closed zero_in_M domain_closed Int_closed Un_closed
+      singleton_closed separation_eq Diff_closed one_in_M RepFun_apply_eq
+       cartprod_closed fst_snd_closed
+    by (rule_tac lam_replacement_CartProd[THEN [5] lam_replacement_hcomp2],auto)
+  ultimately
   show ?thesis
-    using one_in_M zero_in_M
-    unfolding strong_replacement_def univalent_def
-    by simp
+    using Diff_closed Int_closed domain_closed image_closed zero_in_M Un_closed singleton_closed
+     RepFun_apply_eq cartprod_closed one_in_M
+    by(rule_tac lam_replacement_cong[OF 1],auto)
 qed
 
 lemma univ_PHcheck : "\<lbrakk> z\<in>M ; f\<in>M \<rbrakk> \<Longrightarrow> univalent(##M,z,PHcheck(##M,\<one>,f))"
@@ -468,13 +491,15 @@ qed
 
 lemma Hcheck_closed : "\<forall>y\<in>M. \<forall>g\<in>M. function(g) \<longrightarrow> Hcheck(y,g)\<in>M"
 proof -
-  have "Replace(y,PHcheck(##M,\<one>,f))\<in>M" if "f\<in>M" "y\<in>M" for f y
-    using that repl_PHcheck  PHcheck_closed[of y f] univ_PHcheck
-      strong_replacement_closed
-    by (simp flip: setclass_iff)
+  have eq:"Hcheck(x,f) = {f`y . y\<in>x}\<times>{\<one>}" for f x
+    unfolding Hcheck_def by auto
+  then
+  have "Hcheck(y,g)\<in>M" if "y\<in>M" "g\<in>M" "function(g)" for y g
+    using that  Hcheck_closed' cartprod_closed one_in_M singleton_closed
+    by(subst eq,subst RepFun_apply_eq,simp_all)
   then
   show ?thesis
-    using def_PHcheck by auto
+    by auto
 qed
 
 lemma wf_rcheck : "x\<in>M \<Longrightarrow> wf(rcheck(x))"
@@ -487,13 +512,11 @@ lemma relation_rcheck : "x\<in>M \<Longrightarrow> relation(rcheck(x))"
   unfolding rcheck_def using relation_trancl .
 
 lemma check_in_M : "x\<in>M \<Longrightarrow> check(x) \<in> M"
-  unfolding transrec_def
   using wfrec_Hcheck[of x] check_trancl wf_rcheck trans_rcheck relation_rcheck rcheck_in_M
     Hcheck_closed relation2_Hcheck trans_wfrec_closed[of "rcheck(x)"]
-  by (simp flip: setclass_iff)
+  by simp
 
 (* Internalization and absoluteness of rcheck\<close> *)
-
 lemma rcheck_abs[Rel] : "\<lbrakk> x\<in>M ; r\<in>M \<rbrakk> \<Longrightarrow> is_rcheck(##M,x,r) \<longleftrightarrow> r = rcheck(x)"
   unfolding rcheck_def is_rcheck_def
   using singleton_closed trancl_closed Memrel_closed eclose_closed zero_in_M
@@ -524,7 +547,7 @@ proof -
   have "Lambda(A, check) \<in> M" if "A\<in>M" for A
     using that check_in_M transitivity[of _ A] one_in_M P_in_M
     using sats_check_fm check_abs P_in_M check_in_M one_in_M  zero_in_M
-      check_fm_type replacement_ax1(15)
+      check_fm_type ZF_ground_replacements(3)
     by(rule_tac Lambda_in_M [of "check_fm(2,0,1)" "[\<one>]"],simp_all)
   then
   show ?thesis
@@ -546,7 +569,7 @@ definition
   G_dot :: "i" where
   "G_dot \<equiv> {\<langle>check(p),p\<rangle> . p\<in>P}"
 
-lemma (in forcing_data2) G_dot_in_M : "G_dot \<in> M"
+lemma G_dot_in_M : "G_dot \<in> M"
   using lam_replacement_Pair[THEN [5] lam_replacement_hcomp2,OF
     check_lam_replacement lam_replacement_identity]
     check_in_M lam_replacement_imp_strong_replacement_aux
@@ -554,7 +577,7 @@ lemma (in forcing_data2) G_dot_in_M : "G_dot \<in> M"
   unfolding G_dot_def
   by simp
 
-lemma (in forcing_data2) val_G_dot :
+lemma val_G_dot :
   assumes "G \<subseteq> P" "\<one> \<in> G"
   shows "val(G,G_dot) = G"
 proof (intro equalityI subsetI)
@@ -579,7 +602,7 @@ next
     using P_sub_M valcheck by auto
 qed
 
-lemma (in forcing_data2) G_in_Gen_Ext :
+lemma G_in_Gen_Ext :
   assumes "G \<subseteq> P" "\<one> \<in> G"
   shows   "G \<in> M[G]"
   using assms val_G_dot GenExtI[of _ G] G_dot_in_M

@@ -16,24 +16,6 @@ lemma Collect_inter_Transset:
 context G_generic1
 begin
 
-lemma name_components_in_M:
-  assumes "\<langle>\<sigma>,p\<rangle>\<in>\<theta>" "\<theta> \<in> M"
-  shows   "\<sigma>\<in>M" "p\<in>M"
-proof -
-  from assms
-  obtain a where "\<sigma> \<in> a" "p \<in> a" "a\<in>\<langle>\<sigma>,p\<rangle>"
-    unfolding Pair_def by auto
-  moreover from assms
-  have "\<langle>\<sigma>,p\<rangle>\<in>M"
-    using transitivity by simp
-  moreover from calculation
-  have "a\<in>M"
-    using transitivity by simp
-  ultimately
-  show "\<sigma>\<in>M" "p\<in>M"
-    using transitivity by simp_all
-qed
-
 lemma sats_fst_snd_in_M:
   assumes
     "A\<in>M" "B\<in>M" "\<phi> \<in> formula" "p\<in>M" "l\<in>M" "o\<in>M" "\<chi>\<in>M" "arity(\<phi>) \<le> 6"
@@ -84,23 +66,10 @@ proof -
   then
   have "?\<theta> = {sp\<in>A\<times>B . sats(M,?\<psi>,[sp,p,l,o,\<chi>,p])}"
     by auto
-  also from assms \<open>A\<times>B\<in>M\<close>
-  have " ... \<in> M"
-  proof -
-    from arty
-    have "arity(?\<psi>) \<le> 6"
-      using leI by simp
-    moreover from \<open>?\<phi>' \<in> formula\<close>
-    have "?\<psi> \<in> formula"
-      by simp
-    moreover
-    note assms \<open>A\<times>B\<in>M\<close>
-    ultimately
-    show "{x \<in> A\<times>B . M, [x, p, l, o, \<chi>, p] \<Turnstile> ?\<psi>} \<in> M"
-      using separation_ax separation_iff
-      by simp
-  qed
-  finally show ?thesis .
+  with assms \<open>A\<times>B\<in>M\<close>
+  show ?thesis
+    using separation_ax separation_iff arty leI \<open>?\<phi>' \<in> formula\<close>
+    by simp
 qed
 
 lemma Pow_inter_MG:
@@ -139,7 +108,7 @@ proof -
   let ?b="val(G,?\<pi>)"
   from \<open>?Q\<in>M\<close>
   have "?\<pi>\<in>M"
-    using one_in_P P_in_M transitivity
+    using one_in_M
     by (simp flip: setclass_iff)
   then
   have "?b \<in> M[G]"
@@ -274,9 +243,6 @@ proof (intro rallI, simp only:setclass_iff rex_setclass_is_bex)
   *)
   fix a
   assume "a \<in> M[G]"
-  then
-  have "(##M[G])(a)"
-    by simp
   have "{x\<in>Pow(a) . x \<in> M[G]} = Pow(a) \<inter> M[G]"
     by auto
   also from \<open>a\<in>M[G]\<close>
@@ -284,9 +250,9 @@ proof (intro rallI, simp only:setclass_iff rex_setclass_is_bex)
     using Pow_inter_MG by simp
   finally
   have "{x\<in>Pow(a) . x \<in> M[G]} \<in> M[G]" .
-  moreover from \<open>a\<in>M[G]\<close> \<open>{x\<in>Pow(a) . x \<in> M[G]} \<in> _\<close>
+  moreover from \<open>a\<in>M[G]\<close> this
   have "powerset(##M[G], a, {x\<in>Pow(a) . x \<in> M[G]})"
-    using ext.powerset_abs[OF \<open>(##M[G])(a)\<close>]
+    using ext.powerset_abs
     by simp
   ultimately
   show "\<exists>x\<in>M[G] . powerset(##M[G], a, x)"
