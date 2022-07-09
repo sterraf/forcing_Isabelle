@@ -459,8 +459,8 @@ text\<open>Under appropriate hypothesis (this time, from the locale \<^term>\<op
     As a sanity check, we see that if the transitive class is indeed \<^term>\<open>\<V>\<close>,
     we recover the original $\CH$.\<close>
 
-thm M_master.is_ContHyp_iff is_ContHyp_iff_CH[unfolded ContHyp_def]
-text\<open>@{thm [display] M_master.is_ContHyp_iff
+thm M_ZF_library.is_ContHyp_iff is_ContHyp_iff_CH[unfolded ContHyp_def]
+text\<open>@{thm [display] M_ZF_library.is_ContHyp_iff
     is_ContHyp_iff_CH[unfolded ContHyp_def]}\<close>
 (*
   M_master(M) \<Longrightarrow> is_ContHyp(M) \<longleftrightarrow> CH\<^bsup>M\<^esup>
