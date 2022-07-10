@@ -2,11 +2,13 @@ section\<open>The Axiom of Infinity in $M[G]$\<close>
 theory Infinity_Axiom
   imports Union_Axiom Pairing_Axiom
 begin
+sublocale G_generic1 \<subseteq> forcing_data1
+  by unfold_locales
 
 context G_generic1 begin
 
 interpretation mg_triv: M_trivial"##M[G]"
-  using transitivity_MG zero_in_MG generic Union_MG pairing_in_MG
+  using transitivity_MG zero_in_MG[of G] generic Union_MG pairing_in_MG
   by unfold_locales auto
 
 lemma infinity_in_MG : "infinity_ax(##M[G])"
