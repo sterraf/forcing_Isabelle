@@ -608,13 +608,6 @@ lemma G_in_Gen_Ext :
   using assms val_G_dot GenExtI[of _ G] G_dot_in_M
   by force
 
-end \<comment> \<open>\<^locale>\<open>forcing_data1\<close>\<close>
-
-locale G_generic1 = forcing_data1 +
-  fixes G :: "i"
-  assumes generic : "M_generic(G)"
-begin
-
 lemma zero_in_MG :
   "0 \<in> M[G]"
 proof -
@@ -626,6 +619,12 @@ proof -
   finally
   show ?thesis .
 qed
+end \<comment> \<open>\<^locale>\<open>forcing_data1\<close>\<close>
+
+locale G_generic1 = forcing_data1 +
+  fixes G :: "i"
+  assumes generic : "M_generic(G)"
+begin
 
 lemma G_nonempty: "G\<noteq>0"
   using generic subset_refl[of P] P_in_M P_dense
