@@ -19,9 +19,7 @@ lemma Union_name_closed :
 proof -
   let ?Q="Union_name_body(P,leq,\<tau>)"
   note lr_fst2 = lam_replacement_hcomp[OF lam_replacement_fst lam_replacement_fst]
-  moreover
-  note lr_fst3 = lam_replacement_hcomp[OF lr_fst2] lam_replacement_hcomp[OF lr_fst2 lr_fst2]
-  moreover
+    and lr_fst3 = lam_replacement_hcomp[OF lr_fst2] lam_replacement_hcomp[OF lr_fst2 lr_fst2]
   note \<open>\<tau>\<in>M\<close>
   moreover from this
   have "domain(\<Union>(domain(\<tau>)))\<in>M" (is "?d \<in> _")
@@ -49,15 +47,14 @@ proof (intro equalityI subsetI)
   fix x
   assume "x \<in> \<Union> a"
   with \<open>a=_\<close>
-  have "x\<in> \<Union> (val(G,\<tau>))"
+  have "x \<in> \<Union> (val(G,\<tau>))"
     by simp
   then
   obtain i where "i \<in> val(G,\<tau>)" "x \<in> i"
     by blast
   with \<open>\<tau> \<in> M\<close>
   obtain \<sigma> q where "q \<in> G" "\<langle>\<sigma>,q\<rangle> \<in> \<tau>" "val(G,\<sigma>) = i" "\<sigma> \<in> M"
-    using elem_of_val_pair domain_trans[OF trans_M]
-    by blast
+    using elem_of_val_pair domain_trans[OF trans_M] by blast
   moreover from this \<open>x \<in> i\<close>
   obtain \<theta> r where "r \<in> G" "\<langle>\<theta>,r\<rangle> \<in> \<sigma>" "val(G,\<theta>) = x" "\<theta> \<in> M"
     using elem_of_val_pair domain_trans[OF trans_M] by blast
@@ -69,7 +66,7 @@ proof (intro equalityI subsetI)
     using low_bound_filter filterD by blast
   moreover from this
   have "p \<in> M" "q\<in>M" "r\<in>M"
-    using P_in_M by (auto dest:transM)
+    using P_in_M by (auto dest:transitivity)
   moreover from calculation
   have "\<langle>\<theta>,p\<rangle> \<in> Union_name(P,leq,\<tau>)"
     unfolding Union_name_def Union_name_body_def
@@ -94,19 +91,16 @@ next
   moreover from calculation
   obtain \<sigma> q r where "\<langle>\<sigma>,q\<rangle> \<in> \<tau>" "\<langle>\<theta>,r\<rangle> \<in> \<sigma>" "\<langle>p,r\<rangle> \<in> leq" "\<langle>p,q\<rangle> \<in> leq" "r\<in>P" "q\<in>P"
     unfolding Union_name_def Union_name_body_def
-    by force
+    by auto
   moreover from calculation
   have "r \<in> G" "q \<in> G"
     using filter_leqD by auto
   moreover from this \<open>\<langle>\<theta>,r\<rangle> \<in> \<sigma>\<close> \<open>\<langle>\<sigma>,q\<rangle>\<in>\<tau>\<close> \<open>q\<in>P\<close> \<open>r\<in>P\<close>
   have "val(G,\<sigma>) \<in> val(G,\<tau>)" "val(G,\<theta>) \<in> val(G,\<sigma>)"
     using val_of_elem by simp+
-  moreover from this
-  have "val(G,\<theta>) \<in> \<Union> val(G,\<tau>)"
-    by blast
   ultimately
   show "x \<in> \<Union> a"
-    by simp
+    by blast
 qed
 
 lemma union_in_MG :

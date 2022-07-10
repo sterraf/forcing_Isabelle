@@ -98,7 +98,7 @@ proof
     using lt_trans by blast
 qed
 
-lemma edrel_dest [dest]: "x \<in> edrel(A) \<Longrightarrow> \<exists> a\<in> A. \<exists> b \<in> A. x =\<langle>a,b\<rangle>"
+lemma edrel_dest [dest]: "x \<in> edrel(A) \<Longrightarrow> \<exists> a \<in> A. \<exists> b \<in> A. x =\<langle>a,b\<rangle>"
   by(auto simp add:ed_def edrel_def Rrel_def)
 
 lemma edrelD : "x \<in> edrel(A) \<Longrightarrow> \<exists> a\<in> A. \<exists> b \<in> A. x =\<langle>a,b\<rangle> \<and> a \<in> domain(b)"
