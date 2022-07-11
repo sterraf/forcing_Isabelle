@@ -832,8 +832,7 @@ lemma sats_forces_Equal :
 lemma sats_forces_Nand :
   assumes "\<phi>\<in>formula" "\<psi>\<in>formula" "env\<in>list(M)" "p\<in>M"
   shows "p \<tturnstile> \<cdot>\<not>(\<phi> \<and> \<psi>)\<cdot> env \<longleftrightarrow>
-    p\<in>P \<and> \<not>(\<exists>q\<in>M. q\<in>P \<and> is_leq(##M,leq,q,p) \<and>
-    (M,[q,P,leq,\<one>]@env \<Turnstile> forces(\<phi>)) \<and> (M,[q,P,leq,\<one>]@env \<Turnstile> forces(\<psi>)))"
+    p\<in>P \<and> \<not>(\<exists>q\<in>M. q\<in>P \<and> is_leq(##M,leq,q,p) \<and> (q \<tturnstile> \<phi> env) \<and> (q \<tturnstile> \<psi> env))"
   unfolding forces_def
   using sats_is_leq_fm_auto assms sats_ren_forces_nand P_in_M leq_in_M one_in_M zero_in_M
   by simp
@@ -841,13 +840,13 @@ lemma sats_forces_Nand :
 lemma sats_forces_Neg :
   assumes "\<phi>\<in>formula" "env\<in>list(M)" "p\<in>M"
   shows "p \<tturnstile> \<cdot>\<not>\<phi>\<cdot> env \<longleftrightarrow>
-         (p\<in>P \<and> \<not>(\<exists>q\<in>M. q\<in>P \<and> is_leq(##M,leq,q,p) \<and> (M, [q, P, leq, \<one>] @ env \<Turnstile> forces(\<phi>))))"
+         (p\<in>P \<and> \<not>(\<exists>q\<in>M. q\<in>P \<and> is_leq(##M,leq,q,p) \<and> (q \<tturnstile> \<phi> env)))"
   unfolding Neg_def using assms sats_forces_Nand
   by simp
 
 lemma sats_forces_Forall :
   assumes "\<phi>\<in>formula" "env\<in>list(M)" "p\<in>M"
-  shows "p \<tturnstile> (\<cdot>\<forall>\<phi>\<cdot>) env \<longleftrightarrow> p \<in> P \<and> (\<forall>x\<in>M. M,[p,P,leq,\<one>,x] @ env \<Turnstile> forces(\<phi>))"
+  shows "p \<tturnstile> (\<cdot>\<forall>\<phi>\<cdot>) env \<longleftrightarrow> p \<in> P \<and> (\<forall>x\<in>M. p \<tturnstile> \<phi> ([x] @ env))"
   unfolding forces_def using assms sats_ren_forces_forall P_in_M leq_in_M one_in_M
   by simp
 

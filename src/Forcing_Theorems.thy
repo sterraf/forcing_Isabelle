@@ -1462,7 +1462,7 @@ lemma definition_of_forcing:
     "p\<in>P" "\<phi>\<in>formula" "env\<in>list(M)" "arity(\<phi>)\<le>length(env)"
   shows
     "(p \<tturnstile> \<phi> env) \<longleftrightarrow>
-     (\<forall>G. M_generic(G) \<and> p\<in>G  \<longrightarrow>  M[G], map(val(G),env) \<Turnstile> \<phi>)"
+     (\<forall>G. M_generic(G) \<and> p\<in>G \<longrightarrow> M[G], map(val(G),env) \<Turnstile> \<phi>)"
 proof (intro iffI allI impI, elim conjE)
   fix G
   assume "(p \<tturnstile> \<phi> env)" "M_generic(G)" "p \<in> G"
@@ -1470,7 +1470,7 @@ proof (intro iffI allI impI, elim conjE)
   show "M[G], map(val(G),env) \<Turnstile> \<phi>"
     using truth_lemma[of \<phi>] by blast
 next
-  assume 1: "\<forall>G.(M_generic(G)\<and> p\<in>G)\<longrightarrow> M[G] , map(val(G),env) \<Turnstile> \<phi>"
+  assume 1: "\<forall>G.(M_generic(G)\<and> p\<in>G) \<longrightarrow> M[G] , map(val(G),env) \<Turnstile> \<phi>"
   {
     fix r
     assume 2: "r\<in>P" "r\<preceq>p"
