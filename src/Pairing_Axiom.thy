@@ -5,24 +5,19 @@ theory Pairing_Axiom
     Names
 begin
 
-context forcing_data1
+context G_generic1
 begin
 
 lemma val_Upair :
   "\<one> \<in> G \<Longrightarrow> val(G,{\<langle>\<tau>,\<one>\<rangle>,\<langle>\<rho>,\<one>\<rangle>}) = {val(G,\<tau>),val(G,\<rho>)}"
   by (insert one_in_P, rule trans, subst def_val,auto)
 
-lemma pairing_in_MG :
-  assumes "M_generic(G)"
-  shows "upair_ax(##M[G])"
+lemma pairing_in_MG : "upair_ax(##M[G])"
 proof -
-  from assms
-  have types: "\<one>\<in>G" "\<one>\<in>P" "\<one>\<in>M"
-    using one_in_G one_in_M one_in_P
-    by simp_all
+  note types = one_in_G one_in_M one_in_P
   {
     fix x y
-    note assms types
+    note types
     moreover
     assume "x \<in> M[G]" "y \<in> M[G]"
     moreover from this
@@ -39,7 +34,7 @@ proof -
       using GenExtI by simp
     moreover from calculation
     have "{val(G,\<tau>),val(G,\<rho>)} \<in> M[G]"
-      using val_Upair assms one_in_G by simp
+      using val_Upair one_in_G by simp
     ultimately
     have "{x,y} \<in> M[G]"
       by simp
@@ -49,6 +44,6 @@ proof -
     unfolding upair_ax_def upair_def by auto
 qed
 
-end \<comment> \<open>\<^locale>\<open>forcing_data1\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>
 
 end

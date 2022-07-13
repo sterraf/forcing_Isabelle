@@ -188,7 +188,7 @@ context
 begin
 
 lemma G_in_MG: "G \<in> M[G]"
-  using G_in_Gen_Ext[ OF _ one_in_G, OF _ generic]
+  using G_in_Gen_Ext
   by blast
 
 lemma ccc_preserves_Aleph_succ:
@@ -203,7 +203,7 @@ proof (rule ccontr)
     using Card_rel_is_Ord by fastforce
   ultimately
   obtain \<alpha> f where "\<alpha> < \<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>" "f \<in> surj\<^bsup>M[G]\<^esup>(\<alpha>, \<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)"
-    using ext.lt_surj_rel_empty_imp_Card_rel M_subset_MG[OF one_in_G, OF generic]
+    using ext.lt_surj_rel_empty_imp_Card_rel M_subset_MG[OF one_in_G]
     by force
   moreover from this and \<open>z\<in>M\<close> \<open>Ord(z)\<close>
   have "\<alpha> \<in> M" "f \<in> M[G]"
@@ -371,7 +371,7 @@ proof -
     unfolding dense_def by auto
   with assms
   obtain p where "p\<in>dom_dense(\<langle>x, y\<rangle>)" "p\<in>G"
-    using generic[THEN M_generic_denseD, of "dom_dense(\<langle>x, y\<rangle>)"]
+    using M_generic_denseD[of "dom_dense(\<langle>x, y\<rangle>)"]
     by auto
   then
   show "\<langle>x, y\<rangle> \<in> domain(f\<^bsub>G\<^esub>)" by blast
@@ -404,7 +404,7 @@ proof -
     unfolding dense_def using dense_inj_dense by auto
   with assms
   obtain p where "p\<in>inj_dense(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>,2,w,x)" "p\<in>G"
-    using generic[THEN M_generic_denseD, of "inj_dense(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>,2,w,x)"]
+    using M_generic_denseD[of "inj_dense(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>,2,w,x)"]
     by blast
   then
   obtain n where "n \<in> \<omega>" "\<langle>\<langle>w, n\<rangle>, 1\<rangle> \<in> p" "\<langle>\<langle>x, n\<rangle>, 0\<rangle> \<in> p"

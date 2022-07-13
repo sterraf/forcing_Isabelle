@@ -190,7 +190,7 @@ proof -
       note \<open>\<chi> \<in> M\<close>
       ultimately
       obtain p where "p\<in>G" "p \<tturnstile> \<cdot>0 \<in> 1\<cdot> [\<sigma>,\<chi>]"
-        using generic truth_lemma[of "\<cdot>0 \<in> 1\<cdot>" "G" "[\<sigma>,\<chi>]" ] ord_simp_union
+        using generic truth_lemma[of "\<cdot>0 \<in> 1\<cdot>" "[\<sigma>,\<chi>]" ] ord_simp_union
         by auto
       moreover from \<open>p\<in>G\<close>
       have "p\<in>P"
@@ -200,7 +200,7 @@ proof -
         using \<open>\<sigma>\<in>domain(\<tau>)\<close> by simp
       with \<open>val(G,\<sigma>) =  x\<close> \<open>p\<in>G\<close>
       show "x\<in>val(G,?\<theta>)"
-        using val_of_elem [of _ _ "?\<theta>"] by auto
+        using val_of_elem [of _ G "?\<theta>"] sorry
     qed
     with \<open>val(G,?\<theta>) \<in> ?b\<close>
     show "c\<in>?b"

@@ -141,7 +141,7 @@ proof -
   have "map(val( G), [f_dot, A\<^sup>v, B\<^sup>v]) \<in> list(M[G])" by simp
   moreover from calculation
   have "val(G,f_dot) : A \<rightarrow>\<^bsup>M[G]\<^esup> B"
-    using truth_lemma[of "\<cdot>0:1\<rightarrow>2\<cdot>" G "[f_dot, A\<^sup>v, B\<^sup>v]", THEN iffD1]
+    using truth_lemma[of "\<cdot>0:1\<rightarrow>2\<cdot>" "[f_dot, A\<^sup>v, B\<^sup>v]", THEN iffD1]
       typed_function_type arity_typed_function_fm valcheck[OF one_in_G one_in_P]
     by (auto simp: union_abs2 union_abs1 ext.mem_function_space_rel_abs)
   moreover
@@ -154,12 +154,11 @@ proof -
   moreover from calculation
   have "M[G], map(val(G), [f_dot, a\<^sup>v, ?b\<^sup>v]) \<Turnstile> \<cdot>0`1 is 2\<cdot>"
     by simp
-  moreover
-  note \<open>M_generic(G)\<close>
   ultimately
   obtain r where "r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, ?b\<^sup>v]" "r\<in>G" "r\<in>P"
-    using truth_lemma[of "\<cdot>0`1 is 2\<cdot>" G "[f_dot, a\<^sup>v, ?b\<^sup>v]", THEN iffD2]
+    using truth_lemma[of "\<cdot>0`1 is 2\<cdot>" "[f_dot, a\<^sup>v, ?b\<^sup>v]", THEN iffD2]
       fun_apply_type arity_fun_apply_fm valcheck[OF one_in_G one_in_P]
+      G_subset_P
     by (auto simp: union_abs2 union_abs1 ext.mem_function_space_rel_abs)
   moreover from this and \<open>q\<in>G\<close>
   obtain d where "d\<preceq>q" "d\<preceq>r" "d\<in>P" by force
@@ -378,7 +377,7 @@ proof (intro equalityI; clarsimp simp add:
     using GenExtD by force
   moreover from calculation and \<open>A\<in>M\<close> \<open>B\<in>M\<close>
   obtain r where "r \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [\<tau>, A\<^sup>v, B\<^sup>v]" "r\<in>G"
-    using truth_lemma[of "\<cdot>0:1\<rightarrow>2\<cdot>" G "[\<tau>, A\<^sup>v, B\<^sup>v]"] generic
+    using truth_lemma[of "\<cdot>0:1\<rightarrow>2\<cdot>" "[\<tau>, A\<^sup>v, B\<^sup>v]"] generic
       typed_function_type arity_typed_function_fm valcheck[OF one_in_G one_in_P]
     by (auto simp: union_abs2 union_abs1)
   moreover from \<open>A\<in>M\<close> \<open>B\<in>M\<close> \<open>r\<in>G\<close> \<open>\<tau> \<in> M\<close>
@@ -391,14 +390,14 @@ proof (intro equalityI; clarsimp simp add:
     by (auto simp: union_abs2 union_abs1 typed_function_type arity_typed_function_fm) blast
   moreover from calculation
   obtain q h where "h\<in>A \<rightarrow>\<^bsup>M\<^esup> B" "q \<tturnstile> \<cdot>0 = 1\<cdot> [\<tau>, h\<^sup>v]" "q \<preceq> r" "q\<in>P" "q\<in>G"
-    using generic_inter_dense_below[of ?D G r, OF _ generic] by blast
+    using generic_inter_dense_below[of ?D r] by blast
   note \<open>q \<tturnstile> \<cdot>0 = 1\<cdot> [\<tau>, h\<^sup>v]\<close> \<open>\<tau>\<in>M\<close> \<open>h\<in>A \<rightarrow>\<^bsup>M\<^esup> B\<close> \<open>A\<in>M\<close> \<open>B\<in>M\<close> \<open>q\<in>G\<close>
   moreover from this
   have "map(val( G), [\<tau>, h\<^sup>v]) \<in> list(M[G])" "h\<in>M"
     by (auto dest:transM)
   ultimately
   have "h = f"
-    using truth_lemma[of "\<cdot>0=1\<cdot>" G "[\<tau>, h\<^sup>v]"] generic valcheck[OF one_in_G one_in_P]
+    using truth_lemma[of "\<cdot>0=1\<cdot>" "[\<tau>, h\<^sup>v]"] valcheck[OF one_in_G one_in_P]
     by (auto simp: ord_simp_union)
   with \<open>h\<in>M\<close>
   show "f \<in> M" by simp
@@ -579,19 +578,19 @@ proof -
     have "r \<tturnstile> \<cdot>0 = 1\<cdot> [f_dot, ?h\<^sup>v]"
     proof (intro definition_of_forcing[THEN iffD2] allI impI,
         simp_all add:union_abs2 union_abs1 del:app_Cons)
-      fix G
-      let ?f="val(G,f_dot)"
-      assume "M_generic(G) \<and> r \<in> G"
+      fix H
+      let ?f="val(H,f_dot)"
+      assume "M_generic(H) \<and> r \<in> H"
       moreover from this
-      interpret g:G_generic1 _ _ _ _ _ G
+      interpret g:G_generic1 _ _ _ _ _ H
         by unfold_locales simp
       note \<open>r\<in>P\<close> \<open>f_dot\<in>M\<close> \<open>B\<in>M\<close>
-      moreover from this
-      have "map(val( G), [f_dot, \<omega>\<^sup>v, B\<^sup>v]) \<in> list(M[G])"
-        by simp
-      moreover from calculation and \<open>r \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, \<omega>\<^sup>v, B\<^sup>v]\<close>
+      moreover from calculation
+      have "map(val(H), [f_dot, \<omega>\<^sup>v, B\<^sup>v]) \<in> list(M[H])" "r\<in>H"
+        by simp_all
+      moreover from calculation and \<open>r\<in>H\<close> and \<open>r \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, \<omega>\<^sup>v, B\<^sup>v]\<close>
       have "?f : \<omega> \<rightarrow> B"
-        using truth_lemma[of "\<cdot>0:1\<rightarrow>2\<cdot>" G "[f_dot, \<omega>\<^sup>v, B\<^sup>v]"] one_in_G one_in_P
+        using g.truth_lemma[of "\<cdot>0:1\<rightarrow>2\<cdot>" "[f_dot, \<omega>\<^sup>v, B\<^sup>v]",THEN iffD1] g.one_in_G one_in_P
           typed_function_type arity_typed_function_fm valcheck
         by (auto simp: union_abs2 union_abs1)
       moreover
@@ -615,15 +614,15 @@ proof -
         have "?h`n \<in> M"
           by (auto dest:transM)
         moreover
-        note \<open>f_dot \<in> M\<close> \<open>r \<in> P\<close> \<open>M_generic(G) \<and> r \<in> G\<close> \<open>map(val( G), [f_dot, \<omega>\<^sup>v, B\<^sup>v]) \<in> list(M[G])\<close>
+        note \<open>f_dot \<in> M\<close> \<open>r \<in> P\<close> \<open>M_generic(H) \<and> r \<in> H\<close> \<open>map(val(H), [f_dot, \<omega>\<^sup>v, B\<^sup>v]) \<in> list(M[H])\<close>
         moreover from calculation
-        have "[?f, n, ?h`n] \<in> list(M[G])"
-          using M_subset_MG nat_into_M[of n] one_in_G by (auto dest:transM)
+        have "[?f, n, ?h`n] \<in> list(M[H])"
+          using M_subset_MG nat_into_M[of n] g.one_in_G by (auto dest:transM)
         ultimately
         show ?thesis
           using definition_of_forcing[of r "\<cdot>0`1 is 2\<cdot>" "[f_dot, n\<^sup>v, b\<^sup>v]",
-              THEN iffD1, rule_format, of G]\<comment> \<open>without this line is slower\<close>
-            valcheck one_in_G one_in_P nat_into_M
+              THEN iffD1, rule_format, of H]\<comment> \<open>without this line is slower\<close>
+            valcheck g.one_in_G one_in_P nat_into_M
           by (auto dest:transM simp add:fun_apply_type
               arity_fun_apply_fm union_abs2 union_abs1)
       qed
@@ -632,8 +631,8 @@ proof -
         using function_space_rel_char
         by (rule_tac fun_extension[of ?h \<omega> "\<lambda>_.B" ?f]) auto
       ultimately
-      show "?f = val( G, ?h\<^sup>v)"
-        using valcheck one_in_G one_in_P generic by simp
+      show "?f = val(H, ?h\<^sup>v)"
+        using valcheck g.one_in_G one_in_P generic by simp
     qed
     ultimately
     have "\<exists>r\<in>P. \<exists>h\<in>\<omega> \<rightarrow>\<^bsup>M\<^esup> B. r \<preceq> p \<and> r \<tturnstile> \<cdot>0 = 1\<cdot> [f_dot, h\<^sup>v]"

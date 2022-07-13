@@ -21,7 +21,7 @@ begin
 (* Absoluteness of components *)
 lemma ftype_abs:
   "\<lbrakk>x\<in>M; y\<in>M \<rbrakk> \<Longrightarrow> is_ftype(##M,x,y) \<longleftrightarrow> y = ftype(x)"
-  unfolding ftype_def  is_ftype_def by (simp add:absolut)
+  unfolding ftype_def is_ftype_def by (simp add:absolut)
 
 lemma name1_abs:
   "\<lbrakk>x\<in>M; y\<in>M \<rbrakk> \<Longrightarrow> is_name1(##M,x,y) \<longleftrightarrow> y = name1(x)"

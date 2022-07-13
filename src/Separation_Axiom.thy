@@ -208,28 +208,27 @@ proof -
       using elem_of_val_pair domain_trans[OF trans_M \<open>\<pi>\<in>_\<close>]
       by force
     with \<open>\<pi>\<in>M\<close> \<open>nenv \<in> _\<close> \<open>env = _\<close>
-    have "[val(G,\<theta>), val(G,\<pi>)] @ env \<in> list(M[G])"
+    have "[val(G,\<theta>), val(G,\<pi>)] @ env \<in> list(M[G])" "[\<theta>] @ nenv @ [\<pi>]\<in>list(M)"
       using GenExt_def by auto
     with \<open>val(G,\<theta>)=x\<close> \<open>val(G,\<pi>) = A\<close> \<open>x \<in> val(G,\<pi>)\<close> nth \<open>\<theta>\<in>M\<close> \<open>x\<in> {x \<in> A . _}\<close>
     have "M[G],  [val(G,\<theta>)] @ env @ [val(G,\<pi>)] \<Turnstile> \<cdot>\<cdot> 0 \<in> (1 +\<^sub>\<omega> length(env)) \<cdot> \<and> \<phi> \<cdot>"
       by auto
         \<comment> \<open>Recall \<^term>\<open>?\<chi> = And(Member(0,1 +\<^sub>\<omega> length(env)),\<phi>)\<close>\<close>
-    with \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close> \<open>M_generic(G)\<close> \<open>\<phi>\<in>formula\<close> \<open>nenv \<in> _ \<close> map_nenv
-      \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close> \<open>length(nenv) = _\<close>
+    with \<open>[_] @ nenv @ [_] \<in> _ \<close> map_nenv \<open>arity(?\<chi>) \<le> length(_)\<close> \<open>length(nenv) = _\<close>
     obtain r where "r\<in>G" "r \<tturnstile> ?\<chi> ([\<theta>] @ nenv @ [\<pi>])"
-      by(rule_tac truth_lemma[of "?\<chi>" G "[\<theta>] @ nenv @ [\<pi>]",THEN iffD2,THEN bexE],simp_all)
+      using truth_lemma[OF \<open>?\<chi>\<in>_\<close>,of "[\<theta>] @ nenv @ [\<pi>]"]
+      by auto
     with \<open>filter(G)\<close> and \<open>q\<in>G\<close>
     obtain p where "p\<in>G" "p\<preceq>q" "p\<preceq>r"
       unfolding filter_def compat_in_def by force
     with \<open>r\<in>G\<close> \<open>q\<in>G\<close> \<open>G\<subseteq>P\<close>
     have "p\<in>P" "r\<in>P" "q\<in>P" "p\<in>M"
       using P_in_M by (auto simp add:transitivity)
-    with \<open>\<phi>\<in>formula\<close> \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close> \<open>p\<preceq>r\<close> \<open>nenv \<in> _\<close> \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close>
-      \<open>r \<tturnstile> ?\<chi> _\<close> \<open>env\<in>_\<close>
+    with \<open>\<phi>\<in>formula\<close> \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close> \<open>p\<preceq>r\<close> \<open>nenv \<in> _\<close> \<open>arity(?\<chi>) \<le> length(_)\<close> \<open>r \<tturnstile> ?\<chi> _\<close> \<open>env\<in>_\<close>
     have "p \<tturnstile> ?\<chi> ([\<theta>] @ nenv @ [\<pi>])"
       using strengthening_lemma
       by simp
-    with \<open>p\<in>P\<close> \<open>\<phi>\<in>formula\<close> \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close> \<open>nenv \<in> _\<close> \<open>arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])\<close>
+    with \<open>p\<in>P\<close> \<open>\<phi>\<in>formula\<close> \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close> \<open>nenv \<in> _\<close> \<open>arity(?\<chi>) \<le> length(_)\<close>
     have "\<forall>F. M_generic(F) \<and> p \<in> F \<longrightarrow>
                  M[F],   map(val(F), [\<theta>] @ nenv @ [\<pi>]) \<Turnstile>  ?\<chi>"
       using definition_of_forcing[where \<phi>="\<cdot>\<cdot> 0 \<in> (1 +\<^sub>\<omega> length(env)) \<cdot> \<and> \<phi> \<cdot>"]

@@ -93,7 +93,7 @@ proof -
     assume "q\<in>G"
     with assms \<open>M_generic(G)\<close>
     have "M[G], map(val(G),[f,a,b'\<^sup>v]) \<Turnstile> \<cdot>0`1 is 2\<cdot>"
-      using truth_lemma[of "\<cdot>0`1 is 2\<cdot>" G "[f,a,b'\<^sup>v]"]
+      using truth_lemma[of "\<cdot>0`1 is 2\<cdot>" "[f,a,b'\<^sup>v]"]
       by (auto simp add:ord_simp_union arity_fun_apply_fm
           fun_apply_type)
     with \<open>b \<noteq> b'\<close> types
@@ -238,7 +238,7 @@ proof -
   note assms
   moreover from this
   obtain r where "r \<tturnstile> \<phi> env" "r\<in>G"
-    using generic truth_lemma[of  \<phi> _ env]
+    using generic truth_lemma[of \<phi> env]
     by blast
   moreover from this and \<open>p\<in>G\<close>
   obtain q where "q \<preceq> p" "q \<preceq> r" "q \<in> G" by auto
@@ -365,8 +365,7 @@ proof -
   obtain f_dot where "f = val(G,f_dot)" "f_dot\<in>M" using GenExtD by force
   with assms
   obtain p where "p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, A\<^sup>v, B\<^sup>v]" "p\<in>G" "p\<in>M"
-    using transitivity[OF M_genericD P_in_M]
-      generic truth_lemma[of "\<cdot>0:1\<rightarrow>2\<cdot>" G "[f_dot, A\<^sup>v, B\<^sup>v]"]
+    using G_subset_M truth_lemma[of "\<cdot>0:1\<rightarrow>2\<cdot>" "[f_dot, A\<^sup>v, B\<^sup>v]"]
     by (auto simp add:ord_simp_union arity_typed_function_fm
         \<comment> \<open>NOTE: type-checking is not performed here by the Simplifier\<close>
         typed_function_type)
