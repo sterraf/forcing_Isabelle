@@ -31,7 +31,7 @@ lemma Ord_MG_iff:
   shows "\<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> M[G]"
 proof
   show "\<alpha> \<in> M[G]" if "\<alpha> \<in> M"
-    using generic[THEN one_in_G, THEN M_subset_MG] that ..
+    using M_subset_MG[OF one_in_G] that ..
 next
   assume "\<alpha> \<in> M[G]"
   then

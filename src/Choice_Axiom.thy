@@ -143,10 +143,11 @@ begin
 \<comment> \<open>NOTE: The following bundled additions to the simpset might be of
     use later on, perhaps add them globally to some appropriate
     locale.\<close>
-lemmas generic_simps = generic[THEN one_in_G, THEN valcheck, OF one_in_P]
-  generic[THEN one_in_G, THEN M_subset_MG, THEN subsetD]
+lemmas generic_simps = valcheck[OF one_in_G one_in_P]
+  M_subset_MG[OF one_in_G, THEN subsetD]
   check_in_M GenExtI P_in_M
-lemmas generic_dests = M_genericD[OF generic] M_generic_compatD[OF generic]
+
+lemmas generic_dests = M_genericD M_generic_compatD
 
 bundle G_generic1_lemmas = generic_simps[simp] generic_dests[dest]
 
@@ -198,9 +199,11 @@ sublocale G_generic1 \<subseteq> ext:M_Z_trans "M[G]"
   using Transset_MG generic pairing_in_MG Union_MG
     extensionality_in_MG power_in_MG foundation_in_MG
     replacement_assm_MG separation_in_MG infinity_in_MG
-    replacement_ax1 by unfold_locales
+    replacement_ax1 
+  by unfold_locales
 
-lemma (in M_replacement) upair_name_lam_replacement : "M(z) \<Longrightarrow> lam_replacement(M,\<lambda>x . upair_name(fst(x),snd(x),z))"
+lemma (in M_replacement) upair_name_lam_replacement : 
+  "M(z) \<Longrightarrow> lam_replacement(M,\<lambda>x . upair_name(fst(x),snd(x),z))"
   using lam_replacement_Upair[THEN [5] lam_replacement_hcomp2]
     lam_replacement_Pair[THEN [5] lam_replacement_hcomp2]
     lam_replacement_fst lam_replacement_snd lam_replacement_constant
@@ -213,9 +216,8 @@ lemma (in forcing_data2) repl_opname_check :
     using assms lam_replacement_constant check_lam_replacement lam_replacement_identity
       upair_name_lam_replacement[THEN [5] lam_replacement_hcomp2]
       lam_replacement_apply2[THEN [5] lam_replacement_hcomp2]
-      check_in_M lam_replacement_imp_strong_replacement_aux
-      transitivity P_in_M check_in_M RepFun_closed
-      one_in_M upair_name_closed apply_closed
+      lam_replacement_imp_strong_replacement_aux
+      transitivity P_in_M one_in_M check_in_M RepFun_closed upair_name_closed apply_closed
     unfolding opair_name_def
     by simp
 

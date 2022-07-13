@@ -23,6 +23,13 @@ definition
   GenExt :: "[i,i]\<Rightarrow>i"     ("_[_]" [71,1])
   where "M[G] \<equiv> {val(G,\<tau>). \<tau> \<in> M}"
 
+lemma map_val_in_MG:
+  assumes
+    "env\<in>list(M)"
+  shows
+    "map(val(G),env)\<in>list(M[G])"
+  unfolding GenExt_def using assms map_type2 by simp
+
 subsection\<open>Values and check-names\<close>
 context forcing_data1
 begin
@@ -560,7 +567,7 @@ lemma check_replacement: "{check(x). x\<in>P} \<in> M"
     transitivity P_in_M check_in_M RepFun_closed
     by simp_all
 
-lemma M_subset_MG :  "\<one> \<in> G \<Longrightarrow> M \<subseteq> M[G]"
+lemma M_subset_MG : "\<one> \<in> G \<Longrightarrow> M \<subseteq> M[G]"
   using check_in_M one_in_P GenExtI
   by (intro subsetI, subst valcheck [of G,symmetric], auto)
 
@@ -577,39 +584,7 @@ lemma G_dot_in_M : "G_dot \<in> M"
   unfolding G_dot_def
   by simp
 
-lemma val_G_dot :
-  assumes "G \<subseteq> P" "\<one> \<in> G"
-  shows "val(G,G_dot) = G"
-proof (intro equalityI subsetI)
-  fix x
-  assume "x\<in>val(G,G_dot)"
-  then obtain \<theta> p where "p\<in>G" "\<langle>\<theta>,p\<rangle> \<in> G_dot" "val(G,\<theta>) = x" "\<theta> = check(p)"
-    unfolding G_dot_def using elem_of_val_pair G_dot_in_M
-    by force
-  with \<open>\<one>\<in>G\<close> \<open>G\<subseteq>P\<close>
-  show "x \<in> G"
-    using valcheck P_sub_M by auto
-next
-  fix p
-  assume "p\<in>G"
-  have "\<langle>check(q),q\<rangle> \<in> G_dot" if "q\<in>P" for q
-    unfolding G_dot_def using that by simp
-  with \<open>p\<in>G\<close> \<open>G\<subseteq>P\<close>
-  have "val(G,check(p)) \<in> val(G,G_dot)"
-    using val_of_elem G_dot_in_M by blast
-  with \<open>p\<in>G\<close> \<open>G\<subseteq>P\<close> \<open>\<one>\<in>G\<close>
-  show "p \<in> val(G,G_dot)"
-    using P_sub_M valcheck by auto
-qed
-
-lemma G_in_Gen_Ext :
-  assumes "G \<subseteq> P" "\<one> \<in> G"
-  shows   "G \<in> M[G]"
-  using assms val_G_dot GenExtI[of _ G] G_dot_in_M
-  by force
-
-lemma zero_in_MG :
-  "0 \<in> M[G]"
+lemma zero_in_MG : "0 \<in> M[G]"
 proof -
   have "0 = val(G,0)"
     using zero_in_M elem_of_val by auto
@@ -619,20 +594,39 @@ proof -
   finally
   show ?thesis .
 qed
+
 end \<comment> \<open>\<^locale>\<open>forcing_data1\<close>\<close>
 
-locale G_generic1 = forcing_data1 +
-  fixes G :: "i"
-  assumes generic : "M_generic(G)"
+context G_generic1
 begin
 
-lemma G_nonempty: "G\<noteq>0"
-  using generic subset_refl[of P] P_in_M P_dense
-  unfolding M_generic_def
-  by auto
+lemma val_G_dot : "val(G,G_dot) = G"
+proof (intro equalityI subsetI)
+  fix x
+  assume "x\<in>val(G,G_dot)"
+  then obtain \<theta> p where "p\<in>G" "\<langle>\<theta>,p\<rangle> \<in> G_dot" "val(G,\<theta>) = x" "\<theta> = check(p)"
+    unfolding G_dot_def using elem_of_val_pair G_dot_in_M
+    by force
+  then
+  show "x \<in> G"
+    using G_subset_P one_in_G valcheck P_sub_M by auto
+next
+  fix p
+  assume "p\<in>G"
+  have "\<langle>check(q),q\<rangle> \<in> G_dot" if "q\<in>P" for q
+    unfolding G_dot_def using that by simp
+  with \<open>p\<in>G\<close>
+  have "val(G,check(p)) \<in> val(G,G_dot)"
+    using val_of_elem G_dot_in_M by blast
+  with \<open>p\<in>G\<close>
+  show "p \<in> val(G,G_dot)"
+    using one_in_G G_subset_P P_sub_M valcheck by auto
+qed
 
-end \<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>
+lemma G_in_Gen_Ext : "G \<in> M[G]"
+  using G_subset_P one_in_G val_G_dot GenExtI[of _ G] G_dot_in_M
+  by force
 
-locale G_generic1_AC = G_generic1 + M_ctm1_AC
+end  \<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>
 
 end

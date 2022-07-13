@@ -48,22 +48,24 @@ proof -
     using cartprod_closed P_in_M domain_closed by simp
   from \<open>val(G, \<pi>') = c\<close>
   have "c \<subseteq> val(G,?\<pi>)"
-    using def_val[of G ?\<pi>] one_in_P one_in_G[OF generic] elem_of_val
-      domain_of_prod[OF one_in_P, of "domain(\<pi>')"] by force
+    using def_val[of G ?\<pi>] elem_of_val[of _ G \<pi>'] one_in_P one_in_G
+      domain_of_prod[OF one_in_P, of "domain(\<pi>')"]
+    by (force del:M_genericD)
   from \<open>env \<in> _\<close>
   obtain nenv where "nenv\<in>list(M)" "env = map(val(G),nenv)"
     using map_val by auto
   then
   have "length(nenv) = length(env)" by simp
   with \<open>arity(\<phi>) \<le> _\<close>
-  have "arity(\<phi>) \<le> 2 +\<^sub>\<omega> length(nenv)"
-    by simp
+  have "arity(\<phi>) \<le> 2 +\<^sub>\<omega> length(nenv)" by simp
   define f where "f(\<rho>p) \<equiv> \<mu> \<alpha>. \<alpha>\<in>M \<and> (\<exists>\<tau>\<in>M. \<tau> \<in> Vset(\<alpha>) \<and>
         (snd(\<rho>p) \<tturnstile> \<phi> ([fst(\<rho>p),\<tau>] @ nenv)))" (is "_ \<equiv> \<mu> \<alpha>. ?P(\<rho>p,\<alpha>)") for \<rho>p
   have "f(\<rho>p) = (\<mu> \<alpha>. \<alpha>\<in>M \<and> (\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(##M,\<alpha>,V) \<and> \<tau>\<in>V \<and>
         (snd(\<rho>p) \<tturnstile> \<phi> ([fst(\<rho>p),\<tau>] @ nenv))))" (is "_ = (\<mu> \<alpha>. \<alpha>\<in>M \<and> ?Q(\<rho>p,\<alpha>))") for \<rho>p
     unfolding f_def using Vset_abs Vset_closed Ord_Least_cong[of "?P(\<rho>p)" "\<lambda> \<alpha>. \<alpha>\<in>M \<and> ?Q(\<rho>p,\<alpha>)"]
     by (simp, simp del:setclass_iff)
+  moreover
+  note inM = P_in_M leq_in_M one_in_M \<open>nenv\<in>list(M)\<close> \<open>?\<pi>\<in>M\<close>
   moreover
   have "f(\<rho>p) \<in> M" "Ord(f(\<rho>p))" for \<rho>p
     unfolding f_def using Least_closed'[of "?P(\<rho>p)"] by simp_all
@@ -78,7 +80,7 @@ proof -
   have body:"(M, [\<rho>p,m,P,leq,\<one>] @ nenv \<Turnstile> ground_repl_fm(\<phi>)) \<longleftrightarrow> least(##M, QQ(\<rho>p), m)"
     if "\<rho>p\<in>M" "\<rho>p\<in>?\<pi>" "m\<in>M" for \<rho>p m
   proof -
-    note inM = that P_in_M leq_in_M one_in_M \<open>nenv\<in>list(M)\<close> \<open>?\<pi>\<in>M\<close>
+    note inM that
     moreover from this assms 1
     have "(M , [\<alpha>,\<rho>p,m,P,leq,\<one>] @ nenv \<Turnstile> body_ground_repl_fm(\<phi>)) \<longleftrightarrow> ?Q(\<rho>p,\<alpha>)" if "\<alpha>\<in>M" for \<alpha>
       using that sats_body_ground_repl_fm[of \<rho>p \<alpha> m nenv \<phi>]
@@ -105,9 +107,7 @@ proof -
   moreover from \<open>\<phi>\<in>formula\<close>
   have "ground_repl_fm(\<phi>)\<in>formula" by simp
   moreover
-  note inM = P_in_M leq_in_M one_in_M \<open>nenv\<in>list(M)\<close> \<open>?\<pi>\<in>M\<close>
-  moreover
-  note \<open>length(nenv) = length(env)\<close>
+  note \<open>length(nenv) = length(env)\<close> inM
   ultimately
   obtain Y where "Y\<in>M"
     "\<forall>m\<in>M. m \<in> Y \<longleftrightarrow> (\<exists>\<rho>p\<in>M. \<rho>p \<in> ?\<pi> \<and> (M, [\<rho>p,m] @ ([P,leq,\<one>] @ nenv) \<Turnstile> ground_repl_fm(\<phi>)))"
@@ -141,12 +141,12 @@ proof -
       using elem_of_val_pair' by blast
     moreover from this \<open>v\<in>M[G]\<close>
     obtain \<sigma> where "val(G,\<sigma>) = v" "\<sigma>\<in>M"
-      using GenExtD by auto
+      using GenExtD by (force del:M_genericD)
     moreover
     note \<open>\<phi>\<in>_\<close> \<open>nenv\<in>_\<close> \<open>env = _\<close> \<open>arity(\<phi>)\<le> 2 +\<^sub>\<omega> length(env)\<close>
     ultimately
-    obtain q where "q\<in>G" "q \<tturnstile> \<phi> ([\<rho>,\<sigma>]@nenv)"
-      using truth_lemma[OF \<open>\<phi>\<in>_\<close> generic,of "[\<rho>,\<sigma>] @ nenv"]
+    obtain q where "q\<in>G" "q \<tturnstile> \<phi> ([\<rho>,\<sigma>]@nenv)" "q\<in>P"
+      using truth_lemma[OF \<open>\<phi>\<in>_\<close>,of "[\<rho>,\<sigma>] @ nenv"]
       by auto
     with \<open>\<langle>\<rho>,p\<rangle>\<in>\<pi>'\<close> \<open>\<langle>\<rho>,q\<rangle>\<in>?\<pi> \<Longrightarrow> f(\<langle>\<rho>,q\<rangle>)\<in>Y\<close>
     have "f(\<langle>\<rho>,q\<rangle>)\<in>Y"
@@ -169,7 +169,7 @@ proof -
       using LeastI[of "\<lambda> \<alpha>. ?P(\<langle>\<rho>,q\<rangle>,\<alpha>)" ?\<alpha>] by auto
     with \<open>q\<in>G\<close> \<open>\<rho>\<in>M\<close> \<open>nenv\<in>_\<close> \<open>arity(\<phi>)\<le> 2 +\<^sub>\<omega> length(nenv)\<close>
     have "M[G], map(val(G),[\<rho>,\<tau>] @ nenv) \<Turnstile> \<phi>"
-      using truth_lemma[OF \<open>\<phi>\<in>_\<close> generic, of "[\<rho>,\<tau>] @ nenv"] by auto
+      using truth_lemma[OF \<open>\<phi>\<in>_\<close>, of "[\<rho>,\<tau>] @ nenv"] by auto
     moreover from \<open>x\<in>c\<close> \<open>c\<in>M[G]\<close>
     have "x\<in>M[G]" using transitivity_MG by simp
     moreover
@@ -184,7 +184,7 @@ proof -
     with \<open>\<tau>\<in>M\<close>
     have "val(G,\<tau>) \<in> val(G,?big_name)"
       using domain_of_prod[of \<one> "{\<one>}" "{x\<in>Vset(?sup). x \<in> M}" ] def_val[of G ?big_name]
-        one_in_G[OF generic] one_in_P  by (auto simp del: Vset_rank_iff)
+        one_in_G one_in_P  by (auto simp del: Vset_rank_iff)
     with \<open>v=val(G,\<tau>)\<close>
     show "v \<in> val(G,?big_name)"
       by simp
@@ -289,7 +289,7 @@ proof -
       by auto
   }
   then show ?thesis unfolding strong_replacement_def
-    by auto
+    by simp
 qed
 
 lemma replacement_assm_MG:

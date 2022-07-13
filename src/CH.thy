@@ -205,7 +205,7 @@ proof -
      by auto
   with assms
   obtain p where "p\<in>dom_dense(x)" "p\<in>G"
-    using generic[THEN M_generic_denseD, of "dom_dense(x)"]
+    using M_generic_denseD[of "dom_dense(x)"]
     by auto
   then
   show "x \<in> domain(f\<^bsub>G\<^esub>)" by blast
@@ -291,7 +291,7 @@ proof -
     by auto
   with \<open>x \<in> \<omega> \<rightarrow>\<^bsup>M\<^esup> 2\<close>
   obtain p where "p\<in>surj_dense(x)" "p\<in>G"
-    using generic[THEN M_generic_denseD, of "surj_dense(x)"]
+    using M_generic_denseD[of "surj_dense(x)"]
     by blast
   then
   show ?thesis
@@ -323,7 +323,7 @@ proof -
       f_G_in_MG unfolding lepoll_rel_def by auto
   with \<open>Ord(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>)\<close>
   have "|\<omega> \<rightarrow>\<^bsup>M[G]\<^esup> 2|\<^bsup>M[G]\<^esup> \<le> |\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>|\<^bsup>M[G]\<^esup>"
-    using M_subset_MG[OF one_in_G, OF generic] Aleph_rel_closed[of 1]
+    using M_subset_MG[OF one_in_G] Aleph_rel_closed[of 1]
     by (rule_tac ext.lepoll_rel_imp_cardinal_rel_le) simp_all
   ultimately
   have "2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup> \<le> |\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup>|\<^bsup>M[G]\<^esup>"
