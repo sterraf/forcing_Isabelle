@@ -10,20 +10,17 @@ begin
 
 lemma val_Upair :
   "\<one> \<in> G \<Longrightarrow> val(G,{\<langle>\<tau>,\<one>\<rangle>,\<langle>\<rho>,\<one>\<rangle>}) = {val(G,\<tau>),val(G,\<rho>)}"
-  by (insert one_in_P, rule trans, subst def_val,auto)
+  by (rule trans, subst def_val,auto)
 
 lemma pairing_in_MG : "upair_ax(##M[G])"
 proof -
-  note types = one_in_G one_in_M one_in_P
   {
     fix x y
-    note types
-    moreover
     assume "x \<in> M[G]" "y \<in> M[G]"
     moreover from this
     obtain \<tau> \<rho> where "val(G,\<tau>) = x" "val(G,\<rho>) = y" "\<rho> \<in> M"  "\<tau> \<in> M"
       using GenExtD by blast
-    moreover from types this
+    moreover from this
     have "\<langle>\<tau>,\<one>\<rangle> \<in> M" "\<langle>\<rho>,\<one>\<rangle>\<in>M"
       using pair_in_M_iff by auto
     moreover from this

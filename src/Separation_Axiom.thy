@@ -34,8 +34,9 @@ proof -
   from \<open>A\<in>M[G]\<close>
   obtain \<pi> where "\<pi> \<in> M" "val(G, \<pi>) = A"
     using GenExt_def by auto
-  with P_in_M
+  then
   have "domain(\<pi>)\<in>M" "domain(\<pi>) \<times> P \<in> M"
+    using cartprod_closed[of _ P,simplified]
     by (simp_all flip:setclass_iff)
   let ?\<chi>="\<cdot>\<cdot> 0 \<in> (1 +\<^sub>\<omega> length(env)) \<cdot> \<and> \<phi> \<cdot>"
   let ?new_form="sep_ren(length(env),forces(?\<chi>))"
@@ -69,7 +70,7 @@ proof -
   have "arity(?\<chi>) \<le> length([\<theta>] @ nenv @ [\<pi>])" for \<theta>
     using union_abs2[OF \<open>arity(\<phi>) \<le> 2+\<^sub>\<omega> _\<close>] ord_simp_union FOL_arities
     by simp
-  note in_M = \<open>\<pi>\<in>M\<close> \<open>domain(\<pi>) \<times> P \<in> M\<close> P_in_M one_in_M leq_in_M
+  note in_M = \<open>\<pi>\<in>M\<close> \<open>domain(\<pi>) \<times> P \<in> M\<close>
   have Equivalence: "
        (M, [u,P,leq,\<one>,\<pi>] @ nenv \<Turnstile> ?\<psi>) \<longleftrightarrow>
          (\<exists>\<theta>\<in>M. \<exists>p\<in>P. u =\<langle>\<theta>,p\<rangle> \<and>
@@ -85,7 +86,7 @@ proof -
       for \<theta> p
     proof -
       from \<open>p\<in>P\<close>
-      have "p\<in>M" using P_in_M by (simp add: transitivity)
+      have "p\<in>M" by (simp add: transitivity)
       let ?env="[p,P,leq,\<one>,\<theta>] @ nenv @ [\<pi>,u]"
       let ?new_env=" [\<theta>,p,u,P,leq,\<one>,\<pi>] @ nenv"
       note types = in_M \<open>\<theta> \<in> M\<close> \<open>p\<in>M\<close> \<open>u \<in> domain(\<pi>) \<times> P\<close> \<open>u \<in> M\<close> \<open>nenv\<in>_\<close>
@@ -223,7 +224,8 @@ proof -
       unfolding filter_def compat_in_def by force
     with \<open>r\<in>G\<close> \<open>q\<in>G\<close> \<open>G\<subseteq>P\<close>
     have "p\<in>P" "r\<in>P" "q\<in>P" "p\<in>M"
-      using P_in_M by (auto simp add:transitivity)
+      using transitivity[OF _ P_in_M] subsetD
+      by simp_all
     with \<open>\<phi>\<in>formula\<close> \<open>\<theta>\<in>M\<close> \<open>\<pi>\<in>M\<close> \<open>p\<preceq>r\<close> \<open>nenv \<in> _\<close> \<open>arity(?\<chi>) \<le> length(_)\<close> \<open>r \<tturnstile> ?\<chi> _\<close> \<open>env\<in>_\<close>
     have "p \<tturnstile> ?\<chi> ([\<theta>] @ nenv @ [\<pi>])"
       using strengthening_lemma

@@ -14,7 +14,8 @@ lemma (in forcing_data1) surj_nat_MG : "\<exists>f. f \<in> surj(\<omega>,M[G])"
 proof -
   let ?f="\<lambda>n\<in>\<omega>. val(G,enum`n)"
   have "x \<in> \<omega> \<Longrightarrow> val(G, enum ` x)\<in> M[G]" for x
-    using GenExt_iff[THEN iffD2, of _ G] bij_is_fun[OF M_countable] by force
+    using GenExtI bij_is_fun[OF M_countable]
+    by simp
   then
   have "?f: \<omega> \<rightarrow> M[G]"
     using lam_type[of \<omega> "\<lambda>n. val(G,enum`n)" "\<lambda>_.M[G]"] by simp

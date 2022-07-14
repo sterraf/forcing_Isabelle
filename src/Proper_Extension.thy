@@ -62,7 +62,7 @@ proof
   assume "G\<in>M"
   then
   have "P - G \<in> M"
-    using P_in_M Diff_closed by simp
+    using Diff_closed by simp
   moreover
   have "\<not>(\<exists>q\<in>G. q \<in> P - G)" "(P - G) \<subseteq> P"
     unfolding Diff_def by auto

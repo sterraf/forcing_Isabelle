@@ -393,7 +393,7 @@ lemma def_PHcheck:
 proof -
   from assms
   have "\<langle>f`x,\<one>\<rangle> \<in> M" "f`x\<in>M" if "x\<in>z" for x
-    using pair_in_M_iff one_in_M transitivity that apply_closed by simp_all
+    using pair_in_M_iff transitivity that apply_closed by simp_all
   then
   have "{y . x \<in> z, y = \<langle>f ` x, \<one>\<rangle>} =  {y . x \<in> z, y = \<langle>f ` x, \<one>\<rangle> \<and> y\<in>M \<and> f`x\<in>M}"
     by simp
@@ -415,19 +415,19 @@ proof -
         sats(M,is_Hcheck_fm(8,2,1,0),[c,b,a,d,e,y,x,z,\<one>,rcheck(x)])"
     if "a\<in>M" "b\<in>M" "c\<in>M" "d\<in>M" "e\<in>M" "y\<in>M" "x\<in>M" "z\<in>M"
     for a b c d e y x z
-    using that one_in_M \<open>X\<in>M\<close> rcheck_in_M is_Hcheck_iff_sats zero_in_M
+    using that \<open>X\<in>M\<close> rcheck_in_M is_Hcheck_iff_sats zero_in_M
     by simp
   then
   have "sats(M,is_wfrec_fm(is_Hcheck_fm(8,2,1,0),4,1,0), [y,x,z,\<one>,rcheck(X)])
         \<longleftrightarrow> is_wfrec(##M, is_Hcheck(##M,\<one>),rcheck(X), x, y)"
     if "x\<in>M" "y\<in>M" "z\<in>M" for x y z
-    using  that sats_is_wfrec_fm \<open>X\<in>M\<close> rcheck_in_M one_in_M zero_in_M
+    using that sats_is_wfrec_fm \<open>X\<in>M\<close> rcheck_in_M zero_in_M
     by simp
   moreover from this
   have satsf:"sats(M, ?f, [x,z,\<one>,rcheck(X)]) \<longleftrightarrow>
               (\<exists>y\<in>M. pair(##M,x,y,z) & is_wfrec(##M, is_Hcheck(##M,\<one>),rcheck(X), x, y))"
     if "x\<in>M" "z\<in>M" for x z
-    using that \<open>X\<in>M\<close> rcheck_in_M one_in_M
+    using that \<open>X\<in>M\<close> rcheck_in_M
     by (simp del:pair_abs)
   moreover
   have artyf:"arity(?f) = 4"
@@ -436,7 +436,7 @@ proof -
     by simp
   ultimately
   have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,\<one>,rcheck(X)]))"
-    using ZF_ground_replacements(2) artyf \<open>X\<in>M\<close> rcheck_in_M one_in_M
+    using ZF_ground_replacements(2) artyf \<open>X\<in>M\<close> rcheck_in_M
     unfolding replacement_assm_def wfrec_Hcheck_fm_def by simp
   then
   have "strong_replacement(##M,\<lambda>x z.
@@ -467,13 +467,13 @@ proof -
        lam_replacement_constant
        lam_replacement_fst lam_replacement_snd
        image_closed zero_in_M domain_closed Int_closed Un_closed
-      singleton_closed separation_eq Diff_closed one_in_M RepFun_apply_eq
+      singleton_closed separation_eq Diff_closed RepFun_apply_eq
        cartprod_closed fst_snd_closed
     by (rule_tac lam_replacement_CartProd[THEN [5] lam_replacement_hcomp2],auto)
   ultimately
   show ?thesis
     using Diff_closed Int_closed domain_closed image_closed zero_in_M Un_closed singleton_closed
-     RepFun_apply_eq cartprod_closed one_in_M
+     RepFun_apply_eq cartprod_closed
     by(rule_tac lam_replacement_cong[OF 1],auto)
 qed
 
@@ -502,7 +502,7 @@ proof -
     unfolding Hcheck_def by auto
   then
   have "Hcheck(y,g)\<in>M" if "y\<in>M" "g\<in>M" "function(g)" for y g
-    using that  Hcheck_closed' cartprod_closed one_in_M singleton_closed
+    using that Hcheck_closed' cartprod_closed singleton_closed
     by(subst eq,subst RepFun_apply_eq,simp_all)
   then
   show ?thesis
@@ -552,8 +552,8 @@ proof -
     by (simp add:ord_simp_union arity)
   then
   have "Lambda(A, check) \<in> M" if "A\<in>M" for A
-    using that check_in_M transitivity[of _ A] one_in_M P_in_M
-    using sats_check_fm check_abs P_in_M check_in_M one_in_M  zero_in_M
+    using that check_in_M transitivity[of _ A]
+      sats_check_fm check_abs zero_in_M
       check_fm_type ZF_ground_replacements(3)
     by(rule_tac Lambda_in_M [of "check_fm(2,0,1)" "[\<one>]"],simp_all)
   then
@@ -564,11 +564,11 @@ qed
 
 lemma check_replacement: "{check(x). x\<in>P} \<in> M"
   using lam_replacement_imp_strong_replacement_aux[OF check_lam_replacement]
-    transitivity P_in_M check_in_M RepFun_closed
+    transitivity check_in_M RepFun_closed
     by simp_all
 
 lemma M_subset_MG : "\<one> \<in> G \<Longrightarrow> M \<subseteq> M[G]"
-  using check_in_M one_in_P GenExtI
+  using check_in_M GenExtI
   by (intro subsetI, subst valcheck [of G,symmetric], auto)
 
 text\<open>The name for the generic filter\<close>
@@ -580,7 +580,7 @@ lemma G_dot_in_M : "G_dot \<in> M"
   using lam_replacement_Pair[THEN [5] lam_replacement_hcomp2,OF
     check_lam_replacement lam_replacement_identity]
     check_in_M lam_replacement_imp_strong_replacement_aux
-    transitivity P_in_M check_in_M RepFun_closed pair_in_M_iff
+    transitivity check_in_M RepFun_closed pair_in_M_iff
   unfolding G_dot_def
   by simp
 
