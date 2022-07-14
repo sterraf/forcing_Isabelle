@@ -31,8 +31,7 @@ locale forcing_data4 = forcing_data3 + M_ctm4_AC
 context forcing_data1
 begin
 
-(* P \<subseteq> M *)
-lemma P_sub_M : "P\<subseteq>M"
+lemma P_sub_M : "P \<subseteq> M"
   using transitivity P_in_M by auto
 
 definition
@@ -102,6 +101,10 @@ lemma one_in_M: "\<one> \<in> M"
   using one_in_P P_in_M transitivity
   by simp
 
+declare P_in_M [simp,intro]
+declare one_in_M [simp,intro]
+declare leq_in_M [simp,intro]
+declare one_in_P [intro]
 
 end \<comment> \<open>\<^locale>\<open>forcing_data1\<close>\<close>
 
@@ -111,7 +114,7 @@ locale G_generic1 = forcing_data1 +
 begin
 
 lemma G_nonempty: "G\<noteq>0"
-  using generic subset_refl[of P] P_in_M P_dense
+  using generic subset_refl[of P] P_dense
   unfolding M_generic_def
   by auto
 
@@ -142,7 +145,7 @@ proof -
     unfolding M_generic_def filter_def by simp
   then
   show ?thesis
-    using G_nonempty one_in_P one_max
+    using G_nonempty one_max
     unfolding increasing_def by blast
 qed
 

@@ -45,10 +45,10 @@ proof -
     using GenExt_def by auto
   then
   have "domain(\<pi>')\<times>P\<in>M" (is "?\<pi>\<in>M")
-    using cartprod_closed P_in_M domain_closed by simp
+    using cartprod_closed domain_closed by simp
   from \<open>val(G, \<pi>') = c\<close>
   have "c \<subseteq> val(G,?\<pi>)"
-    using def_val[of G ?\<pi>] elem_of_val[of _ G \<pi>'] one_in_P one_in_G
+    using def_val[of G ?\<pi>] elem_of_val[of _ G \<pi>'] one_in_G
       domain_of_prod[OF one_in_P, of "domain(\<pi>')"]
     by (force del:M_genericD)
   from \<open>env \<in> _\<close>
@@ -65,7 +65,7 @@ proof -
     unfolding f_def using Vset_abs Vset_closed Ord_Least_cong[of "?P(\<rho>p)" "\<lambda> \<alpha>. \<alpha>\<in>M \<and> ?Q(\<rho>p,\<alpha>)"]
     by (simp, simp del:setclass_iff)
   moreover
-  note inM = P_in_M leq_in_M one_in_M \<open>nenv\<in>list(M)\<close> \<open>?\<pi>\<in>M\<close>
+  note inM = \<open>nenv\<in>list(M)\<close> \<open>?\<pi>\<in>M\<close>
   moreover
   have "f(\<rho>p) \<in> M" "Ord(f(\<rho>p))" for \<rho>p
     unfolding f_def using Least_closed'[of "?P(\<rho>p)"] by simp_all
@@ -122,7 +122,7 @@ proof -
     using separation_Ord separation_closed Union_closed by simp
   then
   have "{x\<in>Vset(?sup). x \<in> M} \<times> {\<one>} \<in> M" (is "?big_name \<in> M")
-    using Vset_closed cartprod_closed one_in_M singleton_closed by simp
+    using Vset_closed cartprod_closed singleton_closed by simp
   then
   have "val(G,?big_name) \<in> M[G]"
     by (blast intro:GenExtI)

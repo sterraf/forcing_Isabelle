@@ -121,9 +121,9 @@ proof -
   have "q \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, A\<^sup>v, B\<^sup>v]"
     using strengthening_lemma[of p "\<cdot>0:1\<rightarrow>2\<cdot>" q "[f_dot, A\<^sup>v, B\<^sup>v]"]
       typed_function_type arity_typed_function_fm
-    by (auto simp: union_abs2 union_abs1 check_in_M P_in_M)
+    by (auto simp: union_abs2 union_abs1 check_in_M)
   from \<open>a\<in>A\<close> \<open>A\<in>M\<close>
-  have "a\<in>M" by (auto dest:transM)
+  have "a\<in>M" by (auto dest:transitivity)
   from \<open>q\<in>P\<close>
   text\<open>Here we're using countability (via the existence of generic filters)
     of \<^term>\<open>M\<close> as a shortcut, to avoid a further density argument.\<close>
@@ -150,7 +150,7 @@ proof -
   have "val(G,f_dot) ` a \<in> B" (is "?b \<in> B")
     by (simp add: ext.mem_function_space_rel_abs)
   moreover from calculation
-  have "?b \<in> M" by (auto dest:transM)
+  have "?b \<in> M" by (auto dest:transitivity)
   moreover from calculation
   have "M[G], map(val(G), [f_dot, a\<^sup>v, ?b\<^sup>v]) \<Turnstile> \<cdot>0`1 is 2\<cdot>"
     by simp
@@ -168,7 +168,7 @@ proof -
   have "d \<preceq> q \<and> d \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, ?b\<^sup>v]"
     using fun_apply_type arity_fun_apply_fm
       strengthening_lemma[of r "\<cdot>0`1 is 2\<cdot>" d "[f_dot, a\<^sup>v, ?b\<^sup>v]"]
-    by (auto dest:transM simp add: union_abs2 union_abs1)
+    by (auto dest:transitivity simp add: union_abs2 union_abs1)
   ultimately
   show ?thesis by auto
 qed
@@ -183,17 +183,18 @@ lemma separation_check_snd_aux:
   assumes "f_dot\<in>M" "\<tau>\<in>M" "\<chi>\<in>formula" "arity(\<chi>) \<le> 7"
   shows "separation(##M, \<lambda>r. M, [fst(r), P, leq, \<one>, f_dot, \<tau>, snd(r)\<^sup>v] \<Turnstile> \<chi>)"
 proof -
-  note types = assms leq_in_M P_in_M one_in_M
   let ?f_fm="fst_fm(1,0)"
   let ?g_fm="hcomp_fm(check_fm(6),snd_fm,2,0)"
+  note assms
+  moreover
   have "?f_fm \<in> formula" "arity(?f_fm) \<le> 7" "?g_fm \<in> formula" "arity(?g_fm) \<le> 8"
     using ord_simp_union
     unfolding hcomp_fm_def
     by (simp_all add:arity)
-  then
+  ultimately
   show ?thesis
-    using separation_sat_after_function assms types
-    using fst_abs snd_abs types sats_snd_fm sats_check_fm check_abs check_in_M
+    using separation_sat_after_function
+    using fst_abs snd_abs sats_snd_fm sats_check_fm check_abs check_in_M
     unfolding hcomp_fm_def
     by simp
 qed
@@ -206,9 +207,10 @@ proof -
   let ?\<rho>'="\<lambda>z. [fst(z)\<^sup>v, P, leq, \<one>, f_dot, r, snd(z)\<^sup>v]"
   let ?\<phi>=" (\<cdot>\<exists>(\<cdot>\<exists>(\<cdot>\<exists>(\<cdot>\<exists>(\<cdot>\<exists>(\<cdot>\<exists>\<cdot>\<cdot>0 = 11\<cdot> \<and> \<cdot>\<cdot>1 = 7\<cdot> \<and> \<cdot>\<cdot>2 = 8\<cdot> \<and> \<cdot>\<cdot>3 = 9\<cdot> \<and> \<cdot>\<cdot>4 = 10\<cdot> \<and> \<cdot>\<cdot>5 = 6\<cdot> \<and>
     (\<lambda>p. incr_bv(p)`6)^6 (\<chi>) \<cdot>\<cdot>\<cdot>\<cdot>\<cdot>\<cdot>\<cdot>)\<cdot>)\<cdot>)\<cdot>)\<cdot>)\<cdot>)"
-  note types = assms leq_in_M P_in_M one_in_M
   let ?f_fm="hcomp_fm(check_fm(5),fst_fm,1,0)"
   let ?g_fm="hcomp_fm(check_fm(6),snd_fm,2,0)"
+  note assms
+  moreover
   have "?f_fm \<in> formula" "arity(?f_fm) \<le> 7" "?g_fm \<in> formula" "arity(?g_fm) \<le> 8"
     using ord_simp_union
     unfolding hcomp_fm_def
@@ -224,19 +226,20 @@ proof -
     using arity_incr_bv_lemma by safe (simp_all add: arity ord_simp_union)
   moreover from calculation
   have sep:"separation(##M,\<lambda>z. M,?\<rho>'(z)\<Turnstile>?\<phi>)"
-    using separation_sat_after_function assms types sats_check_fm check_abs check_in_M
+    using separation_sat_after_function sats_check_fm check_abs check_in_M
       fst_abs snd_abs
     unfolding hcomp_fm_def
     by simp
-  moreover
+  moreover from assms
   have "?\<rho>(z) \<in> list(M)" if "(##M)(z)" for z
-    using types that by simp
+    using that by simp
   moreover from calculation and \<open>r \<in> M\<close> \<open>\<chi> \<in> formula\<close>
   have "(M,?\<rho>(z) \<Turnstile> \<chi>) \<longleftrightarrow> (M,?\<rho>'(z)\<Turnstile>?\<phi>)" if "(##M)(z)" for z
-    using that types sats_incr_bv_iff[of _ _ M _ "[_,_,_,_,_,_]"]
+    using that sats_incr_bv_iff[of _ _ M _ "[_,_,_,_,_,_]"]
     by simp
   ultimately
-  show ?thesis using separation_cong[THEN iffD1,OF _ sep]
+  show ?thesis
+    using separation_cong[THEN iffD1,OF _ sep]
     by simp
 qed
 
@@ -252,26 +255,26 @@ proof -
   have "separation(##M, \<lambda>z. M, [snd(fst(z)), P, leq, \<one>, f_dot, \<tau>, snd(z)\<^sup>v] \<Turnstile> \<chi>)"
     if "\<chi>\<in>formula" "arity(\<chi>) \<le> 7" "\<tau>\<in>M" for \<chi> \<tau>
   proof -
-    note types = assms leq_in_M P_in_M one_in_M
     let ?f_fm="hcomp_fm(snd_fm,fst_fm,1,0)"
     let ?g_fm="hcomp_fm(check_fm(6),snd_fm,2,0)"
+    note assms
+    moreover
     have "?f_fm \<in> formula" "arity(?f_fm) \<le> 7" "?g_fm \<in> formula" "arity(?g_fm) \<le> 8"
       using ord_simp_union
       unfolding hcomp_fm_def
       by (simp_all add:arity)
-    then
+    ultimately
     show ?thesis
-      using separation_sat_after_function assms types sats_check_fm check_abs fst_abs snd_abs that
+      using separation_sat_after_function sats_check_fm check_abs fst_abs snd_abs that
       unfolding hcomp_fm_def
       by simp
   qed
-  then
+  with assms
   show ?thesis
-    using P_in_M assms
-      separation_in lam_replacement_constant lam_replacement_snd lam_replacement_fst
-      lam_replacement_Pair[THEN[5] lam_replacement_hcomp2] leq_in_M  check_in_M pred_nat_closed
+    using separation_in lam_replacement_constant lam_replacement_snd lam_replacement_fst
+      lam_replacement_Pair[THEN[5] lam_replacement_hcomp2] check_in_M pred_nat_closed
       arity_forces[of " \<cdot>0`1 is 2\<cdot>"] arity_fun_apply_fm[of 0 1 2] ord_simp_union
-    by(clarify, rule_tac separation_conj,simp_all,rule_tac separation_bex,simp_all)
+    by(clarify,rule_tac separation_conj,simp_all,rule_tac separation_bex,simp_all)
 qed
 
 lemma separation_ball_leq_and_forces_apply_aux:
@@ -286,16 +289,17 @@ proof -
   have "separation(##M, \<lambda>z. M, [snd(fst(z)), P, leq, \<one>, f_dot, (\<Union>(fst(fst(fst(fst(z))))))\<^sup>v, snd(z)\<^sup>v] \<Turnstile> \<chi>)"
     if "\<chi>\<in>formula" "arity(\<chi>) \<le> 7" for \<chi>
   proof -
-    note types = assms leq_in_M P_in_M one_in_M
     let ?f_fm="hcomp_fm(snd_fm,fst_fm,1,0)"
     let ?g="\<lambda>z . (\<Union>(fst(fst(fst(fst(z))))))\<^sup>v"
     let ?g_fm="hcomp_fm(check_fm(6),hcomp_fm(big_union_fm,hcomp_fm(fst_fm,hcomp_fm(fst_fm,hcomp_fm(fst_fm,fst_fm)))),2,0)"
     let ?h_fm="hcomp_fm(check_fm(7),snd_fm,3,0)"
+    note assms
+    moreover
     have f_fm_facts:"?f_fm \<in> formula" "arity(?f_fm) \<le> 6"
       using ord_simp_union
       unfolding hcomp_fm_def
       by (simp_all add:arity)
-    moreover from types
+    moreover from assms
     have "?g_fm \<in> formula" "arity(?g_fm) \<le> 7" "?h_fm \<in> formula" "arity(?h_fm) \<le> 8"
       using ord_simp_union
       unfolding hcomp_fm_def
@@ -303,13 +307,13 @@ proof -
     ultimately
     show ?thesis
       using separation_sat_after_function3[OF _ _ _ f_fm_facts] check_abs
-        types assms sats_check_fm that fst_abs snd_abs
+        sats_check_fm that fst_abs snd_abs
       unfolding hcomp_fm_def
       by simp
   qed
-  then
+  with assms
   show ?thesis
-    using P_in_M leq_in_M assms
+    using
       separation_ball separation_imp separation_conj separation_bex separation_in separation_iff'
       lam_replacement_constant lam_replacement_identity lam_replacement_hcomp
       lam_replacement_fst lam_replacement_snd
@@ -331,7 +335,7 @@ proof -
   proof -
     let ?f_fm="fst_fm(1,0)"
     let ?g_fm="hcomp_fm(check_fm(6),snd_fm,2,0)"
-    note types = assms leq_in_M P_in_M one_in_M
+    note assms
     moreover
     have "?f_fm \<in> formula" "arity(?f_fm) \<le> 6" "?g_fm \<in> formula" "arity(?g_fm) \<le> 7"
       using ord_simp_union
@@ -339,17 +343,17 @@ proof -
       by (simp_all add:arity)
     ultimately
     show ?thesis
-      using separation_sat_after_function_1 assms sats_fst_fm that
-        fst_abs snd_abs types sats_snd_fm sats_check_fm check_abs check_in_M
+      using separation_sat_after_function_1 sats_fst_fm that
+        fst_abs snd_abs sats_snd_fm sats_check_fm check_abs check_in_M
       unfolding hcomp_fm_def
       by simp
   qed
-  then
+  with assms
   show ?thesis
     using separation_conj separation_in
       lam_replacement_constant lam_replacement_fst
       lam_replacement_Pair[THEN[5] lam_replacement_hcomp2]
-      assms leq_in_M G_subset_M[THEN subsetD] generic
+      G_subset_M[THEN subsetD]
       arity_forces[of "\<cdot>0 = 1\<cdot>",simplified] ord_simp_union
     by(rule_tac separation_closed[OF separation_bex],simp_all)
 qed
@@ -377,7 +381,7 @@ proof (intro equalityI; clarsimp simp add:
     using GenExtD by force
   moreover from calculation and \<open>A\<in>M\<close> \<open>B\<in>M\<close>
   obtain r where "r \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [\<tau>, A\<^sup>v, B\<^sup>v]" "r\<in>G"
-    using truth_lemma[of "\<cdot>0:1\<rightarrow>2\<cdot>" "[\<tau>, A\<^sup>v, B\<^sup>v]"] generic
+    using truth_lemma[of "\<cdot>0:1\<rightarrow>2\<cdot>" "[\<tau>, A\<^sup>v, B\<^sup>v]"]
       typed_function_type arity_typed_function_fm valcheck[OF one_in_G one_in_P]
     by (auto simp: union_abs2 union_abs1)
   moreover from \<open>A\<in>M\<close> \<open>B\<in>M\<close> \<open>r\<in>G\<close> \<open>\<tau> \<in> M\<close>
@@ -393,8 +397,8 @@ proof (intro equalityI; clarsimp simp add:
     using generic_inter_dense_below[of ?D r] by blast
   note \<open>q \<tturnstile> \<cdot>0 = 1\<cdot> [\<tau>, h\<^sup>v]\<close> \<open>\<tau>\<in>M\<close> \<open>h\<in>A \<rightarrow>\<^bsup>M\<^esup> B\<close> \<open>A\<in>M\<close> \<open>B\<in>M\<close> \<open>q\<in>G\<close>
   moreover from this
-  have "map(val( G), [\<tau>, h\<^sup>v]) \<in> list(M[G])" "h\<in>M"
-    by (auto dest:transM)
+  have "map(val(G), [\<tau>, h\<^sup>v]) \<in> list(M[G])" "h\<in>M"
+    by (auto dest:transitivity)
   ultimately
   have "h = f"
     using truth_lemma[of "\<cdot>0=1\<cdot>" "[\<tau>, h\<^sup>v]"] valcheck[OF one_in_G one_in_P]
@@ -419,8 +423,8 @@ proof -
     let ?subp="{q\<in>P. q \<preceq> p}"
     from \<open>p\<in>P\<close>
     have "?subp \<in> M"
-      using first_section_closed[of P p "converse(leq)"] leq_in_M P_in_M
-      by (auto dest:transM)
+      using first_section_closed[of P p "converse(leq)"]
+      by (auto dest:transitivity)
     define S where "S \<equiv> \<lambda>n\<in>nat.
     {\<langle>q,r\<rangle> \<in> ?subp\<times>?subp. r \<preceq> q \<and> (\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, (\<Union>(n))\<^sup>v, b\<^sup>v])}"
       (is "S \<equiv> \<lambda>n\<in>nat. ?Y(n)")
@@ -443,11 +447,11 @@ proof -
     note \<open>?subp \<in> M\<close> \<open>B\<in>M\<close> \<open>p\<in>P\<close> \<open>f_dot\<in>M\<close>
     moreover from calculation
     have "n \<in> \<omega> \<Longrightarrow> ?Y(n) \<in> M" for n
-      using nat_into_M leq_in_M by simp
+      using nat_into_M by simp
     moreover from calculation
     have "S \<in> M"
       using separation_ball_leq_and_forces_apply_aux separation_leq_and_forces_apply_aux
-        transitivity[OF \<open>p\<in>P\<close> P_in_M]
+        transitivity[OF \<open>p\<in>P\<close>]
       unfolding S_def split_def
       by(rule_tac lam_replacement_Collect[THEN lam_replacement_imp_lam_closed,simplified], simp_all)
     ultimately
@@ -456,7 +460,7 @@ proof -
     from \<open>p\<in>P\<close> \<open>f_dot\<in>M\<close> \<open>p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, \<omega>\<^sup>v, B\<^sup>v]\<close> \<open>B\<in>M\<close>
     have exr:"\<exists>r\<in>P. r \<preceq> q \<and> (\<exists>b\<in>B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, pred(n)\<^sup>v, b\<^sup>v])"
       if "q \<preceq> p" "q\<in>P" "n\<in>\<omega>" for q n
-      using that forcing_a_value by (auto dest:transM)
+      using that forcing_a_value by (auto dest:transitivity)
     have "\<forall>q\<in>?subp. \<forall>n\<in>\<omega>. \<exists>r\<in>?subp. \<langle>q,r\<rangle> \<in> S'`n"
     proof -
       {
@@ -487,12 +491,11 @@ proof -
       using fun_weaken_type[of g \<omega> ?subp P] function_space_rel_char by auto
     ultimately
     have "g : \<omega> \<^sub><\<rightarrow>\<^bsup>M\<^esup> (P,converse(leq))"
-      using decr_succ_decr[of g] leq_preord leq_in_M P_in_M
+      using decr_succ_decr[of g] leq_preord
       unfolding S'_def by (auto simp:absolut intro:leI)
     moreover from \<open>succ(\<omega>)-closed\<^bsup>M\<^esup>(P,leq)\<close> and this
     have "\<exists>q\<in>M. q \<in> P \<and> (\<forall>\<alpha>\<in>M. \<alpha> \<in> \<omega> \<longrightarrow> q \<preceq> g ` \<alpha>)"
-      using transM[simplified, of g] leq_in_M
-        mono_seqspace_rel_closed[of \<omega> _ "converse(leq)"]
+      using transitivity[simplified, of g] mono_seqspace_rel_closed[of \<omega> _ "converse(leq)"]
       unfolding kappa_closed_rel_def
       by auto
     ultimately
@@ -518,7 +521,7 @@ proof -
       ultimately
       show False
         using forces_neq_apply_imp_incompatible[of r f_dot "n\<^sup>v" b r b']
-          transM[of _ B] by (auto dest:transM)
+          transitivity[of _ B] by (auto dest:transitivity)
     qed
     moreover
     have "range(?h) \<subseteq> B"
@@ -537,7 +540,7 @@ proof -
           unfolding S'_def by auto
         moreover from \<open>B\<in>M\<close> and calculation
         have "b \<in> M" "n \<in> M"
-          by (auto dest:transM)
+          by (auto dest:transitivity)
         moreover
         note \<open>g : \<omega> \<rightarrow> P\<close> \<open>\<forall>n\<in>\<omega>. r \<preceq> g`n\<close> \<open>r\<in>P\<close> \<open>f_dot\<in>M\<close>
         moreover from calculation
@@ -612,18 +615,18 @@ proof -
         note \<open>B \<in> M\<close>
         moreover from calculation
         have "?h`n \<in> M"
-          by (auto dest:transM)
+          by (auto dest:transitivity)
         moreover
         note \<open>f_dot \<in> M\<close> \<open>r \<in> P\<close> \<open>M_generic(H) \<and> r \<in> H\<close> \<open>map(val(H), [f_dot, \<omega>\<^sup>v, B\<^sup>v]) \<in> list(M[H])\<close>
         moreover from calculation
         have "[?f, n, ?h`n] \<in> list(M[H])"
-          using M_subset_MG nat_into_M[of n] g.one_in_G by (auto dest:transM)
+          using M_subset_MG nat_into_M[of n] g.one_in_G by (auto dest:transitivity)
         ultimately
         show ?thesis
           using definition_of_forcing[of r "\<cdot>0`1 is 2\<cdot>" "[f_dot, n\<^sup>v, b\<^sup>v]",
               THEN iffD1, rule_format, of H]\<comment> \<open>without this line is slower\<close>
             valcheck g.one_in_G one_in_P nat_into_M
-          by (auto dest:transM simp add:fun_apply_type
+          by (auto dest:transitivity simp add:fun_apply_type
               arity_fun_apply_fm union_abs2 union_abs1)
       qed
       with calculation and \<open>B\<in>M\<close> \<open>?h: \<omega> \<rightarrow>\<^bsup>M\<^esup> B\<close>
@@ -646,7 +649,7 @@ proof -
       ext.mem_function_space_rel_abs by auto
   ultimately
   show ?thesis
-    by (auto dest:transM)
+    by (auto dest:transitivity)
 qed
 
 declare mono_seqspace_rel_closed[rule del]

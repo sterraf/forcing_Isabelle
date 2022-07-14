@@ -28,7 +28,7 @@ abbreviation
 lemma antichain_abs' [absolut]:
   "\<lbrakk> A\<in>M \<rbrakk> \<Longrightarrow> antichain_r'(A) \<longleftrightarrow> antichain(A)"
   unfolding antichain_rel_def antichain_def compat_def
-  using P_in_M leq_in_M transitivity[of _ A]
+  using transitivity[of _ A]
   by (auto simp add:absolut)
 
 lemma (in forcing_notion) Incompatible_imp_not_eq: "\<lbrakk> p \<bottom> q; p\<in>P; q\<in>P \<rbrakk>\<Longrightarrow> p \<noteq> q"
@@ -49,8 +49,8 @@ proof
     using strengthening_lemma by simp_all
   ultimately
   show "False"
-    using Forces_Neg[of d env \<phi>] refl_leq P_in_M
-    by (auto dest:transM; drule_tac bspec; auto dest:transM)
+    using Forces_Neg[of d env \<phi>] refl_leq
+    by (auto dest:transitivity; drule_tac bspec; auto dest:transitivity)
 qed
 
 notation check (\<open>_\<^sup>v\<close> [101] 100)
@@ -253,9 +253,9 @@ lemma ccc_fun_closed_lemma_aux:
   assumes "f_dot\<in>M" "p\<in>M" "a\<in>M" "b\<in>M"
   shows "{q \<in> P . q \<preceq> p \<and> (M, [q, P, leq, \<one>, f_dot, a\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))} \<in> M"
   using separation_forces[where env="[f_dot, a\<^sup>v, b\<^sup>v]" and \<phi>="\<cdot>0`1 is 2\<cdot>",simplified]
-    assms G_subset_M[THEN subsetD] generic one_in_M P_in_M
+    assms G_subset_M[THEN subsetD] generic
     separation_in lam_replacement_constant lam_replacement_identity
-    lam_replacement_Pair[THEN[5] lam_replacement_hcomp2] leq_in_M check_in_M
+    lam_replacement_Pair[THEN[5] lam_replacement_hcomp2] check_in_M
     separation_conj arity_fun_apply_fm union_abs1
   by simp_all
 
@@ -268,7 +268,8 @@ proof -
   proof -
     let ?f_fm="snd_fm(1,0)"
     let ?g_fm="hcomp_fm(check_fm(6),hcomp_fm(fst_fm,fst_fm),2,0)"
-    note types = assms leq_in_M P_in_M one_in_M
+    note assms
+    moreover
     have "arity(forces(\<cdot>0`1 is 2\<cdot> )) \<le> 7"
       using arity_fun_apply_fm union_abs1 arity_forces[of "\<cdot>0`1 is 2\<cdot> "]
       by simp
@@ -279,8 +280,8 @@ proof -
       by (simp_all add:arity)
     ultimately
     show ?thesis
-      using separation_sat_after_function types that sats_fst_fm
-        snd_abs types sats_snd_fm sats_check_fm check_abs check_in_M fst_abs
+      using separation_sat_after_function assms that sats_fst_fm
+        snd_abs sats_snd_fm sats_check_fm check_abs check_in_M fst_abs
       unfolding hcomp_fm_def
       by simp
   qed
@@ -291,7 +292,7 @@ proof -
       lam_replacement_Pair[THEN [5] lam_replacement_hcomp2] lam_replacement_identity
       lam_replacement_constant lam_replacement_snd lam_replacement_fst lam_replacement_hcomp
       ccc_fun_closed_lemma_aux arity_fun_apply_fm union_abs1
-      transitivity[of _ B] leq_in_M assms
+      transitivity[of _ B] assms
     by simp
 qed
 
@@ -301,11 +302,12 @@ lemma ccc_fun_closed_lemma:
 proof -
   have "separation(##M, \<lambda>z. M, [snd(z), P, leq, \<one>, f_dot, fst(fst(fst(z)))\<^sup>v, snd(fst(z))\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))"
   proof -
-    note types = assms leq_in_M P_in_M one_in_M
     let ?f_fm="snd_fm(1,0)"
     let ?g="\<lambda>z . fst(fst(fst(z)))\<^sup>v"
     let ?g_fm="hcomp_fm(check_fm(6),hcomp_fm(fst_fm,hcomp_fm(fst_fm,fst_fm)),2,0)"
     let ?h_fm="hcomp_fm(check_fm(7),hcomp_fm(snd_fm,fst_fm),3,0)"
+    note assms
+    moreover
     have "arity(forces(\<cdot>0`1 is 2\<cdot> )) \<le> 7"
       using arity_fun_apply_fm union_abs1 arity_forces[of "\<cdot>0`1 is 2\<cdot> "]
       by simp
@@ -317,18 +319,19 @@ proof -
       by (simp_all add:arity)
     ultimately
     show ?thesis
-      using separation_sat_after_function3 assms types sats_check_fm check_abs check_in_M
+      using separation_sat_after_function3 assms sats_check_fm check_abs check_in_M
         fst_abs snd_abs
       unfolding hcomp_fm_def
       by simp
   qed
   moreover
-  have  "separation(##M, \<lambda>z. M, [snd(z), P, leq, \<one>, f_dot, \<tau>, fst(z)\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))"
+  have "separation(##M, \<lambda>z. M, [snd(z), P, leq, \<one>, f_dot, \<tau>, fst(z)\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))"
     if "\<tau>\<in>M" for \<tau>
   proof -
     let ?f_fm="snd_fm(1,0)"
     let ?g_fm="hcomp_fm(check_fm(6),fst_fm,2,0)"
-    note types = assms leq_in_M P_in_M one_in_M
+    note assms
+    moreover
     have "arity(forces(\<cdot>0`1 is 2\<cdot> )) \<le> 7"
       using arity_forces[of "\<cdot>0`1 is 2\<cdot> "] arity_fun_apply_fm union_abs1
       by simp
@@ -339,18 +342,18 @@ proof -
       by (simp_all add:arity)
     ultimately
     show ?thesis
-      using separation_sat_after_function assms types that fst_abs
-        snd_abs types sats_check_fm check_abs check_in_M
+      using separation_sat_after_function that fst_abs snd_abs sats_check_fm check_abs check_in_M
       unfolding hcomp_fm_def
       by simp
   qed
+  moreover note assms
   ultimately
   show ?thesis
     using lam_replacement_imp_lam_closed lam_replacement_Collect
       lam_replacement_constant lam_replacement_identity lam_replacement_snd lam_replacement_fst
       lam_replacement_hcomp lam_replacement_Pair[THEN [5] lam_replacement_hcomp2]
       separation_conj separation_in  separation_ball separation_bex separation_iff'
-      transitivity[of _ A] leq_in_M assms
+      transitivity[of _ A]
     by simp
 qed
 
@@ -383,12 +386,12 @@ proof -
     note \<open>f\<in>M[G]\<close> \<open>A\<in>M\<close>
     moreover from calculation
     have "M[G], [f, a, f`a] \<Turnstile> \<cdot>0`1 is 2\<cdot>"
-      by (auto dest:transM)
+      by (auto dest:transitivity)
     moreover
     note \<open>B\<in>M\<close> \<open>f = val(G,f_dot)\<close>
     moreover from calculation
     have "a\<in>M" "val(G, f_dot)`a\<in>M"
-      by (auto dest:transM)
+      by (auto dest:transitivity)
     moreover
     note \<open>f_dot\<in>M\<close> \<open>p\<in>G\<close>
     ultimately
@@ -432,9 +435,9 @@ proof -
       by unfold_locales simp_all
     from \<open>F`a \<in> M\<close>
     interpret M_Pi_assumptions2 "##M" "F`a" ?Q "\<lambda>_ . P"
-      using P_in_M lam_replacement_imp_strong_replacement[OF
+      using lam_replacement_imp_strong_replacement[OF
           lam_replacement_Sigfun[OF lam_replacement_constant]]
-        Pi_replacement1 transM[of _ "F`a"]
+        Pi_replacement1 transitivity[of _ "F`a"]
       by unfold_locales simp_all
     from \<open>p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, A\<^sup>v, B\<^sup>v]\<close> \<open>a\<in>A\<close>
     have "\<exists>y. y \<in> ?Q(b)" if "b \<in> F`a" for b
@@ -473,7 +476,7 @@ proof -
       unfolding antichain_def by auto
     moreover from this and \<open>q\<in>M\<close>
     have "antichain_r'(range(q))"
-      by (simp add:absolut)
+      by (simp add:absolut del:P_in_M)
     moreover from calculation
     have "q`b \<noteq> q`c" if "b \<noteq> c" "b \<in> F`a" "c \<in> F`a" for b c
       using that Incompatible_imp_not_eq apply_type

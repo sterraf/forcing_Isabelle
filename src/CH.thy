@@ -249,13 +249,12 @@ proof -
     assume "x\<in>B" "B\<in>G"
     moreover from this
     have "x \<in> M[G]"
-      by (auto dest!:generic_dests ext.transM)
-        (intro generic_simps(2)[of Coll], simp)
+      by (auto dest!: ext.transM simp add:G_in_MG)
     moreover from calculation
     have "x \<in> \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<times> (\<omega> \<rightarrow> 2)"
       using Fn_rel_subset_Pow[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2",
           OF _ _ function_space_rel_closed] function_space_rel_char
-      by (auto dest!:generic_dests)
+      by (auto dest!: M_genericD)
     moreover from this
     obtain z w where "x=\<langle>z,w\<rangle>" "z\<in>\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "w:\<omega> \<rightarrow> 2" by auto
     moreover from calculation

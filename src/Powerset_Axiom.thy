@@ -82,7 +82,7 @@ proof -
   let ?Q="Pow(domain(\<tau>)\<times>P) \<inter> M"
   from \<open>\<tau>\<in>M\<close>
   have "domain(\<tau>)\<times>P \<in> M" "domain(\<tau>) \<in> M"
-    using domain_closed cartprod_closed P_in_M
+    using domain_closed cartprod_closed
     by simp_all
   then
   have "?Q \<in> M"
@@ -108,8 +108,8 @@ proof -
   let ?b="val(G,?\<pi>)"
   from \<open>?Q\<in>M\<close>
   have "?\<pi>\<in>M"
-    using one_in_M
-    by (simp flip: setclass_iff)
+    using cartprod_closed singleton_closed
+    by simp
   then
   have "?b \<in> M[G]"
     using GenExtI by simp
@@ -125,13 +125,13 @@ proof -
       using arity_forces_at by auto
     with \<open>domain(\<tau>) \<in> M\<close> \<open>\<chi> \<in> M\<close>
     have "?\<theta> \<in> M"
-      using P_in_M one_in_M leq_in_M sats_fst_snd_in_M
+      using sats_fst_snd_in_M
       by simp
     then
     have "?\<theta> \<in> ?Q" by auto
     then
     have "val(G,?\<theta>) \<in> ?b"
-      using one_in_G one_in_P generic val_of_elem [of ?\<theta> \<one> ?\<pi> G]
+      using one_in_G generic val_of_elem [of ?\<theta> \<one> ?\<pi> G]
       by auto
     have "val(G,?\<theta>) = c"
     proof(intro equalityI subsetI)
@@ -200,7 +200,7 @@ proof -
         using \<open>\<sigma>\<in>domain(\<tau>)\<close> by simp
       with \<open>val(G,\<sigma>) =  x\<close> \<open>p\<in>G\<close>
       show "x\<in>val(G,?\<theta>)"
-        using val_of_elem [of _ G "?\<theta>"] sorry
+        using val_of_elem [of _ _ "?\<theta>" G] by auto
     qed
     with \<open>val(G,?\<theta>) \<in> ?b\<close>
     show "c\<in>?b"

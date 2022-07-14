@@ -14,7 +14,7 @@ interpretation mg_triv: M_trivial"##M[G]"
 lemma infinity_in_MG : "infinity_ax(##M[G])"
 proof -
   have "\<omega> \<in> M[G]"
-    using M_subset_MG one_in_G generic nat_in_M by auto
+    using M_subset_MG one_in_G nat_in_M by auto
   moreover from this
   have "succ(y) \<in> \<omega> \<inter> M[G]" if "y \<in> \<omega>" for y
     using that transitivity_MG by blast

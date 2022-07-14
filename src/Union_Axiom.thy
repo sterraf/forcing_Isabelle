@@ -26,8 +26,8 @@ proof -
     using domain_closed Union_closed by simp
   moreover from this
   have "?d \<times> P \<in> M"
-    using cartprod_closed P_in_M by simp
-  note types = leq_in_M P_in_M assms \<open>?d\<times>P \<in> M\<close> \<open>?d\<in>M\<close>
+    using cartprod_closed by simp
+  note types = assms \<open>?d\<times>P \<in> M\<close> \<open>?d\<in>M\<close>
   ultimately
   show ?thesis
     using domain_closed pair_in_M_iff fst_closed snd_closed separation_closed
@@ -66,7 +66,7 @@ proof (intro equalityI subsetI)
     using low_bound_filter filterD by blast
   moreover from this
   have "p \<in> M" "q\<in>M" "r\<in>M"
-    using P_in_M by (auto dest:transitivity)
+    by (auto dest:transitivity)
   moreover from calculation
   have "\<langle>\<theta>,p\<rangle> \<in> Union_name(P,leq,\<tau>)"
     unfolding Union_name_def Union_name_body_def
@@ -120,7 +120,7 @@ proof(clarsimp)
     using GenExtD by blast
   moreover from this
   have "val(G,Union_name(P,leq,\<tau>)) \<in> M[G]"
-    using GenExtI Union_name_closed P_in_M leq_in_M by simp
+    using GenExtI Union_name_closed by simp
   ultimately
   show "\<exists>z\<in>M[G] . big_union(##M[G],a,z)"
     using Union_MG_Eq by auto

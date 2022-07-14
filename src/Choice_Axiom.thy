@@ -160,7 +160,7 @@ begin
 
 lemma val_upair_name : "val(G,upair_name(\<tau>,\<rho>,\<one>)) = {val(G,\<tau>),val(G,\<rho>)}"
   unfolding upair_name_def
-  using val_Upair Upair_eq_cons generic one_in_G one_in_P
+  using val_Upair Upair_eq_cons generic one_in_G
   by simp
 
 lemma val_opair_name : "val(G,opair_name(\<tau>,\<rho>,\<one>)) = \<langle>val(G,\<tau>),val(G,\<rho>)\<rangle>"
@@ -180,9 +180,9 @@ proof -
   also
   have "... = {z . t \<in> ?A , (\<exists>p\<in>P\<inter>G . ?Q(\<langle>t,p\<rangle>)) \<and> z= val(G,t)}"
     using val_of_name_alt by simp
-  also
+  also from \<open>\<one>\<in>P\<inter>G\<close>
   have "... = {val(G,t) . t \<in> ?A }"
-    using \<open>\<one>\<in>P\<inter>G\<close> by force
+    by force
   also
   have "... = {val(G,f(x)) . x \<in> a}"
     by auto
@@ -217,7 +217,7 @@ lemma (in forcing_data2) repl_opname_check :
       upair_name_lam_replacement[THEN [5] lam_replacement_hcomp2]
       lam_replacement_apply2[THEN [5] lam_replacement_hcomp2]
       lam_replacement_imp_strong_replacement_aux
-      transitivity P_in_M one_in_M check_in_M RepFun_closed upair_name_closed apply_closed
+      transitivity check_in_M RepFun_closed upair_name_closed apply_closed
     unfolding opair_name_def
     by simp
 
@@ -253,7 +253,7 @@ proof -
       "f \<equiv> val(G,?f_dot)"
     from \<open>?g\<in>M\<close> \<open>?f_dot = ?g\<times>{\<one>}\<close>
     have "?f_dot\<in>M"
-      using cartprod_closed singleton_closed one_in_M
+      using cartprod_closed singleton_closed
       by simp
     then
     have "f \<in> M[G]"
