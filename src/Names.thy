@@ -175,7 +175,7 @@ lemma val_mono : "x\<subseteq>y \<Longrightarrow> val(G,x) \<subseteq> val(G,y)"
 text\<open>Check-names are the canonical names for elements of the
 ground model. Here we show that this is the case.\<close>
 
-lemma valcheck : "\<one> \<in> G \<Longrightarrow>  \<one> \<in> P \<Longrightarrow> val(G,check(y))  = y"
+lemma val_check : "\<one> \<in> G \<Longrightarrow>  \<one> \<in> P \<Longrightarrow> val(G,check(y))  = y"
 proof (induct rule:eps_induct)
   case (1 y)
   then show ?case
@@ -569,7 +569,7 @@ lemma check_replacement: "{check(x). x\<in>P} \<in> M"
 
 lemma M_subset_MG : "\<one> \<in> G \<Longrightarrow> M \<subseteq> M[G]"
   using check_in_M GenExtI
-  by (intro subsetI, subst valcheck [of G,symmetric], auto)
+  by (intro subsetI, subst val_check [of G,symmetric], auto)
 
 text\<open>The name for the generic filter\<close>
 definition
@@ -595,6 +595,8 @@ proof -
   show ?thesis .
 qed
 
+declare check_in_M [simp,intro]
+
 end \<comment> \<open>\<^locale>\<open>forcing_data1\<close>\<close>
 
 context G_generic1
@@ -609,7 +611,7 @@ proof (intro equalityI subsetI)
     by force
   then
   show "x \<in> G"
-    using G_subset_P one_in_G valcheck P_sub_M by auto
+    using G_subset_P one_in_G val_check P_sub_M by auto
 next
   fix p
   assume "p\<in>G"
@@ -620,12 +622,21 @@ next
     using val_of_elem G_dot_in_M by blast
   with \<open>p\<in>G\<close>
   show "p \<in> val(G,G_dot)"
-    using one_in_G G_subset_P P_sub_M valcheck by auto
+    using one_in_G G_subset_P P_sub_M val_check by auto
 qed
 
 lemma G_in_Gen_Ext : "G \<in> M[G]"
   using G_subset_P one_in_G val_G_dot GenExtI[of _ G] G_dot_in_M
   by force
+
+lemmas generic_simps = val_check[OF one_in_G one_in_P]
+  M_subset_MG[OF one_in_G, THEN subsetD]
+  GenExtI P_in_M
+
+lemmas generic_dests = M_genericD M_generic_compatD
+
+bundle G_generic1_lemmas = generic_simps[simp] generic_dests[dest]
+
 
 end  \<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>
 

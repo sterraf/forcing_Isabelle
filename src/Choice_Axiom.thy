@@ -137,22 +137,6 @@ lemma (in M_ZF1_trans) upair_name_closed :
   using upair_in_M_iff pair_in_M_iff Upair_eq_cons
   by simp
 
-context G_generic1
-begin
-
-\<comment> \<open>NOTE: The following bundled additions to the simpset might be of
-    use later on, perhaps add them globally to some appropriate
-    locale.\<close>
-lemmas generic_simps = valcheck[OF one_in_G one_in_P]
-  M_subset_MG[OF one_in_G, THEN subsetD]
-  check_in_M GenExtI P_in_M
-
-lemmas generic_dests = M_genericD M_generic_compatD
-
-bundle G_generic1_lemmas = generic_simps[simp] generic_dests[dest]
-
-end\<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>
-
 locale G_generic2 = G_generic1 + forcing_data2
 
 context G_generic2
@@ -217,7 +201,7 @@ lemma (in forcing_data2) repl_opname_check :
       upair_name_lam_replacement[THEN [5] lam_replacement_hcomp2]
       lam_replacement_apply2[THEN [5] lam_replacement_hcomp2]
       lam_replacement_imp_strong_replacement_aux
-      transitivity check_in_M RepFun_closed upair_name_closed apply_closed
+      transitivity RepFun_closed upair_name_closed apply_closed
     unfolding opair_name_def
     by simp
 
@@ -265,7 +249,7 @@ proof -
       by simp
     also
     have "... = {\<langle>\<beta>,val(G,s`\<beta>)\<rangle> . \<beta>\<in>\<alpha>}"
-      using val_opair_name valcheck generic one_in_G one_in_P
+      using val_opair_name val_check generic one_in_G one_in_P
       by simp
     finally
     have "f = {\<langle>\<beta>,val(G,s`\<beta>)\<rangle> . \<beta>\<in>\<alpha>}" .

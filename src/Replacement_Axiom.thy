@@ -49,7 +49,7 @@ proof -
   from \<open>val(G, \<pi>') = c\<close>
   have "c \<subseteq> val(G,?\<pi>)"
     using def_val[of G ?\<pi>] elem_of_val[of _ G \<pi>'] one_in_G
-      domain_of_prod[OF one_in_P, of "domain(\<pi>')"]
+       domain_of_prod[OF one_in_P, of "domain(\<pi>')"]
     by (force del:M_genericD)
   from \<open>env \<in> _\<close>
   obtain nenv where "nenv\<in>list(M)" "env = map(val(G),nenv)"
@@ -116,7 +116,7 @@ proof -
   with \<open>least(_,QQ(_),f(_))\<close> \<open>f(_) \<in> M\<close> \<open>?\<pi>\<in>M\<close> body
   have "f(\<rho>p)\<in>Y" if "\<rho>p\<in>?\<pi>" for \<rho>p
     using that transitivity[OF _ \<open>?\<pi>\<in>M\<close>]
-    by (clarsimp, rule_tac x="\<langle>x,y\<rangle>" in bexI, auto)
+    by (clarsimp,rename_tac \<rho> p \<rho>p, rule_tac x="\<langle>\<rho>,p\<rangle>" in bexI, auto)
   from \<open>Y\<in>M\<close>
   have "\<Union> {y\<in>Y. Ord(y)} \<in> M" (is "?sup \<in> M")
     using separation_Ord separation_closed Union_closed by simp

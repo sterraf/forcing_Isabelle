@@ -121,7 +121,7 @@ proof -
   have "q \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, A\<^sup>v, B\<^sup>v]"
     using strengthening_lemma[of p "\<cdot>0:1\<rightarrow>2\<cdot>" q "[f_dot, A\<^sup>v, B\<^sup>v]"]
       typed_function_type arity_typed_function_fm
-    by (auto simp: union_abs2 union_abs1 check_in_M)
+    by (auto simp: union_abs2 union_abs1)
   from \<open>a\<in>A\<close> \<open>A\<in>M\<close>
   have "a\<in>M" by (auto dest:transitivity)
   from \<open>q\<in>P\<close>
@@ -142,7 +142,7 @@ proof -
   moreover from calculation
   have "val(G,f_dot) : A \<rightarrow>\<^bsup>M[G]\<^esup> B"
     using truth_lemma[of "\<cdot>0:1\<rightarrow>2\<cdot>" "[f_dot, A\<^sup>v, B\<^sup>v]", THEN iffD1]
-      typed_function_type arity_typed_function_fm valcheck[OF one_in_G one_in_P]
+      typed_function_type arity_typed_function_fm val_check[OF one_in_G one_in_P]
     by (auto simp: union_abs2 union_abs1 ext.mem_function_space_rel_abs)
   moreover
   note \<open>a \<in> M\<close>
@@ -157,7 +157,7 @@ proof -
   ultimately
   obtain r where "r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, ?b\<^sup>v]" "r\<in>G" "r\<in>P"
     using truth_lemma[of "\<cdot>0`1 is 2\<cdot>" "[f_dot, a\<^sup>v, ?b\<^sup>v]", THEN iffD2]
-      fun_apply_type arity_fun_apply_fm valcheck[OF one_in_G one_in_P]
+      fun_apply_type arity_fun_apply_fm val_check[OF one_in_G one_in_P]
       G_subset_P
     by (auto simp: union_abs2 union_abs1 ext.mem_function_space_rel_abs)
   moreover from this and \<open>q\<in>G\<close>
@@ -194,7 +194,7 @@ proof -
   ultimately
   show ?thesis
     using separation_sat_after_function
-    using fst_abs snd_abs sats_snd_fm sats_check_fm check_abs check_in_M
+    using fst_abs snd_abs sats_snd_fm sats_check_fm check_abs
     unfolding hcomp_fm_def
     by simp
 qed
@@ -226,7 +226,7 @@ proof -
     using arity_incr_bv_lemma by safe (simp_all add: arity ord_simp_union)
   moreover from calculation
   have sep:"separation(##M,\<lambda>z. M,?\<rho>'(z)\<Turnstile>?\<phi>)"
-    using separation_sat_after_function sats_check_fm check_abs check_in_M
+    using separation_sat_after_function sats_check_fm check_abs
       fst_abs snd_abs
     unfolding hcomp_fm_def
     by simp
@@ -272,7 +272,7 @@ proof -
   with assms
   show ?thesis
     using separation_in lam_replacement_constant lam_replacement_snd lam_replacement_fst
-      lam_replacement_Pair[THEN[5] lam_replacement_hcomp2] check_in_M pred_nat_closed
+      lam_replacement_Pair[THEN[5] lam_replacement_hcomp2] pred_nat_closed
       arity_forces[of " \<cdot>0`1 is 2\<cdot>"] arity_fun_apply_fm[of 0 1 2] ord_simp_union
     by(clarify,rule_tac separation_conj,simp_all,rule_tac separation_bex,simp_all)
 qed
@@ -344,7 +344,7 @@ proof -
     ultimately
     show ?thesis
       using separation_sat_after_function_1 sats_fst_fm that
-        fst_abs snd_abs sats_snd_fm sats_check_fm check_abs check_in_M
+        fst_abs snd_abs sats_snd_fm sats_check_fm check_abs
       unfolding hcomp_fm_def
       by simp
   qed
@@ -361,7 +361,7 @@ qed
 lemma separation_closed_forces_apply_aux:
   assumes "B\<in>M" "f_dot\<in>M" "r\<in>M"
   shows "(##M)({\<langle>n,b\<rangle> \<in> \<omega> \<times> B. r \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, n\<^sup>v, b\<^sup>v]})"
-  using nat_in_M assms check_in_M transitivity[OF _ \<open>B\<in>M\<close>] nat_into_M separation_check_fst_snd_aux
+  using nat_in_M assms transitivity[OF _ \<open>B\<in>M\<close>] nat_into_M separation_check_fst_snd_aux
     arity_forces[of " \<cdot>0`1 is 2\<cdot>"] arity_fun_apply_fm[of 0 1 2] ord_simp_union
   unfolding split_def
   by simp_all
@@ -382,7 +382,7 @@ proof (intro equalityI; clarsimp simp add:
   moreover from calculation and \<open>A\<in>M\<close> \<open>B\<in>M\<close>
   obtain r where "r \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [\<tau>, A\<^sup>v, B\<^sup>v]" "r\<in>G"
     using truth_lemma[of "\<cdot>0:1\<rightarrow>2\<cdot>" "[\<tau>, A\<^sup>v, B\<^sup>v]"]
-      typed_function_type arity_typed_function_fm valcheck[OF one_in_G one_in_P]
+      typed_function_type arity_typed_function_fm val_check[OF one_in_G one_in_P]
     by (auto simp: union_abs2 union_abs1)
   moreover from \<open>A\<in>M\<close> \<open>B\<in>M\<close> \<open>r\<in>G\<close> \<open>\<tau> \<in> M\<close>
   have "{q\<in>P. \<exists>h\<in>A \<rightarrow>\<^bsup>M\<^esup> B. q \<preceq> r \<and> q \<tturnstile> \<cdot>0 = 1\<cdot> [\<tau>, h\<^sup>v]} \<in> M" (is "?D \<in> M")
@@ -401,7 +401,7 @@ proof (intro equalityI; clarsimp simp add:
     by (auto dest:transitivity)
   ultimately
   have "h = f"
-    using truth_lemma[of "\<cdot>0=1\<cdot>" "[\<tau>, h\<^sup>v]"] valcheck[OF one_in_G one_in_P]
+    using truth_lemma[of "\<cdot>0=1\<cdot>" "[\<tau>, h\<^sup>v]"] val_check[OF one_in_G one_in_P]
     by (auto simp: ord_simp_union)
   with \<open>h\<in>M\<close>
   show "f \<in> M" by simp
@@ -594,7 +594,7 @@ proof -
       moreover from calculation and \<open>r\<in>H\<close> and \<open>r \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, \<omega>\<^sup>v, B\<^sup>v]\<close>
       have "?f : \<omega> \<rightarrow> B"
         using g.truth_lemma[of "\<cdot>0:1\<rightarrow>2\<cdot>" "[f_dot, \<omega>\<^sup>v, B\<^sup>v]",THEN iffD1] g.one_in_G one_in_P
-          typed_function_type arity_typed_function_fm valcheck
+          typed_function_type arity_typed_function_fm val_check
         by (auto simp: union_abs2 union_abs1)
       moreover
       have "?h`n = ?f`n" if "n \<in> \<omega>" for n
@@ -625,7 +625,7 @@ proof -
         show ?thesis
           using definition_of_forcing[of r "\<cdot>0`1 is 2\<cdot>" "[f_dot, n\<^sup>v, b\<^sup>v]",
               THEN iffD1, rule_format, of H]\<comment> \<open>without this line is slower\<close>
-            valcheck g.one_in_G one_in_P nat_into_M
+            val_check g.one_in_G one_in_P nat_into_M
           by (auto dest:transitivity simp add:fun_apply_type
               arity_fun_apply_fm union_abs2 union_abs1)
       qed
@@ -635,7 +635,7 @@ proof -
         by (rule_tac fun_extension[of ?h \<omega> "\<lambda>_.B" ?f]) auto
       ultimately
       show "?f = val(H, ?h\<^sup>v)"
-        using valcheck g.one_in_G one_in_P generic by simp
+        using val_check g.one_in_G one_in_P generic by simp
     qed
     ultimately
     have "\<exists>r\<in>P. \<exists>h\<in>\<omega> \<rightarrow>\<^bsup>M\<^esup> B. r \<preceq> p \<and> r \<tturnstile> \<cdot>0 = 1\<cdot> [f_dot, h\<^sup>v]"

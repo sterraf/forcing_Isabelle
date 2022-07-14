@@ -102,11 +102,11 @@ proof -
   }
   with types
   have "q \<tturnstile> \<cdot>\<not>\<cdot>0`1 is 2\<cdot>\<cdot> [f,a,b\<^sup>v]"
-    using definition_of_forcing[where \<phi>="\<cdot>\<not>\<cdot>0`1 is 2\<cdot>\<cdot>" ] check_in_M
+    using definition_of_forcing[where \<phi>="\<cdot>\<not>\<cdot>0`1 is 2\<cdot>\<cdot>" ]
     by (auto simp add:ord_simp_union arity_fun_apply_fm)
   with \<open>p \<tturnstile> \<cdot>0`1 is 2\<cdot> [f,a,b\<^sup>v]\<close> and types
   show "p \<bottom> q"
-    using check_in_M inconsistent_imp_incompatible
+    using inconsistent_imp_incompatible
     by (simp add:ord_simp_union arity_fun_apply_fm fun_apply_type)
 qed
 
@@ -255,7 +255,7 @@ lemma ccc_fun_closed_lemma_aux:
   using separation_forces[where env="[f_dot, a\<^sup>v, b\<^sup>v]" and \<phi>="\<cdot>0`1 is 2\<cdot>",simplified]
     assms G_subset_M[THEN subsetD] generic
     separation_in lam_replacement_constant lam_replacement_identity
-    lam_replacement_Pair[THEN[5] lam_replacement_hcomp2] check_in_M
+    lam_replacement_Pair[THEN[5] lam_replacement_hcomp2]
     separation_conj arity_fun_apply_fm union_abs1
   by simp_all
 
@@ -281,7 +281,7 @@ proof -
     ultimately
     show ?thesis
       using separation_sat_after_function assms that sats_fst_fm
-        snd_abs sats_snd_fm sats_check_fm check_abs check_in_M fst_abs
+        snd_abs sats_snd_fm sats_check_fm check_abs fst_abs
       unfolding hcomp_fm_def
       by simp
   qed
@@ -319,7 +319,7 @@ proof -
       by (simp_all add:arity)
     ultimately
     show ?thesis
-      using separation_sat_after_function3 assms sats_check_fm check_abs check_in_M
+      using separation_sat_after_function3 assms sats_check_fm check_abs
         fst_abs snd_abs
       unfolding hcomp_fm_def
       by simp
@@ -342,7 +342,7 @@ proof -
       by (simp_all add:arity)
     ultimately
     show ?thesis
-      using separation_sat_after_function that fst_abs snd_abs sats_check_fm check_abs check_in_M
+      using separation_sat_after_function that fst_abs snd_abs sats_check_fm check_abs
       unfolding hcomp_fm_def
       by simp
   qed
