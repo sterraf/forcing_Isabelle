@@ -637,7 +637,6 @@ lemmas generic_dests = M_genericD M_generic_compatD
 
 bundle G_generic1_lemmas = generic_simps[simp] generic_dests[dest]
 
-
 end  \<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>
 
 end

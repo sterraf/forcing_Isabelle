@@ -183,10 +183,10 @@ sublocale G_generic1 \<subseteq> ext:M_Z_trans "M[G]"
   using Transset_MG generic pairing_in_MG Union_MG
     extensionality_in_MG power_in_MG foundation_in_MG
     replacement_assm_MG separation_in_MG infinity_in_MG
-    replacement_ax1 
+    replacement_ax1
   by unfold_locales
 
-lemma (in M_replacement) upair_name_lam_replacement : 
+lemma (in M_replacement) upair_name_lam_replacement :
   "M(z) \<Longrightarrow> lam_replacement(M,\<lambda>x . upair_name(fst(x),snd(x),z))"
   using lam_replacement_Upair[THEN [5] lam_replacement_hcomp2]
     lam_replacement_Pair[THEN [5] lam_replacement_hcomp2]
