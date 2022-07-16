@@ -17,7 +17,6 @@ theory Interface
   imports
     Fm_Definitions
     Transitive_Models.Cardinal_AC_Relative
-    Transitive_Models.M_Basic_No_Repl
 begin
 
 locale M_Z_basic =

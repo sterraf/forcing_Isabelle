@@ -11,6 +11,8 @@ theory Forcing_Data
     ZF_Trans_Interpretations
 begin
 
+no_notation Aleph (\<open>\<aleph>_\<close> [90] 90)
+
 subsection\<open>A forcing locale and generic filters\<close>
 
 text\<open>Ideally, countability should be separated from the assumption of this locale.

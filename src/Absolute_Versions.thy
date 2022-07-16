@@ -6,6 +6,8 @@ theory Absolute_Versions
     ZF.Cardinal_AC
 begin
 
+hide_const (open) Order.pred
+
 subsection\<open>Locales of a class \<^term>\<open>M\<close> hold in \<^term>\<open>\<V>\<close>\<close>
 
 interpretation V: M_trivial \<V>

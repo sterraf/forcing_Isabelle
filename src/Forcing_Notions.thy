@@ -8,6 +8,8 @@ theory Forcing_Notions
     "Delta_System_Lemma.ZF_Library"
 begin
 
+hide_const (open) Order.pred
+
 subsection\<open>Basic concepts\<close>
 text\<open>We say that two elements $p,q$ are
   \<^emph>\<open>compatible\<close> if they have a lower bound in $P$\<close>

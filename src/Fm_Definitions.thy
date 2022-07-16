@@ -6,6 +6,10 @@ theory Fm_Definitions
     FrecR_Arities
 begin
 
+(* Really, I have no idea why is this needed again. At the end of the
+   imported theories, notation works just fine. *)
+no_notation Aleph (\<open>\<aleph>_\<close> [90] 90)
+
 text\<open>In this theory we put every concept that should be synthesized in a formula
 to have an instance of replacement.
 
