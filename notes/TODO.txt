@@ -9,7 +9,7 @@ ground_replacement_assm(M,env,LambdaPair_in_M_fm(is_inj_fm(0,1,2),0))
 ground_replacement_assm(M,env,replacement_transrec_apply_image_body_fm)
 ground_replacement_assm(M,env,replacement_is_trans_apply_image_fm)
 - Can we remove lam_replacement_image?
-- Remove cardinal_rel
+
 
 FIXMEs
 ======
@@ -30,11 +30,7 @@ Unaddressed issues in Transitive_Models
 
 - Enable more "mem_model" patterns for iff_sats.
 
-- Many pred(pred(pred(...))) in Arities
 
-- ...replacement_un --> ...replacement_Un (and variants!)
-
-- separation_pair --> separation_Pair (?)
 
 General Tasks
 =============
@@ -105,19 +101,8 @@ ZF-Constructible
 Assorted To-Dos
 ===============
 
-- Add comments about Definitions_Main in root.tex.
-
 - Have instances of valcheck in forcing_data, G_generic (discharging
   assumptions). Add it to the simpset?
-
-- Add to simpset? Simplified versions of class version theorems
-  instantiated for a set model, because the original versions are not
-  effective enough. Example:
-
-  apply_closed: (##M)(?f) ⟹ (##M)(?a) ⟹ (##M)(?f ` ?a)
-  apply_closed[simplified]: ?f ∈ M ⟹ ?a ∈ M ⟹ ?f ` ?a ∈ M
-
-- Discipline for Vfrom_abs and Vfrom_closed
 
 - Relocate material on antichains (in Forcing_Notions?) and results on
   range (both now in Cardinal_Preservation).
