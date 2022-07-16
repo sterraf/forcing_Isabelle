@@ -345,7 +345,11 @@ locale M_cardinal_library = M_library + M_replacement +
     "M(A') \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> M(F) \<Longrightarrow>
         separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>a. if M(a) then F-``{a} else 0,b,f,i)\<rangle>)"
     and
-    lam_replacement_cardinal_rel : "lam_replacement(M, cardinal_rel(M))"
+    cardinal_rel_separation :
+    "separation(M, \<lambda>\<langle>x,y\<rangle>. cardinal_rel(M,x) = y)"
+    and
+    cardinal_lib_assms5 :
+    "M(\<gamma>) \<Longrightarrow> separation(M, \<lambda>Z . cardinal_rel(M,Z) < \<gamma>)"
     and
     cardinal_lib_assms6:
     "M(f) \<Longrightarrow> M(\<beta>) \<Longrightarrow> Ord(\<beta>) \<Longrightarrow>
@@ -359,12 +363,11 @@ lemma cdlt_assms: "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> separation(M, \
   by (rule_tac separation_ball,simp_all,rule_tac separation_iff',auto)
     (rule_tac separation_all,auto simp:lam_replacement_constant)
 
-
-lemma cardinal_lib_assms5 :
-  "M(\<gamma>) \<Longrightarrow> Ord(\<gamma>) \<Longrightarrow> separation(M, \<lambda>Z . cardinal_rel(M,Z) < \<gamma>)"
-  unfolding lt_def
-  using separation_in lam_replacement_constant[of \<gamma>] separation_univ lam_replacement_cardinal_rel
-  unfolding lt_def
+lemma cdlt_assms': "M(x) \<Longrightarrow> M(Q) \<Longrightarrow> separation(M, \<lambda>a .  \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q)"
+  using separation_in[OF _
+      lam_replacement_hcomp2[OF _ _ _ _ lam_replacement_Pair] _
+      lam_replacement_constant]
+    separation_ball lam_replacement_hcomp lam_replacement_fst lam_replacement_snd
   by simp_all
 
 lemma countable_rel_union_countable_rel:

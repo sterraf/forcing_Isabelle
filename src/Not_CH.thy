@@ -124,10 +124,10 @@ lemmas (in M_ZF3_trans) sep_instances =
   separation_ifrangeF_body separation_ifrangeF_body2 separation_ifrangeF_body3
   separation_ifrangeF_body4 separation_ifrangeF_body5 separation_ifrangeF_body6
   separation_ifrangeF_body7 separation_cardinal_rel_lesspoll_rel
-  separation_is_dcwit_body
+  separation_is_dcwit_body separation_cdltgamma separation_cdeqgamma
 
 lemmas (in M_ZF3_trans) repl_instances = lam_replacement_inj_rel
-  lam_replacement_cardinal replacement_trans_apply_image
+  replacement_trans_apply_image
 
 sublocale M_ZFC3_trans \<subseteq> M_master "##M"
   using replacement_dcwit_repl_body\<comment> \<open>this is another replacement instance\<close>

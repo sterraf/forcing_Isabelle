@@ -14,8 +14,6 @@ locale M_delta = M_cardinal_library +
                           y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>x. {xa \<in> G . x \<in> xa}, b, f, i)\<rangle>)"
 begin
 
-lemmas cardinal_replacement = lam_replacement_cardinal_rel[unfolded lam_replacement_def]
-
 lemma disjoint_separation: "M(c) \<Longrightarrow> separation(M, \<lambda> x. \<exists>a. \<exists>b. x=\<langle>a,b\<rangle> \<and> a \<inter> b = c)"
   using separation_Pair separation_eq lam_replacement_constant lam_replacement_Int
   by simp
@@ -44,10 +42,11 @@ proof -
     with \<open>M(G)\<close> \<open>M(p)\<close>
     show ?thesis by simp
   qed
-  from \<open>M(F)\<close>
+  from \<open>\<forall>A\<in>F. Finite(A)\<close> \<open>M(F)\<close>
   have "M(\<lambda>A\<in>F. |A|\<^bsup>M\<^esup>)"
-    using cardinal_replacement
-    by (rule_tac lam_closed) (auto dest:transM)
+    using cardinal_rel_separation Finite_cardinal_rel_in_nat[OF _ transM[of _ F]]
+      separation_imp_lam_closed[of _ "cardinal_rel(M)" \<omega>]
+    by simp
   text\<open>Since all members are finite,\<close>
   with \<open>\<forall>A\<in>F. Finite(A)\<close> \<open>M(F)\<close>
   have "(\<lambda>A\<in>F. |A|\<^bsup>M\<^esup>) : F \<rightarrow>\<^bsup>M\<^esup> \<omega>" (is "?cards : _")

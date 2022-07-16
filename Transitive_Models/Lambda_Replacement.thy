@@ -1945,6 +1945,29 @@ lemma separation_dist: "separation(M, \<lambda> x . \<exists>a. \<exists>b . x=\
   using separation_Pair separation_neg separation_eq lam_replacement_fst lam_replacement_snd
   by simp
 
+lemma separation_imp_lam_closed:
+  assumes "\<forall>x\<in>A. F(x) \<in> B" "separation(M, \<lambda>\<langle>x,y\<rangle>. F(x) = y)"
+    "M(A)" "M(B)"
+  shows "M(\<lambda>x\<in>A. F(x))"
+proof -
+  from \<open>\<forall>x\<in>A. F(x) \<in> B\<close>
+  have "(\<lambda>x\<in>A. F(x)) \<subseteq> A\<times>B"
+    using times_subset_iff fun_is_rel[OF lam_funtype, of A F]
+    by auto
+  moreover from this
+  have "(\<lambda>x\<in>A. F(x)) = {\<langle>x,y\<rangle> \<in> A \<times> B. F(x) = y}"
+    unfolding lam_def by force
+  moreover
+  note \<open>M(A)\<close> \<open>M(B)\<close> \<open>separation(M, \<lambda>\<langle>x,y\<rangle>. F(x) = y)\<close>
+  moreover from this
+  have "M({\<langle>x,y\<rangle> \<in> A \<times> B. F(x) = y})"
+    by simp
+  ultimately
+  show ?thesis
+    unfolding lam_def
+    by auto
+qed
+
 lemma curry_closed :
   assumes "M(f)" "M(A)" "M(B)"
   shows "M(curry(A,B,f))"

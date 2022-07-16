@@ -73,14 +73,14 @@ lemma empty_rel_abs : "M(x) \<Longrightarrow> M(0) \<Longrightarrow> x = 0 \<lon
 
 lemma fst_rel_abs:
   assumes "M(p)"
-  shows "fst(p) = fst_rel(M,p)"
+  shows "fst_rel(M,p) = fst(p)"
   using fst_abs assms
   unfolding fst_def fst_rel_def
   by (cases "\<exists>a. \<exists>b. p = \<langle>a, b\<rangle>";auto;rule_tac the_equality[symmetric],simp_all)
 
 lemma snd_rel_abs:
   assumes "M(p)"
-  shows "snd(p) = snd_rel(M,p)"
+  shows " snd_rel(M,p) = snd(p)"
   using snd_abs assms
   unfolding snd_def snd_rel_def
   by (cases "\<exists>a. \<exists>b. p = \<langle>a, b\<rangle>";auto;rule_tac the_equality[symmetric],simp_all)

@@ -339,7 +339,6 @@ locale M_ZF4 = M_ZF3 +
     "ground_replacement_assm(M,env,dcwit_repl_body_fm(6,5,4,3,2,0,1))"
     "ground_replacement_assm(M,env,Lambda_in_M_fm(fst_fm(0,1),0))"
     "ground_replacement_assm(M,env,Lambda_in_M_fm(big_union_fm(0,1),0))"
-    "ground_replacement_assm(M,env,Lambda_in_M_fm(is_cardinal_fm(0,1),0))"
     "ground_replacement_assm(M,env,Lambda_in_M_fm(snd_fm(0,1),0))"
     "ground_replacement_assm(M,env,LambdaPair_in_M_fm(image_fm(0,1,2),0))"
     "ground_replacement_assm(M,env,LambdaPair_in_M_fm(setdiff_fm(0,1,2),0))"
@@ -378,7 +377,6 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(dcwit_repl_body_fm(6,5,4,3,2,0,1)),
     ground_repl_fm(Lambda_in_M_fm(fst_fm(0,1),0)),
     ground_repl_fm(Lambda_in_M_fm(big_union_fm(0,1),0)),
-    ground_repl_fm(Lambda_in_M_fm(is_cardinal_fm(0,1),0)),
     ground_repl_fm(Lambda_in_M_fm(snd_fm(0,1),0)),
     ground_repl_fm(LambdaPair_in_M_fm(image_fm(0,1,2),0)),
     ground_repl_fm(LambdaPair_in_M_fm(setdiff_fm(0,1,2),0)),
@@ -389,14 +387,14 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(Lambda_in_M_fm(is_converse_fm(0,1),0)),
     ground_repl_fm(Lambda_in_M_fm(domain_fm(0,1),0)) }"
 
-text\<open>This set has 41 internalized formulas, corresponding to the total count
+text\<open>This set has 36 internalized formulas, corresponding to the total count
 of previous replacement instances.\<close>
 
 definition overhead where
   "overhead \<equiv> instances1_fms \<union> instances2_fms \<union> instances3_fms \<union> instances4_fms \<union> instances_ground_fms"
 
 text\<open>Hence, the “overhead” to force $\CH$ and its negation consists
-of 84 replacement instances.\<close>
+of 72 replacement instances.\<close>
 
 lemma instances3_fms_type[TC] : "instances3_fms \<subseteq> formula"
   unfolding instances3_fms_def replacement_is_order_body_fm_def

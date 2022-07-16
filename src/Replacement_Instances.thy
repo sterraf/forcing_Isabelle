@@ -130,7 +130,7 @@ lemma (in M_trivial) fst2_snd2_abs:
   assumes "M(x)" "M(res)"
   shows "is_fst2_snd2(M, x, res) \<longleftrightarrow> res = fst2_snd2(x)"
   unfolding is_fst2_snd2_def fst2_snd2_def
-  using fst_rel_abs[symmetric] snd_rel_abs[symmetric] fst_abs snd_abs assms
+  using fst_rel_abs snd_rel_abs fst_abs snd_abs assms
   by simp
 
 synthesize "is_fst2_snd2" from_definition assuming "nonempty"
@@ -360,7 +360,6 @@ locale M_ZF2 = M_ZF1 +
     "replacement_assm(M,env,Lambda_in_M_fm(domain_fm(0,1),0))"
     "replacement_assm(M,env,Lambda_in_M_fm(snd_fm(0,1),0))"
     "replacement_assm(M,env,Lambda_in_M_fm(big_union_fm(0,1),0))"
-    "replacement_assm(M,env,Lambda_in_M_fm(is_cardinal_fm(0,1),0))"
     "replacement_assm(M,env,Lambda_in_M_fm(is_converse_fm(0,1),0))"
     and
     LambdaPair_in_M_replacement2:
@@ -386,7 +385,6 @@ definition instances2_fms where "instances2_fms \<equiv>
     Lambda_in_M_fm(domain_fm(0,1),0),
     Lambda_in_M_fm(snd_fm(0,1),0),
     Lambda_in_M_fm(big_union_fm(0,1),0),
-    Lambda_in_M_fm(is_cardinal_fm(0,1),0),
     Lambda_in_M_fm(is_converse_fm(0,1),0),
     LambdaPair_in_M_fm(image_fm(0,1,2),0),
     LambdaPair_in_M_fm(setdiff_fm(0,1,2),0),
@@ -395,7 +393,7 @@ definition instances2_fms where "instances2_fms \<equiv>
     LambdaPair_in_M_fm(is_RepFun_body_fm(0,1,2),0),
     LambdaPair_in_M_fm(composition_fm(0,1,2),0) }"
 
-text\<open>This set has 22 internalized formulas.\<close>
+text\<open>This set has 21 internalized formulas.\<close>
 
 lemmas replacement_instances2_defs =
   replacement_is_omega_funspace_fm_def
@@ -509,7 +507,7 @@ lemma lam_replacement_converse : "lam_replacement(##M, converse)"
     Lambda_in_M[where \<phi>="is_converse_fm(0,1)" and env="[]"]
     is_converse_fm_type converse_abs
     arity_is_converse_fm[of 0 1] ord_simp_union transitivity converse_closed
-    Lambda_in_M_replacement2(6)
+    Lambda_in_M_replacement2(5)
   by simp
 
 lemma lam_replacement_fst : "lam_replacement(##M, fst)"
@@ -659,7 +657,7 @@ lemma (in M_trivial) sndfst_fst2_snd2_abs:
   assumes "M(x)" "M(res)"
   shows "is_sndfst_fst2_snd2(M, x, res) \<longleftrightarrow> res = sndfst_fst2_snd2(x)"
   unfolding is_sndfst_fst2_snd2_def sndfst_fst2_snd2_def
-  using fst_rel_abs[symmetric] snd_rel_abs[symmetric] fst_abs snd_abs assms
+  using fst_rel_abs snd_rel_abs fst_abs snd_abs assms
   by simp
 
 lemma replacement_sndfst_fst2_snd2:
@@ -783,14 +781,6 @@ lemma banach_replacement:
     assms banach_functor_closed zero_in_M
     strong_replacement_cong[THEN iffD1,OF _ banach_replacement_iterates[of X Y f g 0]]
   by simp
-
-lemma lam_replacement_cardinal : "lam_replacement(##M, cardinal_rel(##M))"
-  using lam_replacement_iff_lam_closed[THEN iffD2,of "cardinal_rel(##M)"]
-    cardinal_rel_closed is_cardinal_iff
-    Lambda_in_M[where \<phi>="is_cardinal_fm(0,1)" and env="[]",OF is_cardinal_fm_type[of 0 1]]
-    arity_is_cardinal_fm[of 0 1] ord_simp_union cardinal_rel_closed transitivity zero_in_M
-    Lambda_in_M_replacement2(5)
-  by simp_all
 
 lemma (in M_basic) rel2_trans_apply:
   "M(f) \<Longrightarrow> relation2(M,is_trans_apply_image(M,f),trans_apply_image(f))"
@@ -1470,5 +1460,62 @@ lemma (in M_ZF2_trans) separation_ifrangeF_body7:
     separation_cong[where P="is_ifrangeF_body7(##M,A,B,D,G,b,f)" and M="##M",THEN iffD1]
   unfolding ifrangeF_body7_def if_range_F_def if_range_F_else_F_def ifrFb_body7_def
   by simp
+
+definition cdltgamma :: "[i,i] \<Rightarrow> o" where
+  "cdltgamma(\<gamma>) \<equiv> \<lambda>Z . |Z| < \<gamma>"
+relativize functional "cdltgamma" "cdltgamma_rel"
+relationalize "cdltgamma_rel" "is_cdltgamma"
+synthesize "is_cdltgamma" from_definition assuming "nonempty"
+arity_theorem for "is_cdltgamma_fm"
+
+definition cdeqgamma :: "[i] \<Rightarrow> o" where
+  "cdeqgamma \<equiv> \<lambda>Z . |fst(Z)| = snd(Z)"
+relativize functional "cdeqgamma" "cdeqgamma_rel"
+relationalize "cdeqgamma_rel" "is_cdeqgamma"
+synthesize "is_cdeqgamma" from_definition assuming "nonempty"
+arity_theorem for "is_cdeqgamma_fm"
+
+context M_Perm
+begin
+
+is_iff_rel for "cdltgamma"
+  using is_cardinal_iff
+  unfolding cdltgamma_rel_def is_cdltgamma_def
+  by (simp add:absolut)
+
+is_iff_rel for "cdeqgamma"
+  using is_cardinal_iff fst_rel_abs snd_rel_abs
+  unfolding cdeqgamma_rel_def is_cdeqgamma_def
+  by (auto simp add:absolut)
+
+lemma is_cdeqgamma_iff_split: "M(Z) \<Longrightarrow> cdeqgamma_rel(M, Z) \<longleftrightarrow> (\<lambda>\<langle>x,y\<rangle>. |x|\<^bsup>M\<^esup> = y)(Z)"
+  using  fst_rel_abs snd_rel_abs
+  unfolding cdeqgamma_rel_def split_def
+  by simp
+
+end
+
+context M_ZF2_trans
+begin
+
+lemma separation_cdltgamma:
+  assumes "(##M)(\<gamma>)"
+  shows "separation(##M, \<lambda>Z . cardinal_rel(##M,Z) < \<gamma>)"
+  using assms separation_in_ctm[where env="[\<gamma>]" and \<phi>="is_cdltgamma_fm(1,0)"
+      and Q="cdltgamma_rel(##M,\<gamma>)"]
+    nonempty is_cdltgamma_iff[of \<gamma>] arity_is_cdltgamma_fm is_cdltgamma_fm_type
+  unfolding cdltgamma_rel_def
+  by (auto simp add:ord_simp_union)
+
+lemma separation_cdeqgamma:
+  shows "separation(##M, \<lambda>Z. (\<lambda>\<langle>x,y\<rangle> . cardinal_rel(##M,x) = y)(Z))"
+  using separation_in_ctm[where env="[]" and \<phi>="is_cdeqgamma_fm(0)"
+      and Q="cdeqgamma_rel(##M)"] is_cdeqgamma_iff_split
+    nonempty is_cdeqgamma_iff arity_is_cdeqgamma_fm is_cdeqgamma_fm_type
+    separation_cong[OF is_cdeqgamma_iff_split, of "##M"]
+  unfolding cdeqgamma_rel_def
+  by (simp add:ord_simp_union)
+
+end \<comment> \<open>\<^locale>\<open>M_ZF2_trans\<close>\<close>
 
 end
