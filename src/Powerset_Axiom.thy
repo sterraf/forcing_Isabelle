@@ -72,6 +72,10 @@ proof -
     by simp
 qed
 
+declare nat_into_M[rule del, simplified setclass_iff, intro]
+lemmas ssimps = domain_closed cartprod_closed cons_closed
+declare ssimps [simp del, simplified setclass_iff, simp, intro]
+
 lemma Pow_inter_MG:
   assumes "a\<in>M[G]"
   shows "Pow(a) \<inter> M[G] \<in> M[G]"
@@ -82,7 +86,6 @@ proof -
   let ?Q="Pow(domain(\<tau>)\<times>P) \<inter> M"
   from \<open>\<tau>\<in>M\<close>
   have "domain(\<tau>)\<times>P \<in> M" "domain(\<tau>) \<in> M"
-    using domain_closed cartprod_closed
     by simp_all
   then
   have "?Q \<in> M"
@@ -108,8 +111,7 @@ proof -
   let ?b="val(G,?\<pi>)"
   from \<open>?Q\<in>M\<close>
   have "?\<pi>\<in>M"
-    using cartprod_closed singleton_closed
-    by simp
+    by auto
   then
   have "?b \<in> M[G]"
     using GenExtI by simp
@@ -238,10 +240,10 @@ context G_generic1 begin
 theorem power_in_MG : "power_ax(##(M[G]))"
   unfolding power_ax_def
 proof (intro rallI, simp only:setclass_iff rex_setclass_is_bex)
-  (* After simplification, we have to show that for every
-     a\<in>M[G] there exists some x\<in>M[G] with powerset(##M[G],a,x)
-  *)
   fix a
+  text\<open>After simplification, we have to show that for every
+  \<^term>\<open>a\<in>M[G]\<close> there exists some \<^term>\<open>x\<in>M[G]\<close> satisfying
+  \<^term>\<open>powerset(##M[G],a,x)\<close>\<close>
   assume "a \<in> M[G]"
   have "{x\<in>Pow(a) . x \<in> M[G]} = Pow(a) \<inter> M[G]"
     by auto
