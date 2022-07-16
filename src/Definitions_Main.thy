@@ -454,7 +454,7 @@ lemma ContHyp_rel_def':
     "CH\<^bsup>N\<^esup> \<equiv> \<aleph>\<^bsub>1\<^esub>\<^bsup>N\<^esup> = 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>N\<^esup>,N\<^esup>"
   unfolding ContHyp_rel_def .
 
-text\<open>Under appropriate hypothesis (this time, from the locale \<^term>\<open>M_master\<close>),
+text\<open>Under appropriate hypothesis (this time, from the locale \<^term>\<open>M_ZF_library\<close>),
    \<^term>\<open>CH\<^bsup>M\<^esup>\<close> is equivalent to its fully relational version \<^term>\<open>is_ContHyp\<close>.
     As a sanity check, we see that if the transitive class is indeed \<^term>\<open>\<V>\<close>,
     we recover the original $\CH$.\<close>
@@ -463,7 +463,7 @@ thm M_ZF_library.is_ContHyp_iff is_ContHyp_iff_CH[unfolded ContHyp_def]
 text\<open>@{thm [display] M_ZF_library.is_ContHyp_iff
     is_ContHyp_iff_CH[unfolded ContHyp_def]}\<close>
 (*
-  M_master(M) \<Longrightarrow> is_ContHyp(M) \<longleftrightarrow> CH\<^bsup>M\<^esup>
+  M_ZF_library(M) \<Longrightarrow> is_ContHyp(M) \<longleftrightarrow> CH\<^bsup>M\<^esup>
   is_ContHyp(\<V>) \<longleftrightarrow> \<aleph>\<^bsub>1\<^esub> = 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^esup>
 *)
 
