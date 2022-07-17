@@ -530,17 +530,16 @@ thm instances1_fms_def
 text\<open>@{thm [display] instances1_fms_def}\<close>
 (*
 instances1_fms \<equiv>
-{ wfrec_Hfrc_at_fm, list_repl1_intf_fm, list_repl2_intf_fm,
- formula_repl2_intf_fm, eclose_repl2_intf_fm, powapply_repl_fm,
- phrank_repl_fm, wfrec_rank_fm, trans_repl_HVFrom_fm, wfrec_Hcheck_fm,
- repl_PHcheck_fm, repl_opname_check_fm,
- tl_repl_intf_fm, formula_repl1_intf_fm, eclose_repl1_intf_fm }
+{ list_repl1_intf_fm, list_repl2_intf_fm, formula_repl1_intf_fm, formula_repl2_intf_fm,
+ eclose_repl1_intf_fm, eclose_repl2_intf_fm, powapply_repl_fm, phrank_repl_fm,
+ wfrec_rank_fm, trans_repl_HVFrom_fm, tl_repl_intf_fm}
 *)
 
 thm overhead_def
 text\<open>@{thm [display] overhead_def}\<close>
 (*
-overhead \<equiv> instances1_fms \<union> instances2_fms \<union> instances3_fms \<union> instances4_fms
+overhead \<equiv> instances1_fms \<union> instances2_fms \<union> instances3_fms \<union>
+  instances4_fms \<union> instances_ground_fms
 *)
 
 thm extensions_of_ctms

@@ -385,14 +385,16 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(Lambda_in_M_fm(is_converse_fm(0,1),0)),
     ground_repl_fm(Lambda_in_M_fm(domain_fm(0,1),0)) }"
 
-text\<open>This set has 35 internalized formulas, corresponding to the total count
-of previous replacement instances.\<close>
+text\<open>This set has 35 internalized formulas, corresponding to the total
+count of previous replacement instances (apart from those 3 in
+\<^term>\<open>instances_ground_fms\<close>).\<close>
 
 definition overhead where
-  "overhead \<equiv> instances1_fms \<union> instances2_fms \<union> instances3_fms \<union> instances4_fms \<union> instances_ground_fms"
+  "overhead \<equiv> instances1_fms \<union> instances2_fms \<union> instances3_fms \<union>
+     instances4_fms \<union> instances_ground_fms"
 
 text\<open>Hence, the “overhead” to force $\CH$ and its negation consists
-of 70 replacement instances.\<close>
+of 73 replacement instances.\<close>
 
 (*
 axiomatization
