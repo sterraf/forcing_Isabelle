@@ -38,33 +38,54 @@ definition
   seqspace :: "[i,i] \<Rightarrow> i" (\<open>_\<^bsup><_\<^esup>\<close> [100,1]100) where
   "B\<^bsup><\<alpha>\<^esup> \<equiv> \<Union>n\<in>\<alpha>. (n\<rightarrow>B)"
 
-schematic_goal seqspace_fm_auto:
-  assumes
-    "i \<in> nat" "j \<in> nat" "h\<in>nat" "env \<in> list(A)"
-  shows
-    "(\<exists>om\<in>A. omega(##A,om) \<and> nth(i,env) \<in> om \<and> is_funspace(##A, nth(i,env), nth(h,env), nth(j,env))) \<longleftrightarrow> (A, env \<Turnstile> (?sqsprp(i,j,h)))"
-  unfolding is_funspace_def
-  by (insert assms ; (rule iff_sats | simp)+)
-
-synthesize "seqspace_rel" from_schematic "seqspace_fm_auto"
-arity_theorem for "seqspace_rel_fm"
-
 lemma seqspaceI[intro]: "n\<in>\<alpha> \<Longrightarrow> f:n\<rightarrow>B \<Longrightarrow> f\<in>B\<^bsup><\<alpha>\<^esup>"
   unfolding seqspace_def by blast
 
 lemma seqspaceD[dest]: "f\<in>B\<^bsup><\<alpha>\<^esup> \<Longrightarrow> \<exists>n\<in>\<alpha>. f:n\<rightarrow>B"
   unfolding seqspace_def by blast
 
-locale M_seqspace =  M_trancl + M_replacement +
+locale M_pre_seqspace =  M_trancl + M_replacement + M_Pi
+begin
+
+lemma function_space_subset_Pow_rel:
+  assumes "n\<in>\<omega>" "M(B)"
+  shows "n\<rightarrow>B \<subseteq> Pow\<^bsup>M\<^esup>(\<Union>(\<omega>\<rightarrow>\<^bsup>M\<^esup>B))"
+  using assms
+  apply (auto dest:transM intro!:mem_Pow_rel_abs[THEN iffD2])
+  sorry
+
+lemma seqspace_subset_Pow_rel:
+  assumes "M(B)"
+  shows "B\<^bsup><\<omega>\<^esup> \<subseteq> Pow\<^bsup>M\<^esup>(\<Union>(\<omega>\<rightarrow>\<^bsup>M\<^esup>B))"
+  using assms function_space_subset_Pow_rel unfolding seqspace_def
+  by auto
+
+lemma seqspace_imp_M:
+  assumes "x \<in> B\<^bsup><\<omega>\<^esup>" "M(B)"
+  shows "M(x)"
+  using assms seqspace_subset_Pow_rel
+  by (auto dest:transM)
+
+lemma seqspace_eq_Collect:
+  assumes "M(B)"
+  shows "B\<^bsup><\<omega>\<^esup> = {z \<in> Pow\<^bsup>M\<^esup>(\<Union>(\<omega>\<rightarrow>\<^bsup>M\<^esup>B)). \<exists>x[M]. \<exists>n[M]. n \<in> \<omega> \<and> z \<in> x \<and> x = n \<rightarrow>\<^bsup>M\<^esup> B}"
+  using assms seqspace_subset_Pow_rel nat_into_M seqspace_imp_M
+    transM[OF _ finite_funspace_closed, of _ _ B] function_space_rel_char
+  by (intro equalityI) (auto dest:transM dest!:seqspaceD)
+
+end \<comment> \<open>\<^locale>\<open>M_pre_seqspace\<close>\<close>
+
+locale M_seqspace =  M_pre_seqspace +
   assumes
-    seqspace_replacement: "M(B) \<Longrightarrow> strong_replacement(M,\<lambda>n z. n\<in>nat \<and> is_funspace(M,n,B,z))"
+    seqspace_separation: "M(B) \<Longrightarrow> separation(M,\<lambda>z. \<exists>x[M]. \<exists>n[M]. n \<in> \<omega> \<and> z \<in> x \<and> x = n \<rightarrow>\<^bsup>M\<^esup> B)"
 begin
 
 lemma seqspace_closed:
   "M(B) \<Longrightarrow> M(B\<^bsup><\<omega>\<^esup>)"
-  unfolding seqspace_def using seqspace_replacement[of B] RepFun_closed2
+  using seqspace_eq_Collect using seqspace_separation
   by simp
-end
+
+end \<comment> \<open>\<^locale>\<open>M_seqspace\<close>\<close>
 
 subsection\<open>Representation of finite functions\<close>
 

@@ -16,10 +16,7 @@ The order relation of the poset is that of being less defined as functions
 (cf. \<^term>\<open>Fnlerel(A\<^bsup><\<omega>\<^esup>)\<close>), so it could be surprising that we have not used
 \<^term>\<open>Fn(\<omega>,\<omega>,2)\<close> for the set. The only reason why we keep this alternative
 definition is because we can prove \<^term>\<open>A\<^bsup><\<omega>\<^esup> \<in> M\<close> (and therefore
-\<^term>\<open>Fnlerel(A\<^bsup><\<omega>\<^esup>) \<in> M\<close>) using only one instance of replacement.\<close>
-
-sublocale M_ZF2_trans \<subseteq> M_seqspace "##M"
-  by (unfold_locales, simp add:replacement_omega_funspace)
+\<^term>\<open>Fnlerel(A\<^bsup><\<omega>\<^esup>) \<in> M\<close>) using only one instance of separation.\<close>
 
 definition seq_upd :: "i \<Rightarrow> i \<Rightarrow> i" where
   "seq_upd(f,a) \<equiv> \<lambda> j \<in> succ(domain(f)) . if j < domain(f) then f`j else a"

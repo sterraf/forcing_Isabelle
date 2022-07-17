@@ -344,7 +344,7 @@ definition replacement_dcwit_repl_body_fm where "replacement_dcwit_repl_body_fm 
 locale M_ZF2 = M_ZF1 +
   assumes
     replacement_ax2:
-    "replacement_assm(M,env,replacement_is_omega_funspace_fm)"
+    "True"
     "replacement_assm(M,env,replacement_HAleph_wfrec_repl_body_fm)"
     "replacement_assm(M,env,replacement_is_fst2_snd2_fm)"
     "replacement_assm(M,env,replacement_is_sndfst_fst2_snd2_fm)"
@@ -371,8 +371,7 @@ locale M_ZF2 = M_ZF1 +
     "replacement_assm(M,env,LambdaPair_in_M_fm(composition_fm(0,1,2),0))"
 
 definition instances2_fms where "instances2_fms \<equiv>
-  { replacement_is_omega_funspace_fm,
-    replacement_HAleph_wfrec_repl_body_fm,
+  { replacement_HAleph_wfrec_repl_body_fm,
     replacement_is_fst2_snd2_fm,
     replacement_is_sndfst_fst2_snd2_fm,
     replacement_is_order_eq_map_fm,
@@ -393,10 +392,9 @@ definition instances2_fms where "instances2_fms \<equiv>
     LambdaPair_in_M_fm(is_RepFun_body_fm(0,1,2),0),
     LambdaPair_in_M_fm(composition_fm(0,1,2),0) }"
 
-text\<open>This set has 21 internalized formulas.\<close>
+text\<open>This set has 20 internalized formulas.\<close>
 
 lemmas replacement_instances2_defs =
-  replacement_is_omega_funspace_fm_def
   replacement_HAleph_wfrec_repl_body_fm_def
   replacement_is_fst2_snd2_fm_def
   replacement_is_sndfst_fst2_snd2_fm_def
@@ -572,22 +570,6 @@ lemma lam_replacement_comp:
     arity_composition_fm[of 0 1 2] ord_simp_union LambdaPair_in_M_replacement2(6)
   by simp
 
-lemma omega_funspace_abs:
-  "B\<in>M \<Longrightarrow> n\<in>M \<Longrightarrow> z\<in>M \<Longrightarrow> is_omega_funspace(##M,B,n,z) \<longleftrightarrow> n\<in>\<omega> \<and> is_funspace(##M,n,B,z)"
-  unfolding is_omega_funspace_def using nat_in_M by simp
-
-lemma replacement_is_omega_funspace:
-  "B\<in>M \<Longrightarrow> strong_replacement(##M, is_omega_funspace(##M,B))"
-  using strong_replacement_rel_in_ctm[where \<phi>="omega_funspace_fm(2,0,1)" and env="[B]"]
-    zero_in_M arity_omega_funspace_fm ord_simp_union replacement_ax2(1)
-  by simp
-
-lemma replacement_omega_funspace:
-  "b\<in>M\<Longrightarrow>strong_replacement(##M, \<lambda>n z. n\<in>\<omega> \<and> is_funspace(##M,n,b,z))"
-  using strong_replacement_cong[THEN iffD2,OF _ replacement_is_omega_funspace[of b]]
-    omega_funspace_abs[of b] setclass_iff[THEN iffD1]
-  by (simp del:setclass_iff)
-
 lemma replacement_HAleph_wfrec_repl_body:
   "B\<in>M \<Longrightarrow> strong_replacement(##M, HAleph_wfrec_repl_body(##M,B))"
   using strong_replacement_rel_in_ctm[where \<phi>="HAleph_wfrec_repl_body_fm(2,0,1)" and env="[B]"]
@@ -729,6 +711,9 @@ sublocale M_ZF2_trans \<subseteq> M_Perm "##M"
       lam_replacement_Sigfun[OF lam_replacement_constant]]
     Pi_replacement1 unfolding Sigfun_def
   by unfold_locales simp_all
+
+sublocale M_ZF2_trans \<subseteq> M_pre_seqspace "##M"
+  by unfold_locales
 
 context M_ZF2_trans
 begin
@@ -1460,6 +1445,41 @@ lemma (in M_ZF2_trans) separation_ifrangeF_body7:
     separation_cong[where P="is_ifrangeF_body7(##M,A,B,D,G,b,f)" and M="##M",THEN iffD1]
   unfolding ifrangeF_body7_def if_range_F_def if_range_F_else_F_def ifrFb_body7_def
   by simp
+
+definition omfunspace :: "[i,i] \<Rightarrow> o" where
+  "omfunspace(B) \<equiv> \<lambda>z. \<exists>x. \<exists>n\<in>\<omega>. z\<in>x \<and> x = n\<rightarrow>B"
+relativize functional "omfunspace" "omfunspace_rel"
+relationalize "omfunspace_rel" "is_omfunspace"
+synthesize "is_omfunspace" from_definition assuming "nonempty"
+arity_theorem for "is_omfunspace_fm"
+
+context M_pre_seqspace
+begin
+
+is_iff_rel for "omfunspace"
+  using is_function_space_iff
+  unfolding omfunspace_rel_def is_omfunspace_def
+  by (simp add:absolut)
+
+end \<comment> \<open>\<^locale>\<open>M_pre_seqspace\<close>\<close>
+
+context M_ZF2_trans
+begin
+
+lemma separation_omfunspace:
+  assumes "(##M)(B)"
+  shows "separation(##M, \<lambda>z. \<exists>x[##M]. \<exists>n[##M]. n \<in> \<omega> \<and> z \<in> x \<and> x = n \<rightarrow>\<^bsup>M\<^esup> B)"
+  using assms separation_in_ctm[where env="[B]" and \<phi>="is_omfunspace_fm(1,0)"
+      and Q="is_omfunspace(##M,B)"]
+    nonempty is_omfunspace_iff[of B, THEN separation_cong, of "##M"]
+    arity_is_omfunspace_fm is_omfunspace_fm_type
+  unfolding omfunspace_rel_def
+  by (auto simp add:ord_simp_union)
+
+end \<comment> \<open>\<^locale>\<open>M_ZF2_trans\<close>\<close>
+
+sublocale M_ZF2_trans \<subseteq> M_seqspace "##M"
+  using separation_omfunspace by unfold_locales
 
 definition cdltgamma :: "[i,i] \<Rightarrow> o" where
   "cdltgamma(\<gamma>) \<equiv> \<lambda>Z . |Z| < \<gamma>"

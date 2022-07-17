@@ -288,7 +288,7 @@ sublocale M_ZF3_trans \<subseteq> M_aleph "##M"
   by unfold_locales
 
 sublocale M_ZF2_trans \<subseteq> M_FiniteFun "##M"
-  using separation_is_function replacement_omega_funspace
+  using separation_is_function separation_omfunspace
   by unfold_locales simp
 
 sublocale M_ZFC1_trans \<subseteq> M_AC "##M"
@@ -327,7 +327,6 @@ locale M_ZF4 = M_ZF3 +
     "ground_replacement_assm(M,env,tl_repl_intf_fm)"
     "ground_replacement_assm(M,env,formula_repl1_intf_fm)"
     "ground_replacement_assm(M,env,eclose_repl1_intf_fm)"
-    "ground_replacement_assm(M,env,replacement_is_omega_funspace_fm)"
     "ground_replacement_assm(M,env,replacement_HAleph_wfrec_repl_body_fm)"
     "ground_replacement_assm(M,env,replacement_is_fst2_snd2_fm)"
     "ground_replacement_assm(M,env,replacement_is_sndfst_fst2_snd2_fm)"
@@ -365,7 +364,6 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(tl_repl_intf_fm),
     ground_repl_fm(formula_repl1_intf_fm),
     ground_repl_fm(eclose_repl1_intf_fm),
-    ground_repl_fm(replacement_is_omega_funspace_fm),
     ground_repl_fm(replacement_HAleph_wfrec_repl_body_fm),
     ground_repl_fm(replacement_is_fst2_snd2_fm),
     ground_repl_fm(replacement_is_sndfst_fst2_snd2_fm),
@@ -387,14 +385,14 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(Lambda_in_M_fm(is_converse_fm(0,1),0)),
     ground_repl_fm(Lambda_in_M_fm(domain_fm(0,1),0)) }"
 
-text\<open>This set has 36 internalized formulas, corresponding to the total count
+text\<open>This set has 35 internalized formulas, corresponding to the total count
 of previous replacement instances.\<close>
 
 definition overhead where
   "overhead \<equiv> instances1_fms \<union> instances2_fms \<union> instances3_fms \<union> instances4_fms \<union> instances_ground_fms"
 
 text\<open>Hence, the “overhead” to force $\CH$ and its negation consists
-of 72 replacement instances.\<close>
+of 70 replacement instances.\<close>
 
 lemma instances3_fms_type[TC] : "instances3_fms \<subseteq> formula"
   unfolding instances3_fms_def replacement_is_order_body_fm_def
