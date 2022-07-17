@@ -1,13 +1,16 @@
 Better Hierarchy of Locales
 ===========================
-- The following items are not obvious!
+
+The following items are not obvious!
+
 - Move dcwit to M_ZF_ground
+
 - Revise the comment in Not_CH about other instances (Pedro):
-ground_replacement_assm(M,env,replacement_is_omega_funspace_fm)
-ground_replacement_assm(M,env,dcwit_repl_body_fm(6,5,4,3,2,0,1))
-ground_replacement_assm(M,env,LambdaPair_in_M_fm(is_inj_fm(0,1,2),0))
-ground_replacement_assm(M,env,replacement_transrec_apply_image_body_fm)
-ground_replacement_assm(M,env,replacement_is_trans_apply_image_fm)
+    ground_replacement_assm(M,env,dcwit_repl_body_fm(6,5,4,3,2,0,1))
+    ground_replacement_assm(M,env,LambdaPair_in_M_fm(is_inj_fm(0,1,2),0))
+    ground_replacement_assm(M,env,replacement_transrec_apply_image_body_fm)
+    ground_replacement_assm(M,env,replacement_is_trans_apply_image_fm)
+
 - Can we remove lam_replacement_image?
 
 
@@ -61,7 +64,7 @@ General Tasks
 - Move general results proved in some context to the definition
   of the context.
 
-- Revise locale assumptions of separation and replacemente. They
+- Revise locale assumptions of separation and replacement. They
   should involve relativized concepts. We are not clear if we need
   them to be even relationalized (which would make them closer to the
   internalized versions). This discussion surely depends on is_iff
@@ -76,7 +79,7 @@ Tidying up sources for release
 - Remove auxiliary commands (find_theorems, try, try0).
 - Remove diagnostic commands (term, thm --- keep this last one in
   Definitions_Main.thy!)
-- Clean up warnings (today: Not_CH, CH)
+- Clean up warnings (as of this commit, unavoidable in 3 theories)
 
 
 ZF-Constructible

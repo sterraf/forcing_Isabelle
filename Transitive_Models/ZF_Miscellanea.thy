@@ -44,6 +44,9 @@ lemma function_space_nonempty:
   shows "(\<lambda>x\<in>A. b) : A \<rightarrow> B"
   using assms lam_type by force
 
+lemma lam_constant_eq_cartprod: "(\<lambda>_\<in>A. y) = A \<times> {y}"
+  unfolding lam_def by auto
+
 lemma vimage_lam: "(\<lambda>x\<in>A. f(x)) -`` B = { x\<in>A . f(x) \<in> B }"
   using lam_funtype[of A f, THEN [2] domain_type]
     lam_funtype[of A f, THEN [2] apply_equality] lamI[of _ A f]

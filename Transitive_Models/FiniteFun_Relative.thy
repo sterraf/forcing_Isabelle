@@ -50,9 +50,32 @@ begin
 lemma function_space_subset_Pow_rel:
   assumes "n\<in>\<omega>" "M(B)"
   shows "n\<rightarrow>B \<subseteq> Pow\<^bsup>M\<^esup>(\<Union>(\<omega>\<rightarrow>\<^bsup>M\<^esup>B))"
-  using assms
-  apply (auto dest:transM intro!:mem_Pow_rel_abs[THEN iffD2])
-  sorry
+proof -
+  {
+    fix f p
+    assume "f \<subseteq> n \<times> B" "p \<in> f"
+    with assms
+    obtain x y where "p =\<langle>x,y\<rangle>" "x\<in>n" "y\<in>B" by auto
+    with assms
+    have "p \<in> (\<lambda>_\<in>\<omega>. y)"
+      using Ord_trans[of _ _ \<omega>] lam_constant_eq_cartprod by simp
+    moreover
+    note assms and \<open>y\<in>B\<close>
+    moreover from this
+    have "M(\<lambda>_\<in>\<omega>. y)" using lam_constant_eq_cartprod by (auto dest:transM)
+    moreover from calculation
+    have "(\<lambda>_\<in>\<omega>. y) : \<omega> \<rightarrow>\<^bsup>M\<^esup> B"
+      using mem_function_space_rel_abs[of \<omega> B, THEN iffD2]
+      by simp
+    ultimately
+    have "\<exists>B\<in>\<omega> \<rightarrow>\<^bsup>M\<^esup> B. p \<in> B"
+      by (rule_tac x="\<lambda>_\<in>\<omega>. y" in bexI)
+  }
+  with assms
+  show ?thesis
+    by (auto dest:transM intro!:mem_Pow_rel_abs[THEN iffD2])
+      (unfold Pi_def, auto)
+qed
 
 lemma seqspace_subset_Pow_rel:
   assumes "M(B)"

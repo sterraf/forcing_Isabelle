@@ -394,6 +394,21 @@ definition overhead where
 text\<open>Hence, the “overhead” to force $\CH$ and its negation consists
 of 70 replacement instances.\<close>
 
+(*
+axiomatization
+  card :: "i\<Rightarrow>i" where
+  card_0 [simp]: "card(0) = 0" and
+  card_cons [simp]: "card(cons(x,y)) = succ(card(y))"
+
+schematic_goal
+  "card(instances1_fms) = ?n" (* 11 *)
+  "card(instances2_fms) = ?m" (* 20 *)
+  "card(instances3_fms) = ?o" (*  4 *)
+  "card(instances4_fms) = ?p" (* 35 *)
+  unfolding instances1_fms_def instances2_fms_def instances3_fms_def instances4_fms_def
+  by simp_all
+*)
+
 lemma instances3_fms_type[TC] : "instances3_fms \<subseteq> formula"
   unfolding instances3_fms_def replacement_is_order_body_fm_def
     wfrec_replacement_order_pred_fm_def replacement_is_jump_cardinal_body_fm_def

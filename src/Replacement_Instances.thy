@@ -344,7 +344,6 @@ definition replacement_dcwit_repl_body_fm where "replacement_dcwit_repl_body_fm 
 locale M_ZF2 = M_ZF1 +
   assumes
     replacement_ax2:
-    "True"
     "replacement_assm(M,env,replacement_HAleph_wfrec_repl_body_fm)"
     "replacement_assm(M,env,replacement_is_fst2_snd2_fm)"
     "replacement_assm(M,env,replacement_is_sndfst_fst2_snd2_fm)"
@@ -573,7 +572,7 @@ lemma lam_replacement_comp:
 lemma replacement_HAleph_wfrec_repl_body:
   "B\<in>M \<Longrightarrow> strong_replacement(##M, HAleph_wfrec_repl_body(##M,B))"
   using strong_replacement_rel_in_ctm[where \<phi>="HAleph_wfrec_repl_body_fm(2,0,1)" and env="[B]"]
-    zero_in_M arity_HAleph_wfrec_repl_body_fm replacement_ax2(2) ord_simp_union
+    zero_in_M arity_HAleph_wfrec_repl_body_fm replacement_ax2(1) ord_simp_union
   by simp
 
 lemma HAleph_wfrec_repl:
@@ -606,7 +605,7 @@ lemma replacement_dcwit_repl_body:
    strong_replacement(##M, dcwit_repl_body(##M,mesa,A,a,s,R))"
   using strong_replacement_rel_in_ctm[where \<phi>="dcwit_repl_body_fm(6,5,4,3,2,0,1)"
       and env="[R,s,a,A,mesa]" and f="dcwit_repl_body(##M,mesa,A,a,s,R)"]
-    zero_in_M arity_dcwit_repl_body replacement_ax2(10)
+    zero_in_M arity_dcwit_repl_body replacement_ax2(9)
   by simp
 
 lemma dcwit_repl:
@@ -631,7 +630,7 @@ lemma dcwit_repl:
 lemma replacement_fst2_snd2: "strong_replacement(##M, \<lambda>x y. y = \<langle>fst(fst(x)), snd(snd(x))\<rangle>)"
   using strong_replacement_in_ctm[where \<phi>="is_fst2_snd2_fm(0,1)" and env="[]"]
     zero_in_M fst_snd_closed pair_in_M_iff
-    arity_is_fst2_snd2_fm ord_simp_union fst2_snd2_abs replacement_ax2(3)
+    arity_is_fst2_snd2_fm ord_simp_union fst2_snd2_abs replacement_ax2(2)
   unfolding fst2_snd2_def
   by simp
 
@@ -646,7 +645,7 @@ lemma replacement_sndfst_fst2_snd2:
   "strong_replacement(##M, \<lambda>x y. y = \<langle>snd(fst(x)), fst(fst(x)), snd(snd(x))\<rangle>)"
   using strong_replacement_in_ctm[where \<phi>="is_sndfst_fst2_snd2_fm(0,1)" and env="[]"]
     zero_in_M fst_snd_closed pair_in_M_iff
-    arity_is_sndfst_fst2_snd2_fm ord_simp_union sndfst_fst2_snd2_abs replacement_ax2(4)
+    arity_is_sndfst_fst2_snd2_fm ord_simp_union sndfst_fst2_snd2_abs replacement_ax2(3)
   unfolding sndfst_fst2_snd2_def
   by simp
 
@@ -722,7 +721,7 @@ lemma replacement_is_order_eq_map:
   "A\<in>M \<Longrightarrow> r\<in>M \<Longrightarrow> strong_replacement(##M, order_eq_map(##M,A,r))"
   using strong_replacement_rel_in_ctm[where \<phi>="order_eq_map_fm(2,3,0,1)" and env="[A,r]"  and f="order_eq_map(##M,A,r)"]
     order_eq_map_iff_sats[where env="[_,_,A,r]"] zero_in_M fst_snd_closed pair_in_M_iff
-    arity_order_eq_map_fm ord_simp_union replacement_ax2(5)
+    arity_order_eq_map_fm ord_simp_union replacement_ax2(4)
   by simp
 
 lemma banach_iterates:
@@ -732,7 +731,7 @@ proof -
   have "strong_replacement(##M, \<lambda> x z . banach_body_iterates(##M,X,Y,f,g,W,n,x,z))" if "n\<in>\<omega>" for n
     using assms that arity_banach_body_iterates_fm ord_simp_union nat_into_M
       strong_replacement_rel_in_ctm[where \<phi>="banach_body_iterates_fm(7,6,5,4,3,2,0,1)"
-        and env="[n,W,g,f,Y,X]"] replacement_ax2(9)
+        and env="[n,W,g,f,Y,X]"] replacement_ax2(8)
     by simp
   then
   show ?thesis
@@ -749,7 +748,7 @@ proof -
   have "strong_replacement(##M, \<lambda> n z . banach_is_iterates_body(##M,X,Y,f,g,W,n,z))"
     using assms arity_banach_is_iterates_body_fm ord_simp_union nat_into_M
       strong_replacement_rel_in_ctm[where \<phi>="banach_is_iterates_body_fm(6,5,4,3,2,0,1)"
-        and env="[W,g,f,Y,X]"] replacement_ax2(7)
+        and env="[W,g,f,Y,X]"] replacement_ax2(6)
     by simp
   then
   show ?thesis
@@ -784,7 +783,7 @@ lemma replacement_transrec_apply_image_body :
   "(##M)(f) \<Longrightarrow> (##M)(mesa) \<Longrightarrow> strong_replacement(##M,transrec_apply_image_body(##M,f,mesa))"
   using strong_replacement_rel_in_ctm[where \<phi>="transrec_apply_image_body_fm(3,2,0,1)" and env="[mesa,f]"]
     zero_in_M arity_transrec_apply_image_body_fm ord_simp_union
-    replacement_ax2(6)
+    replacement_ax2(5)
   by simp
 
 lemma transrec_replacement_apply_image:
@@ -809,7 +808,7 @@ lemma replacement_is_trans_apply_image:
         where P="\<lambda> x z. M,[x,z,\<beta>,f] \<Turnstile> is_trans_apply_image_body_fm(3,2,0,1)",THEN iffD1])
    apply(rule_tac is_trans_apply_image_body_iff_sats[symmetric,unfolded is_trans_apply_image_body_def,where env="[_,_,\<beta>,f]"])
             apply(simp_all add:zero_in_M)
-  apply(rule_tac replacement_ax2(8)[unfolded replacement_assm_def, rule_format, where env="[\<beta>,f]",simplified])
+  apply(rule_tac replacement_ax2(7)[unfolded replacement_assm_def, rule_format, where env="[\<beta>,f]",simplified])
     apply(simp_all add: arity_is_trans_apply_image_body_fm is_trans_apply_image_body_fm_type ord_simp_union)
   done
 
