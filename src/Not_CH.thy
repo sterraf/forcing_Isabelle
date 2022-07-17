@@ -129,10 +129,17 @@ lemmas (in M_ZF3_trans) sep_instances =
 lemmas (in M_ZF3_trans) repl_instances = lam_replacement_inj_rel
   replacement_trans_apply_image
 
-sublocale M_ZFC3_trans \<subseteq> M_master "##M"
-  using replacement_dcwit_repl_body\<comment> \<open>this is another replacement instance\<close>
+sublocale M_ZFC3_ground_trans \<subseteq> M_master "##M"
+  using replacement_dcwit_repl_body \<comment> \<open>this is another replacement instance\<close>
   by unfold_locales (simp_all add:repl_instances sep_instances del:setclass_iff
       add: transrec_replacement_def wfrec_replacement_def dcwit_repl_body_def)
+
+sublocale M_ZFC3_trans \<subseteq> M_Pi_replacement "##M"
+  by unfold_locales
+
+sublocale M_ZFC3_trans \<subseteq> M_cardinal_library "##M"
+  by unfold_locales (simp_all add:repl_instances sep_instances del:setclass_iff
+      add: transrec_replacement_def wfrec_replacement_def)
 
 subsection\<open>Cohen forcing is ccc\<close>
 
@@ -514,8 +521,8 @@ proof -
     unfolding overhead_def ZC_def
     by auto
   with \<open>Transset(M)\<close>
-  interpret M_ZF_ground M
-    using M_satT_imp_M_ZF_ground
+  interpret M_ZF_ground_trans M
+    using M_satT_imp_M_ZF_ground_trans
     by simp
   from \<open>M \<approx> \<omega>\<close>
   obtain enum where "enum \<in> bij(\<omega>,M)"

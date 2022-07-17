@@ -352,7 +352,6 @@ locale M_ZF2 = M_ZF1 +
     "replacement_assm(M,env,banach_replacement_iterates_fm)"
     "replacement_assm(M,env,replacement_is_trans_apply_image_fm)"
     "replacement_assm(M,env,banach_iterates_fm)"
-    "replacement_assm(M,env,replacement_dcwit_repl_body_fm)"
     and
     Lambda_in_M_replacement2:
     "replacement_assm(M,env,Lambda_in_M_fm(fst_fm(0,1),0))"
@@ -378,7 +377,6 @@ definition instances2_fms where "instances2_fms \<equiv>
     banach_replacement_iterates_fm,
     replacement_is_trans_apply_image_fm,
     banach_iterates_fm,
-    replacement_dcwit_repl_body_fm,
     Lambda_in_M_fm(fst_fm(0,1),0),
     Lambda_in_M_fm(domain_fm(0,1),0),
     Lambda_in_M_fm(snd_fm(0,1),0),
@@ -402,7 +400,6 @@ lemmas replacement_instances2_defs =
   banach_replacement_iterates_fm_def
   replacement_is_trans_apply_image_fm_def
   banach_iterates_fm_def
-  replacement_dcwit_repl_body_fm_def
 
 declare (in M_ZF2) replacement_instances2_defs [simp]
 
@@ -417,24 +414,26 @@ first one corresponds to the recursive definition of forces for atomic
 formulas; the next two corresponds to \<^term>\<open>PHcheck\<close>; the following
 is used to get a generic filter using some form of choice.\<close>
 
-locale M_ZF_ground = M_ZF2_trans +
+locale M_ZF_ground = M_ZF2 +
   assumes
-    ZF_ground_replacements :
-      "replacement_assm(M,env,wfrec_Hfrc_at_fm)"
-      "replacement_assm(M,env,wfrec_Hcheck_fm)"
-      "replacement_assm(M,env,Lambda_in_M_fm(check_fm(2,0,1),1))"
+    ZF_ground_replacements:
+    "replacement_assm(M,env,wfrec_Hfrc_at_fm)"
+    "replacement_assm(M,env,wfrec_Hcheck_fm)"
+    "replacement_assm(M,env,Lambda_in_M_fm(check_fm(2,0,1),1))"
+    "replacement_assm(M,env,replacement_dcwit_repl_body_fm)"
 
+locale M_ZF_ground_trans = M_ZF2_trans + M_ZF_ground
 
 definition instances_ground_fms where "instances_ground_fms \<equiv>
   { wfrec_Hfrc_at_fm,
     wfrec_Hcheck_fm,
-    Lambda_in_M_fm(check_fm(2,0,1),1)
-}
-"
+    Lambda_in_M_fm(check_fm(2,0,1),1),
+    replacement_dcwit_repl_body_fm }"
 
 lemma instances_ground_fms_type[TC]: "instances_ground_fms \<subseteq> formula"
   using Lambda_in_M_fm_type
-  unfolding instances_ground_fms_def wfrec_Hfrc_at_fm_def wfrec_Hcheck_fm_def by simp
+  unfolding instances_ground_fms_def wfrec_Hfrc_at_fm_def wfrec_Hcheck_fm_def
+    replacement_dcwit_repl_body_fm_def by simp
 
 locale M_ZFC2 = M_ZFC1 + M_ZF2
 
@@ -446,7 +445,7 @@ locale M_ctm1 = M_ZF1_trans +
 
 locale M_ctm1_AC = M_ctm1 + M_ZFC1_trans
 
-locale M_ctm2 = M_ctm1 + M_ZF_ground
+locale M_ctm2 = M_ctm1 + M_ZF_ground_trans
 
 locale M_ctm2_AC = M_ctm2 + M_ZFC2_trans
 
@@ -600,15 +599,16 @@ lemma HAleph_wfrec_repl:
   using replacement_HAleph_wfrec_repl_body unfolding HAleph_wfrec_repl_body_def by simp
 
 
-lemma replacement_dcwit_repl_body:
+lemma (in M_ZF_ground_trans) replacement_dcwit_repl_body:
   "(##M)(mesa) \<Longrightarrow> (##M)(A) \<Longrightarrow> (##M)(a) \<Longrightarrow> (##M)(s) \<Longrightarrow> (##M)(R) \<Longrightarrow>
    strong_replacement(##M, dcwit_repl_body(##M,mesa,A,a,s,R))"
   using strong_replacement_rel_in_ctm[where \<phi>="dcwit_repl_body_fm(6,5,4,3,2,0,1)"
       and env="[R,s,a,A,mesa]" and f="dcwit_repl_body(##M,mesa,A,a,s,R)"]
-    zero_in_M arity_dcwit_repl_body replacement_ax2(9)
+    zero_in_M arity_dcwit_repl_body ZF_ground_replacements(4)
+  unfolding replacement_dcwit_repl_body_fm_def
   by simp
 
-lemma dcwit_repl:
+lemma (in M_ZF_ground_trans) dcwit_repl:
   "(##M)(sa) \<Longrightarrow>
         (##M)(esa) \<Longrightarrow>
         (##M)(mesa) \<Longrightarrow> (##M)(A) \<Longrightarrow> (##M)(a) \<Longrightarrow> (##M)(s) \<Longrightarrow> (##M)(R) \<Longrightarrow>

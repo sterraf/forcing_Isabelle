@@ -362,8 +362,8 @@ proof -
     unfolding overhead_def ZC_def
     by auto
   with \<open>Transset(M)\<close>
-  interpret M_ZF_ground M
-    using M_satT_imp_M_ZF_ground
+  interpret M_ZF_ground_trans M
+    using M_satT_imp_M_ZF_ground_trans
     by simp
   from \<open>M \<approx> \<omega>\<close>
   obtain enum where "enum \<in> bij(\<omega>,M)"

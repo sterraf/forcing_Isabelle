@@ -6,7 +6,6 @@ The following items are not obvious!
 - Move dcwit to M_ZF_ground
 
 - Revise the comment in Not_CH about other instances (Pedro):
-    ground_replacement_assm(M,env,dcwit_repl_body_fm(6,5,4,3,2,0,1))
     ground_replacement_assm(M,env,LambdaPair_in_M_fm(is_inj_fm(0,1,2),0))
     ground_replacement_assm(M,env,replacement_transrec_apply_image_body_fm)
     ground_replacement_assm(M,env,replacement_is_trans_apply_image_fm)

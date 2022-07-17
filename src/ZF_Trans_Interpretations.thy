@@ -38,9 +38,17 @@ locale M_ZFC3 = M_ZFC2 + M_ZF3
 
 locale M_ZFC3_trans = M_ZFC2_trans + M_ZF3_trans
 
-locale M_ctm3 = M_ctm2 + M_ZF3_trans + M_ZF2_trans
+locale M_ZF3_ground = M_ZF3 + M_ZF_ground
 
-locale M_ctm3_AC = M_ctm3 + M_ctm1_AC + M_ZFC3_trans
+locale M_ZF3_ground_trans = M_ZF3_trans + M_ZF3_ground + M_ZF_ground_trans
+
+locale M_ZFC3_ground = M_ZFC3 + M_ZF3_ground
+
+locale M_ZFC3_ground_trans = M_ZFC3_trans + M_ZF3_ground_trans
+
+locale M_ctm3 = M_ctm2 + M_ZF3_ground_trans
+
+locale M_ctm3_AC = M_ctm3 + M_ctm1_AC + M_ZFC3_ground_trans
 
 lemmas (in M_ZF2_trans) separation_instances =
   separation_well_ord
@@ -335,7 +343,6 @@ locale M_ZF4 = M_ZF3 +
     "ground_replacement_assm(M,env,banach_replacement_iterates_fm)"
     "ground_replacement_assm(M,env,replacement_is_trans_apply_image_fm)"
     "ground_replacement_assm(M,env,banach_iterates_fm)"
-    "ground_replacement_assm(M,env,dcwit_repl_body_fm(6,5,4,3,2,0,1))"
     "ground_replacement_assm(M,env,Lambda_in_M_fm(fst_fm(0,1),0))"
     "ground_replacement_assm(M,env,Lambda_in_M_fm(big_union_fm(0,1),0))"
     "ground_replacement_assm(M,env,Lambda_in_M_fm(snd_fm(0,1),0))"
@@ -372,7 +379,6 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(banach_replacement_iterates_fm),
     ground_repl_fm(replacement_is_trans_apply_image_fm),
     ground_repl_fm(banach_iterates_fm),
-    ground_repl_fm(dcwit_repl_body_fm(6,5,4,3,2,0,1)),
     ground_repl_fm(Lambda_in_M_fm(fst_fm(0,1),0)),
     ground_repl_fm(Lambda_in_M_fm(big_union_fm(0,1),0)),
     ground_repl_fm(Lambda_in_M_fm(snd_fm(0,1),0)),
@@ -385,8 +391,8 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(Lambda_in_M_fm(is_converse_fm(0,1),0)),
     ground_repl_fm(Lambda_in_M_fm(domain_fm(0,1),0)) }"
 
-text\<open>This set has 35 internalized formulas, corresponding to the total
-count of previous replacement instances (apart from those 3 in
+text\<open>This set has 34 internalized formulas, corresponding to the total
+count of previous replacement instances (apart from those 4 in
 \<^term>\<open>instances_ground_fms\<close>).\<close>
 
 definition overhead where
@@ -394,7 +400,7 @@ definition overhead where
      instances4_fms \<union> instances_ground_fms"
 
 text\<open>Hence, the “overhead” to force $\CH$ and its negation consists
-of 73 replacement instances.\<close>
+of 72 replacement instances.\<close>
 
 (*
 axiomatization
@@ -404,9 +410,9 @@ axiomatization
 
 schematic_goal
   "card(instances1_fms) = ?n" (* 11 *)
-  "card(instances2_fms) = ?m" (* 20 *)
+  "card(instances2_fms) = ?m" (* 19 *)
   "card(instances3_fms) = ?o" (*  4 *)
-  "card(instances4_fms) = ?p" (* 35 *)
+  "card(instances4_fms) = ?p" (* 34 *)
   unfolding instances1_fms_def instances2_fms_def instances3_fms_def instances4_fms_def
   by simp_all
 *)
@@ -509,9 +515,9 @@ proof -
     by unfold_locales (simp_all add:replacement_assm_def ground_replacement_assm_def)
 qed
 
-theorem M_satT_imp_M_ZF_ground:
+theorem M_satT_imp_M_ZF_ground_trans:
   assumes "Transset(M)" "M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms \<union> instances_ground_fms}"
-  shows "M_ZF_ground(M)"
+  shows "M_ZF_ground_trans(M)"
 proof -
   from \<open>M \<Turnstile> \<cdot>Z\<cdot> \<union> _\<close>
   have "M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms}"
