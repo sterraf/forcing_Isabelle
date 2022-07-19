@@ -446,39 +446,89 @@ proof -
     by (rule_tac lam_replacement_iff_lam_closed[THEN iffD2]) simp_all
 qed
 
-\<comment> \<open>Below we assume the replacement instance for @{term fst}. Alternatively it follows from the
-instance of separation assumed in this lemma.\<close>
-lemma lam_replacement_fst':
-  assumes "\<forall>A[M]. separation(M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, fst(x)\<rangle>)"
-  shows "lam_replacement(M,fst)"
+lemma fst_in_double_Union:
+  assumes "x\<in>X" "M(X)"
+  shows "fst(x) \<in> {0} \<union> \<Union>\<Union>X"
 proof -
   have "fst(x) \<in> {0} \<union> \<Union>x" for x
     unfolding fst_def
     using the_0 fst_conv
     by(cases "\<exists>!a.\<exists>b. x = \<langle>a,b\<rangle>", auto, simp add:Pair_def)
-  then
-  have "\<forall>x\<in>X. fst(x) \<in> {0} \<union> \<Union>\<Union>X" if "M(X)" for X
-    using that by auto
   with assms
-  show ?thesis
-    using bounded_lam_replacement[of fst "\<lambda>X. {0} \<union> \<Union>\<Union>X"] by simp
+  show ?thesis by auto
 qed
 
-lemma lam_replacement_snd':
-  assumes "\<forall>A[M]. separation(M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, snd(x)\<rangle>)"
-  shows "lam_replacement(M,snd)"
+lemma snd_in_double_Union:
+  assumes "x\<in>X" "M(X)"
+  shows "snd(x) \<in> {0} \<union> \<Union>\<Union>X"
 proof -
   have "snd(x) \<in> {0} \<union> \<Union>x" for x
     unfolding snd_def
     using the_0 snd_conv
-    by(cases "\<exists>!a.\<exists>b. x = \<langle>b,a\<rangle>", auto, simp add:Pair_def)
-  then
-  have "\<forall>x\<in>X. snd(x) \<in> {0} \<union> \<Union>\<Union>X" if "M(X)" for X
-    using that by auto
+    by(cases "\<exists>!a.\<exists>b. x = \<langle>a,b\<rangle>", auto, simp add:Pair_def)
   with assms
-  show ?thesis
-    using bounded_lam_replacement[of snd "\<lambda>X. {0} \<union> \<Union>\<Union>X"] by simp
+  show ?thesis by auto
 qed
+
+lemma bounded_lam_replacement_binary:
+  fixes U
+  assumes "\<forall>X[M]. \<forall>x\<in>X. \<forall>y\<in>X. f(x,y) \<in> U(X)"
+    and separation_f:"\<forall>A[M]. separation(M,\<lambda>y. \<exists>x[M]. x\<in>A \<and> y = \<langle>x, f(fst(x),snd(x))\<rangle>)"
+    and U_closed [intro,simp]: "\<And>X. M(X) \<Longrightarrow> M(U(X))"
+  shows "lam_replacement(M, \<lambda>r . f(fst(r),snd(r)))"
+proof -
+  have "M(\<lambda>x\<in>A. f(fst(x),snd(x)))" if "M(A)" for A
+  proof -
+    have "(\<lambda>x\<in>A. f(fst(x),snd(x))) =
+      {y\<in> Pow\<^bsup>M\<^esup>(Pow\<^bsup>M\<^esup>(A \<union> U({0} \<union> \<Union>\<Union>A))). \<exists>x[M]. x\<in>A \<and> y = \<langle>x, f(fst(x),snd(x))\<rangle>}"
+      using \<open>M(A)\<close> unfolding lam_def
+    proof (intro equalityI, auto)
+      fix x
+      assume "x\<in>A"
+      moreover
+      note \<open>M(A)\<close>
+      moreover from calculation assms
+      have "f(fst(x),snd(x)) \<in> U({0} \<union> \<Union>\<Union>A)"
+        using fst_in_double_Union snd_in_double_Union by simp
+      moreover from calculation
+      have "{x, f(fst(x),snd(x))} \<in> Pow\<^bsup>M\<^esup>(A \<union> U({0} \<union> \<Union>\<Union>A))"
+        "{x,x} \<in> Pow\<^bsup>M\<^esup>(A \<union> U({0} \<union> \<Union>\<Union>A))"
+        using Pow_rel_char[of "A \<union> U({0} \<union> \<Union>\<Union>A)"] by (auto dest:transM)
+      ultimately
+      show "\<langle>x, f(fst(x),snd(x))\<rangle> \<in> Pow\<^bsup>M\<^esup>(Pow\<^bsup>M\<^esup>(A \<union> U({0} \<union> \<Union>\<Union>A)))"
+        using Pow_rel_char[of "Pow\<^bsup>M\<^esup>(A \<union> U({0} \<union> \<Union>\<Union>A))"] unfolding Pair_def
+        by (auto dest:transM)
+    qed
+    moreover from \<open>M(A)\<close>
+    have "M({y\<in> Pow\<^bsup>M\<^esup>(Pow\<^bsup>M\<^esup>(A \<union> U({0} \<union> \<Union>\<Union>A))). \<exists>x[M]. x\<in>A \<and> y = \<langle>x, f(fst(x),snd(x))\<rangle>})"
+      using separation_f
+      by (rule_tac separation_closed) simp_all
+    ultimately
+    show ?thesis
+      by simp
+  qed
+  moreover from this
+  have "\<forall>x[M]. M(f(fst(x),snd(x)))"
+    using lam_closed_imp_closed[of "\<lambda>x. f(fst(x),snd(x))"] by simp
+  ultimately
+  show ?thesis
+    using assms
+    by (rule_tac lam_replacement_iff_lam_closed[THEN iffD2]) simp_all
+qed
+
+\<comment> \<open>Below we assume the replacement instance for @{term fst}. Alternatively it follows from the
+instance of separation assumed in this lemma.\<close>
+lemma lam_replacement_fst':
+  assumes "\<forall>A[M]. separation(M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, fst(x)\<rangle>)"
+  shows "lam_replacement(M,fst)"
+  using fst_in_double_Union assms
+    bounded_lam_replacement[of fst "\<lambda>X. {0} \<union> \<Union>\<Union>X"] by simp
+
+lemma lam_replacement_snd':
+  assumes "\<forall>A[M]. separation(M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, snd(x)\<rangle>)"
+  shows "lam_replacement(M,snd)"
+  using snd_in_double_Union assms
+    bounded_lam_replacement[of snd "\<lambda>X. {0} \<union> \<Union>\<Union>X"] by simp
 
 lemma lam_replacement_restrict:
   assumes "\<forall>A[M]. separation(M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, restrict(x,B)\<rangle>)"  "M(B)"
@@ -535,7 +585,6 @@ proof -
     using bounded_lam_replacement[where U="\<lambda>A . Pow\<^bsup>M\<^esup>(\<Union>\<Union>A)"]
     by auto
 qed
-
 
 end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
 
