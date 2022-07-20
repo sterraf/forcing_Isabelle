@@ -588,6 +588,25 @@ qed
 
 end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
 
+context M_Perm
+begin
+
+lemma inj_rel_in_Pow_rel_Pow_rel:
+  assumes "x\<in>X" "y\<in>X" "M(X)"
+  shows "inj\<^bsup>M\<^esup>(x,y) \<in> Pow\<^bsup>M\<^esup>(Pow\<^bsup>M\<^esup>(\<Union>X \<times> \<Union>X))"
+  using assms transM[of _  X] mem_Pow_rel_abs inj_def Pi_def
+  by clarsimp (use inj_rel_char in auto)
+
+lemma lam_replacement_inj_rel':
+  assumes
+    "\<forall>A[M]. separation(M,\<lambda>y. \<exists>x[M]. x\<in>A \<and> y = \<langle>x, inj\<^bsup>M\<^esup>(fst(x),snd(x))\<rangle>)"
+  shows
+    "lam_replacement(M, \<lambda>r . inj\<^bsup>M\<^esup>(fst(r),snd(r)))"
+  using assms inj_rel_in_Pow_rel_Pow_rel
+  by (rule_tac bounded_lam_replacement_binary[of _ "\<lambda>X. Pow\<^bsup>M\<^esup>(Pow\<^bsup>M\<^esup>(\<Union>X \<times> \<Union>X))"]) auto
+
+end \<comment> \<open>\<^locale>\<open>M_Perm\<close>\<close>
+
 locale M_replacement = M_basic +
   assumes
     lam_replacement_domain: "lam_replacement(M,domain)"

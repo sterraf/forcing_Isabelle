@@ -759,6 +759,20 @@ end \<comment> \<open>\<^locale>\<open>M_N_Perm\<close>\<close>
 
 (***************  end Discipline  *********************)
 
+context M_Perm
+begin
+
+lemma mem_bij_rel: "\<lbrakk>f \<in> bij\<^bsup>M\<^esup>(A,B); M(A); M(B)\<rbrakk> \<Longrightarrow> f\<in>bij(A,B)"
+  using bij_rel_char by simp
+
+lemma mem_inj_rel: "\<lbrakk>f \<in> inj\<^bsup>M\<^esup>(A,B); M(A); M(B)\<rbrakk> \<Longrightarrow> f\<in>inj(A,B)"
+  using inj_rel_char by simp
+
+lemma mem_surj_rel: "\<lbrakk>f \<in> surj\<^bsup>M\<^esup>(A,B); M(A); M(B)\<rbrakk> \<Longrightarrow> f\<in>surj(A,B)"
+  using surj_rel_char by simp
+
+end \<comment> \<open>\<^locale>\<open>M_Perm\<close>\<close>
+
 (******************************************************)
 subsection\<open>Discipline for \<^term>\<open>eqpoll\<close>\<close>
 

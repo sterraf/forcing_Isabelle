@@ -184,15 +184,6 @@ end \<comment> \<open>\<^locale>\<open>M_Pi_assumptions\<close>\<close>
 context M_ZF_library
 begin
 
-lemma mem_bij_rel: "\<lbrakk>f \<in> bij\<^bsup>M\<^esup>(A,B); M(A); M(B)\<rbrakk> \<Longrightarrow> f\<in>bij(A,B)"
-  using bij_rel_char by simp
-
-lemma mem_inj_rel: "\<lbrakk>f \<in> inj\<^bsup>M\<^esup>(A,B); M(A); M(B)\<rbrakk> \<Longrightarrow> f\<in>inj(A,B)"
-  using inj_rel_char by simp
-
-lemma mem_surj_rel: "\<lbrakk>f \<in> surj\<^bsup>M\<^esup>(A,B); M(A); M(B)\<rbrakk> \<Longrightarrow> f\<in>surj(A,B)"
-  using surj_rel_char by simp
-
 lemmas rel_apply_in_range = apply_in_codomain_Ord[OF _ _ mem_function_space_rel]
 
 lemmas rel_range_eq_image = ZF_Library.range_eq_image[OF mem_function_space_rel]
