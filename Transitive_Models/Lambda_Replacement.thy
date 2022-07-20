@@ -623,6 +623,71 @@ qed
 
 end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
 
+definition
+  middle_del :: "i\<Rightarrow>i\<Rightarrow>i" where
+  "middle_del(x,y) \<equiv> \<langle>fst(x),snd(y)\<rangle>"
+
+context M_basic
+begin
+
+lemma middle_del_in_cartprod:
+  assumes "x\<in>X" "y\<in>X" "M(X)"
+  shows "middle_del(x,y) \<in> ({0} \<union> \<Union>\<Union>X) \<times> ({0} \<union> \<Union>\<Union>X)"
+    using assms Pow_rel_char transM[of _ X] fst_in_double_Union snd_in_double_Union
+    unfolding middle_del_def by auto
+
+lemma lam_replacement_middle_del:
+  assumes
+    "\<forall>A[M]. separation(M,\<lambda>y. \<exists>x[M]. x\<in>A \<and> y = \<langle>x, middle_del(fst(x),snd(x))\<rangle>)"
+  shows
+    "lam_replacement(M, \<lambda>r . middle_del(fst(r),snd(r)))"
+  using assms middle_del_in_cartprod
+  by (rule_tac bounded_lam_replacement_binary[of _ "\<lambda>X. ({0} \<union> \<Union>\<Union>X) \<times> ({0} \<union> \<Union>\<Union>X)"]) auto
+
+lemma middle_del_replacement':
+  assumes
+    "\<forall>A[M]. separation(M,\<lambda>y. \<exists>x[M]. x\<in>A \<and> y = \<langle>x, middle_del(fst(x),snd(x))\<rangle>)"
+  shows
+    "strong_replacement(M, \<lambda>x y. y=\<langle>fst(fst(x)),snd(snd(x))\<rangle>)"
+  using assms lam_replacement_middle_del lam_replacement_imp_strong_replacement_aux
+  unfolding middle_del_def
+  by auto
+
+end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
+
+definition
+  prodRepl :: "i\<Rightarrow>i\<Rightarrow>i" where
+  "prodRepl(x,y) \<equiv> \<langle>snd(x),\<langle>fst(x),snd(y)\<rangle>\<rangle>"
+
+context M_basic
+begin
+
+lemma prodRepl_in_cartprod:
+  assumes "x\<in>X" "y\<in>X" "M(X)"
+  shows "prodRepl(x,y) \<in> ({0} \<union> \<Union>\<Union>X) \<times> ({0} \<union> \<Union>\<Union>X) \<times> ({0} \<union> \<Union>\<Union>X)"
+    using assms Pow_rel_char transM[of _ X] fst_in_double_Union snd_in_double_Union
+    unfolding prodRepl_def by auto
+
+lemma lam_replacement_prodRepl:
+  assumes
+    "\<forall>A[M]. separation(M,\<lambda>y. \<exists>x[M]. x\<in>A \<and> y = \<langle>x, prodRepl(fst(x),snd(x))\<rangle>)"
+  shows
+    "lam_replacement(M, \<lambda>r . prodRepl(fst(r),snd(r)))"
+  using assms prodRepl_in_cartprod
+  by (rule_tac bounded_lam_replacement_binary[of _
+        "\<lambda>X. ({0} \<union> \<Union>\<Union>X) \<times> ({0} \<union> \<Union>\<Union>X) \<times> ({0} \<union> \<Union>\<Union>X)"]) auto
+
+lemma product_replacement':
+  assumes
+    "\<forall>A[M]. separation(M,\<lambda>y. \<exists>x[M]. x\<in>A \<and> y = \<langle>x, prodRepl(fst(x),snd(x))\<rangle>)"
+  shows
+    "strong_replacement(M, \<lambda>x y. y=\<langle>snd(fst(x)),\<langle>fst(fst(x)),snd(snd(x))\<rangle>\<rangle>)"
+  using assms lam_replacement_prodRepl lam_replacement_imp_strong_replacement_aux
+  unfolding prodRepl_def
+  by auto
+
+end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
+
 context M_Perm
 begin
 
