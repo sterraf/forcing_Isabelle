@@ -2130,6 +2130,26 @@ lemma phrank_repl:
     lam_replacement_imp_strong_replacement lam_replacement_hcomp
   by auto
 
+lemma lam_replacement_Pow_rel:
+  assumes "\<forall>A[M]. separation(M, \<lambda>y. \<exists>x[M]. x \<in> A \<and> y = \<langle>x, Pow_rel(M,x)\<rangle>)"
+  shows "lam_replacement(M,Pow_rel(M))"
+proof -
+  have "Pow_rel(M,x) \<in> Pow(Pow(\<Union>A))" if "x\<in>A" "M(A)" for x A
+    using that transM[of x A] def_Pow_rel[of _ x] by (auto dest:transM)
+  then
+  have "Pow_rel(M,x) \<in> Pow(Pow\<^bsup>M\<^esup>(\<Union>A))" if "M(A)" "x\<in>A" for x A
+    using that transM[of x A] Pow_rel_char
+    by auto
+  then
+  have "Pow_rel(M,x) \<in> Pow\<^bsup>M\<^esup>(Pow\<^bsup>M\<^esup>(\<Union>A))" if "M(A)" "x\<in>A" for x A
+    using that transM[of x A] Pow_rel_char[of "Pow\<^bsup>M\<^esup>(\<Union>A)"]
+    by auto
+  with assms
+  show ?thesis
+    using bounded_lam_replacement[where U="\<lambda>A. Pow\<^bsup>M\<^esup>(Pow\<^bsup>M\<^esup>(\<Union>A))"]
+    by auto
+qed
+
 end \<comment> \<open>\<^locale>\<open>M_replacement\<close>\<close>
 
 locale M_Pi_replacement = M_Pi + M_replacement
