@@ -601,6 +601,26 @@ lemma lam_replacement_minimum':
   using assms minimum_in_Union
   by (rule_tac bounded_lam_replacement_binary[of _ "\<lambda>X. {0} \<union> \<Union>X"]) auto
 
+lemma lam_replacement_Pow_rel:
+  assumes "\<forall>A[M]. separation(M, \<lambda>y. \<exists>x[M]. x \<in> A \<and> y = \<langle>x, Pow_rel(M,x)\<rangle>)"
+  shows "lam_replacement(M,Pow_rel(M))"
+proof -
+  have "Pow_rel(M,x) \<in> Pow(Pow(\<Union>A))" if "x\<in>A" "M(A)" for x A
+    using that transM[of x A] def_Pow_rel[of _ x] by (auto dest:transM)
+  then
+  have "Pow_rel(M,x) \<in> Pow(Pow\<^bsup>M\<^esup>(\<Union>A))" if "M(A)" "x\<in>A" for x A
+    using that transM[of x A] Pow_rel_char
+    by auto
+  then
+  have "Pow_rel(M,x) \<in> Pow\<^bsup>M\<^esup>(Pow\<^bsup>M\<^esup>(\<Union>A))" if "M(A)" "x\<in>A" for x A
+    using that transM[of x A] Pow_rel_char[of "Pow\<^bsup>M\<^esup>(\<Union>A)"]
+    by auto
+  with assms
+  show ?thesis
+    using bounded_lam_replacement[where U="\<lambda>A. Pow\<^bsup>M\<^esup>(Pow\<^bsup>M\<^esup>(\<Union>A))"]
+    by auto
+qed
+
 end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
 
 context M_Perm
@@ -2130,25 +2150,17 @@ lemma phrank_repl:
     lam_replacement_imp_strong_replacement lam_replacement_hcomp
   by auto
 
-lemma lam_replacement_Pow_rel:
+lemma lam_replacement_Powapply_rel:
   assumes "\<forall>A[M]. separation(M, \<lambda>y. \<exists>x[M]. x \<in> A \<and> y = \<langle>x, Pow_rel(M,x)\<rangle>)"
-  shows "lam_replacement(M,Pow_rel(M))"
-proof -
-  have "Pow_rel(M,x) \<in> Pow(Pow(\<Union>A))" if "x\<in>A" "M(A)" for x A
-    using that transM[of x A] def_Pow_rel[of _ x] by (auto dest:transM)
-  then
-  have "Pow_rel(M,x) \<in> Pow(Pow\<^bsup>M\<^esup>(\<Union>A))" if "M(A)" "x\<in>A" for x A
-    using that transM[of x A] Pow_rel_char
-    by auto
-  then
-  have "Pow_rel(M,x) \<in> Pow\<^bsup>M\<^esup>(Pow\<^bsup>M\<^esup>(\<Union>A))" if "M(A)" "x\<in>A" for x A
-    using that transM[of x A] Pow_rel_char[of "Pow\<^bsup>M\<^esup>(\<Union>A)"]
-    by auto
-  with assms
-  show ?thesis
-    using bounded_lam_replacement[where U="\<lambda>A. Pow\<^bsup>M\<^esup>(Pow\<^bsup>M\<^esup>(\<Union>A))"]
-    by auto
-qed
+    "M(f)"
+  shows
+    "lam_replacement(M, Powapply_rel(M,f))"
+  using assms lam_replacement_Pow_rel lam_replacement_apply[THEN lam_replacement_hcomp]
+  unfolding Powapply_rel_def
+  by auto
+
+lemmas Powapply_rel_replacement = lam_replacement_Powapply_rel[THEN
+    lam_replacement_imp_strong_replacement]
 
 end \<comment> \<open>\<^locale>\<open>M_replacement\<close>\<close>
 
