@@ -447,25 +447,28 @@ proof -
     by simp
 qed
 
+lemma domain_sub_Union3:
+  assumes "r\<in>R" shows "domain(r) \<subseteq> (\<Union>\<Union>\<Union>R)"
+  using assms
+  unfolding domain_def Pair_def
+  by auto
+
+lemma range_sub_Union3:
+  assumes "r\<in>R" shows "range(r) \<subseteq> (\<Union>\<Union>\<Union>R)"
+  unfolding range_def converse_def domain_def
+  by (clarsimp, auto simp add:Pair_def,rule_tac x="r" in rev_bexI,auto simp add:assms)
+
 lemma lam_replacement_converse':
   assumes "\<forall>A[M]. separation(M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, converse(x)\<rangle>)"
   shows "lam_replacement(M, \<lambda>r . converse(r))"
 proof -
-  have "domain(r) \<subseteq> (\<Union>\<Union>\<Union>R)" if "r\<in>R" for r R
-    unfolding domain_def Pair_def
-    using that
-    by auto
-  moreover
-  have "range(r) \<subseteq> (\<Union>\<Union>\<Union>R)" if "r\<in>R" for r R
-    unfolding range_def converse_def domain_def
-    by (clarsimp, auto simp add:Pair_def,rule_tac x="r" in rev_bexI,auto simp add:that)
-  moreover
   have "converse(r) \<subseteq> range(r) \<times> domain(r)" for r
     unfolding range_def domain_def converse_def
     by auto
-  moreover from calculation
+  moreover from this
   have "converse(r) \<in> Pow(\<Union>\<Union>\<Union>R \<times> \<Union>\<Union>\<Union>R)" if "r\<in>R" for r R
-    using subset_trans[OF \<open>converse(_)\<subseteq>_\<close>] Sigma_mono that
+    using that domain_sub_Union3 range_sub_Union3
+      subset_trans[OF \<open>converse(_)\<subseteq>_\<close>] Sigma_mono
     by auto
   ultimately
   have "converse(r) \<in> Pow\<^bsup>M\<^esup>((\<Union>\<Union>\<Union>R \<times> \<Union>\<Union>\<Union>R))" if "M(R)" "r\<in>R" for r R
@@ -480,12 +483,8 @@ lemma lam_replacement_domain' :
   assumes  "\<forall>A[M]. separation(M, \<lambda>y. \<exists>x[M]. x \<in> A \<and> y = \<langle>x, domain(x)\<rangle>)"
   shows "lam_replacement(M,domain)"
 proof -
-  have "domain(x) \<in> Pow(\<Union>\<Union>\<Union>A)" if "x\<in>A" for x A
-    using that
-    unfolding domain_def Pair_def by auto
-  then
   have "domain(x) \<in> Pow\<^bsup>M\<^esup>(\<Union>\<Union>\<Union>A)" if "M(A)" "x\<in>A" for x A
-    using that transM[of x A] Pow_rel_char
+    using that domain_sub_Union3 transM[of x A] Pow_rel_char
     by auto
   with assms
   show ?thesis
@@ -508,6 +507,85 @@ proof -
     using bounded_lam_replacement[where U="\<lambda>A . Pow\<^bsup>M\<^esup>(\<Union>\<Union>A)"]
     by auto
 qed
+
+lemma Upair_in_Pow_rel:
+  assumes "x\<in>X" "y\<in>X" "M(X)"
+  shows "Upair(x,y) \<in> Pow\<^bsup>M\<^esup>(X)"
+  using assms transM[of _  X] mem_Pow_rel_abs
+  by auto
+
+lemma lam_replacement_Upair':
+  assumes
+    "\<forall>A[M]. separation(M,\<lambda>y. \<exists>x[M]. x\<in>A \<and> y = \<langle>x, Upair(fst(x),snd(x))\<rangle>)"
+  shows
+    "lam_replacement(M, \<lambda>r . Upair(fst(r),snd(r)))"
+  using assms Upair_in_Pow_rel
+  by (rule_tac bounded_lam_replacement_binary[of _ "\<lambda>X. Pow\<^bsup>M\<^esup>(X)"]) auto
+
+lemma Diff_in_Pow_rel_Pow_rel:
+  assumes "x\<in>X" "y\<in>X" "M(X)"
+  shows "Diff(x,y) \<in> Pow\<^bsup>M\<^esup>(\<Union>X)"
+  using assms transM[of _  X] mem_Pow_rel_abs
+  by auto
+
+lemma lam_replacement_Diff'':
+  assumes
+    "\<forall>A[M]. separation(M,\<lambda>y. \<exists>x[M]. x\<in>A \<and> y = \<langle>x, Diff(fst(x),snd(x))\<rangle>)"
+  shows
+    "lam_replacement(M, \<lambda>r . Diff(fst(r),snd(r)))"
+  using assms Diff_in_Pow_rel_Pow_rel
+  by (rule_tac bounded_lam_replacement_binary[of _ "\<lambda>X. Pow\<^bsup>M\<^esup>(\<Union>X)"]) auto
+
+lemma Image_in_Pow_rel_Union3:
+  assumes "x\<in>X" "y\<in>X" "M(X)"
+  shows "Image(x,y) \<in> Pow\<^bsup>M\<^esup>(\<Union>\<Union>\<Union>X)"
+proof -
+  from assms
+  have "\<langle>a, b\<rangle> \<in> x \<Longrightarrow> b \<in> \<Union>\<Union>x" for a b
+    unfolding Pair_def by (auto dest:transM)
+  moreover from this and assms
+  have "\<langle>a, b\<rangle> \<in> x \<Longrightarrow> M(b)" for a b
+    using transM[of _  X] transM[of _  x]
+    by auto
+  ultimately
+  show ?thesis
+    using assms transM[of _  X] transM[of _  x] mem_Pow_rel_abs
+    by auto fast
+qed
+
+lemma lam_replacement_Image':
+  assumes
+    "\<forall>A[M]. separation(M,\<lambda>y. \<exists>x[M]. x\<in>A \<and> y = \<langle>x, Image(fst(x),snd(x))\<rangle>)"
+  shows
+    "lam_replacement(M, \<lambda>r . Image(fst(r),snd(r)))"
+  using assms Image_in_Pow_rel_Union3
+  by (rule_tac bounded_lam_replacement_binary[of _ "\<lambda>X. Pow\<^bsup>M\<^esup>(\<Union>\<Union>\<Union>X)"]) auto
+
+lemma comp_in_Pow_rel:
+  assumes "x\<in>X" "y\<in>X" "M(X)"
+  shows "comp(x,y) \<in> Pow\<^bsup>M\<^esup>((\<Union>\<Union>\<Union>X \<times> \<Union>\<Union>\<Union>X))"
+proof -
+  have "comp(x,y) \<subseteq> domain(y) \<times> range(x)"
+    using M_comp_iff by auto
+  moreover
+  note assms
+  moreover from this
+  have "comp(x,y) \<in> Pow(\<Union>\<Union>\<Union>X \<times> \<Union>\<Union>\<Union>X)"
+    using domain_sub_Union3 range_sub_Union3
+      subset_trans[OF \<open>comp(_,_)\<subseteq>_\<close>] Sigma_mono
+    by auto
+  ultimately
+  show "comp(x,y) \<in> Pow\<^bsup>M\<^esup>((\<Union>\<Union>\<Union>X \<times> \<Union>\<Union>\<Union>X))"
+    using Pow_rel_char transM[of _ X] by auto
+qed
+
+lemma lam_replacement_comp'':
+  assumes
+    "\<forall>A[M]. separation(M,\<lambda>y. \<exists>x[M]. x\<in>A \<and> y = \<langle>x, comp(fst(x),snd(x))\<rangle>)"
+  shows
+    "lam_replacement(M, \<lambda>r . comp(fst(r),snd(r)))"
+  using assms comp_in_Pow_rel
+  by (rule_tac bounded_lam_replacement_binary[of _ "\<lambda>X. Pow\<^bsup>M\<^esup>((\<Union>\<Union>\<Union>X \<times> \<Union>\<Union>\<Union>X))"]) auto
 
 end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
 
