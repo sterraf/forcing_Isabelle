@@ -74,6 +74,11 @@ definition
   minimum :: "i \<Rightarrow> i \<Rightarrow> i" where
   "minimum(r,B) \<equiv> THE b. first(b,B,r)"
 
+lemma minimum_in': "minimum(r,B) \<in> B \<union> {0}"
+  using the_0 first_is_elem unfolding minimum_def
+  by (cases "\<exists>!b. first(b, B, r)")
+    (auto dest!:theI[of "\<lambda>b. first(b, B, r)"])
+
 lemma minimum_in: "\<lbrakk> well_ord(A,r); B\<subseteq>A; B\<noteq>0 \<rbrakk> \<Longrightarrow> minimum(r,B) \<in> B"
   using the_first_in unfolding minimum_def by simp
 

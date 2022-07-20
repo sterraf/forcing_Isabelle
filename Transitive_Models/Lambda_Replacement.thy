@@ -522,7 +522,7 @@ lemma lam_replacement_Upair':
   using assms Upair_in_Pow_rel
   by (rule_tac bounded_lam_replacement_binary[of _ "\<lambda>X. Pow\<^bsup>M\<^esup>(X)"]) auto
 
-lemma Diff_in_Pow_rel_Pow_rel:
+lemma Diff_in_Pow_rel_Union:
   assumes "x\<in>X" "y\<in>X" "M(X)"
   shows "Diff(x,y) \<in> Pow\<^bsup>M\<^esup>(\<Union>X)"
   using assms transM[of _  X] mem_Pow_rel_abs
@@ -533,7 +533,7 @@ lemma lam_replacement_Diff'':
     "\<forall>A[M]. separation(M,\<lambda>y. \<exists>x[M]. x\<in>A \<and> y = \<langle>x, Diff(fst(x),snd(x))\<rangle>)"
   shows
     "lam_replacement(M, \<lambda>r . Diff(fst(r),snd(r)))"
-  using assms Diff_in_Pow_rel_Pow_rel
+  using assms Diff_in_Pow_rel_Union
   by (rule_tac bounded_lam_replacement_binary[of _ "\<lambda>X. Pow\<^bsup>M\<^esup>(\<Union>X)"]) auto
 
 lemma Image_in_Pow_rel_Union3:
@@ -586,6 +586,20 @@ lemma lam_replacement_comp'':
     "lam_replacement(M, \<lambda>r . comp(fst(r),snd(r)))"
   using assms comp_in_Pow_rel
   by (rule_tac bounded_lam_replacement_binary[of _ "\<lambda>X. Pow\<^bsup>M\<^esup>((\<Union>\<Union>\<Union>X \<times> \<Union>\<Union>\<Union>X))"]) auto
+
+lemma minimum_in_Union:
+  assumes "x\<in>X" "y\<in>X" "M(X)"
+  shows "minimum(x,y) \<in> {0} \<union> \<Union>X"
+  using assms minimum_in'
+  by auto
+
+lemma lam_replacement_minimum':
+  assumes
+    "\<forall>A[M]. separation(M,\<lambda>y. \<exists>x[M]. x\<in>A \<and> y = \<langle>x, minimum(fst(x),snd(x))\<rangle>)"
+  shows
+    "lam_replacement(M, \<lambda>r . minimum(fst(r),snd(r)))"
+  using assms minimum_in_Union
+  by (rule_tac bounded_lam_replacement_binary[of _ "\<lambda>X. {0} \<union> \<Union>X"]) auto
 
 end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
 
@@ -2076,6 +2090,36 @@ lemma curry_closed :
     lam_apply_replacement lam_replacement_iff_lam_closed
   unfolding curry_def
   by auto
+
+definition
+  RepFun_cons :: "i\<Rightarrow>i\<Rightarrow>i" where
+  "RepFun_cons(x,y) \<equiv> RepFun(x, \<lambda>z. {\<langle>y,z\<rangle>})"
+
+lemma RepFun_cons_in_Union:
+  assumes "x\<in>X" "y\<in>X" "M(X)"
+  shows "RepFun_cons(x,y) \<in> Pow\<^bsup>M\<^esup>(Pow\<^bsup>M\<^esup>(X \<times> \<Union>X))"
+proof -
+  from assms
+  have "M(RepFun_cons(x,y))"
+    using transM[of _  X] transM[of _  x]
+      lam_replacement_sing[THEN lam_replacement_imp_strong_replacement]
+      lam_replacement_imp_strong_replacement lam_replacement_sing_const_id
+    unfolding RepFun_cons_def
+    by (rule_tac RepFun_closed) auto
+  with assms
+  show ?thesis
+    using transM[of _  X] transM[of _  x] mem_Pow_rel_abs
+    unfolding RepFun_cons_def
+    by auto
+qed
+
+lemma lam_replacement_RepFun_cons':
+  assumes
+    "\<forall>A[M]. separation(M,\<lambda>y. \<exists>x[M]. x\<in>A \<and> y = \<langle>x, RepFun_cons(fst(x),snd(x))\<rangle>)"
+  shows (* FIXME: definition expanded below and in the locale assumption *)
+    "lam_replacement(M, \<lambda>p. RepFun(fst(p), \<lambda>x. {\<langle>snd(p),x\<rangle>}))"
+  using assms RepFun_cons_in_Union unfolding RepFun_cons_def
+  by (rule_tac bounded_lam_replacement_binary[of _ "\<lambda>X. Pow\<^bsup>M\<^esup>(Pow\<^bsup>M\<^esup>(X \<times> \<Union>X))"]) auto
 
 end \<comment> \<open>\<^locale>\<open>M_replacement\<close>\<close>
 
