@@ -106,104 +106,6 @@ proof -
     by simp
 qed
 
-lemma converse_subset : "converse(r) \<subseteq> {\<langle>snd(x),fst(x)\<rangle> . x\<in>r}"
-  unfolding converse_def
-proof(intro subsetI, auto)
-  fix u v
-  assume "\<langle>u,v\<rangle>\<in>r" (is "?z\<in>r")
-  moreover
-  have "v=snd(?z)" "u=fst(?z)" by simp_all
-  ultimately
-  show "\<exists>z\<in>r. v=snd(z) \<and> u = fst(z)"
-    using rexI[where x="\<langle>u,v\<rangle>"] by force
-qed
-
-lemma converse_eq_aux :
-  assumes "<0,0>\<in>r"
-  shows "converse(r) = {\<langle>snd(x),fst(x)\<rangle> . x\<in>r}"
-  using converse_subset
-proof(intro equalityI subsetI,auto)
-  fix z
-  assume "z\<in>r"
-  then show "\<langle>fst(z),snd(z)\<rangle> \<in> r"
-  proof(cases "\<exists> a b . z =\<langle>a,b\<rangle>")
-    case True
-    with \<open>z\<in>r\<close>
-    show ?thesis by auto
-  next
-    case False
-    then
-    have "fst(z) = 0" "snd(z)=0"
-      unfolding fst_def snd_def by auto
-    with \<open>z\<in>r\<close> assms
-    show ?thesis by auto
-  qed
-qed
-
-lemma converse_eq_aux' :
-  assumes "<0,0>\<notin>r"
-  shows "converse(r) = {\<langle>snd(x),fst(x)\<rangle> . x\<in>r} - {<0,0>}"
-  using converse_subset assms
-proof(intro equalityI subsetI,auto)
-  fix z
-  assume "z\<in>r" "snd(z)\<noteq>0"
-  then
-  obtain a b where "z = \<langle>a,b\<rangle>" unfolding snd_def by force
-  with \<open>z\<in>r\<close>
-  show "\<langle>fst(z),snd(z)\<rangle> \<in> r"
-    by auto
-next
-  fix z
-  assume "z\<in>r" "fst(z)\<noteq>0"
-  then
-  obtain a b where "z = \<langle>a,b\<rangle>" unfolding fst_def by force
-  with \<open>z\<in>r\<close>
-  show "\<langle>fst(z),snd(z)\<rangle> \<in> r"
-    by auto
-qed
-
-lemma converse_eq: "converse(r) = ({\<langle>snd(x),fst(x)\<rangle> . x\<in>r} - {<0,0>}) \<union> (r\<inter>{<0,0>})"
-proof(cases "<0,0>\<in>r")
-  have *:"b\<subseteq>a \<Longrightarrow> (a-b) \<union> b = a" for a b
-    by auto
-  case True
-  then
-  have "converse(r) = {\<langle>snd(x),fst(x)\<rangle> . x\<in>r}"
-    using converse_eq_aux by auto
-  moreover
-  from True
-  have "r\<inter>{<0,0>} = {<0,0>}" "{<0,0>}\<subseteq>{\<langle>snd(x),fst(x)\<rangle> . x\<in>r}"
-    using converse_subset by auto
-  moreover from this True
-  have "{\<langle>snd(x),fst(x)\<rangle> . x\<in>r} = ({\<langle>snd(x),fst(x)\<rangle> . x\<in>r} - {<0,0>}) \<union> ({<0,0>})"
-    using *[of "{<0,0>}",symmetric] converse_eq_aux by auto
-  ultimately
-  show ?thesis
-    by simp
-next
-  case False
-  then
-  have "r\<inter>{<0,0>} = 0" by auto
-  then
-  have "({\<langle>snd(x),fst(x)\<rangle> . x\<in>r} - {<0,0>}) \<union> (r\<inter>{<0,0>}) = ({\<langle>snd(x),fst(x)\<rangle> . x\<in>r} - {<0,0>})"
-    by simp
-  with False
-  show ?thesis
-    using converse_eq_aux' by auto
-qed
-
-lemma range_subset : "range(r) \<subseteq> {snd(x). x\<in>r}"
-  unfolding range_def domain_def converse_def
-proof(intro subsetI, auto)
-  fix u v
-  assume "\<langle>u,v\<rangle>\<in>r" (is "?z\<in>r")
-  moreover
-  have "v=snd(?z)" "u=fst(?z)" by simp_all
-  ultimately
-  show "\<exists>z\<in>r. v=snd(z)"
-    using rexI[where x="v"] by force
-qed
-
 lemma lam_replacement_imp_strong_replacement_aux:
   assumes "lam_replacement(M, b)" "\<forall>x[M]. M(b(x))"
   shows "strong_replacement(M, \<lambda>x y. y = b(x))"
@@ -534,22 +436,43 @@ lemma lam_replacement_restrict:
   assumes "\<forall>A[M]. separation(M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, restrict(x,B)\<rangle>)"  "M(B)"
   shows "lam_replacement(M, \<lambda>r . restrict(r,B))"
 proof -
-  have "\<forall>r\<in>R. restrict(r,B)\<in>Pow\<^bsup>M\<^esup>(\<Union>R)" if "M(R)" for R
-  proof -
-    {
-      fix r
-      assume "r\<in>R"
-      with \<open>M(B)\<close>
-      have "restrict(r,B)\<in>Pow(\<Union>R)" "M(restrict(r,B))"
-        using Union_upper subset_Pow_Union subset_trans[OF restrict_subset]
-          transM[OF _ \<open>M(R)\<close>]
-        by simp_all
-    } then show ?thesis
-      using Pow_rel_char that by simp
-  qed
+  from assms
+  have "restrict(r,B)\<in>Pow\<^bsup>M\<^esup>(\<Union>R)" if "M(R)" "r\<in>R" for r R
+    using Union_upper subset_Pow_Union subset_trans[OF restrict_subset]
+      Pow_rel_char that transM[of _ R]
+    by auto
   with assms
   show ?thesis
     using bounded_lam_replacement[of "\<lambda>r . restrict(r,B)" "\<lambda>X. Pow\<^bsup>M\<^esup>(\<Union>X)"]
+    by simp
+qed
+
+lemma lam_replacement_converse:
+  assumes "\<forall>A[M]. separation(M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, converse(x)\<rangle>)"
+  shows "lam_replacement(M, \<lambda>r . converse(r))"
+proof -
+  have "domain(r) \<subseteq> (\<Union>\<Union>\<Union>R)" if "r\<in>R" for r R
+    unfolding domain_def Pair_def
+    using that
+    by auto
+  moreover
+  have "range(r) \<subseteq> (\<Union>\<Union>\<Union>R)" if "r\<in>R" for r R
+    unfolding range_def converse_def domain_def
+    by (clarsimp, auto simp add:Pair_def,rule_tac x="r" in rev_bexI,auto simp add:that)
+  moreover
+  have "converse(r) \<subseteq> range(r) \<times> domain(r)" for r
+    unfolding range_def domain_def converse_def
+    by auto
+  moreover from calculation
+  have "converse(r) \<in> Pow(\<Union>\<Union>\<Union>R \<times> \<Union>\<Union>\<Union>R)" if "r\<in>R" for r R
+    using subset_trans[OF \<open>converse(_)\<subseteq>_\<close>] Sigma_mono that
+    by auto
+  ultimately
+  have "converse(r) \<in> Pow\<^bsup>M\<^esup>((\<Union>\<Union>\<Union>R \<times> \<Union>\<Union>\<Union>R))" if "M(R)" "r\<in>R" for r R
+    using that Pow_rel_char transM[of _ R] by auto
+  with assms
+  show ?thesis
+    using bounded_lam_replacement[of "\<lambda>r . converse(r)" "\<lambda>X. Pow\<^bsup>M\<^esup>((\<Union>\<Union>\<Union>X \<times> \<Union>\<Union>\<Union>X))"]
     by simp
 qed
 
