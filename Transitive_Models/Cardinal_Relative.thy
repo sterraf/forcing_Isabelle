@@ -23,6 +23,9 @@ definition
   banach_functor :: "[i,i,i,i,i] \<Rightarrow> i" where
   "banach_functor(X,Y,f,g,W) \<equiv> X - g``(Y - f``W)"
 
+lemma banach_functor_subset: "banach_functor(X,Y,f,g,W) \<subseteq> X"
+  unfolding banach_functor_def by auto
+
 definition
   is_banach_functor :: "[i\<Rightarrow>o,i,i,i,i,i,i]\<Rightarrow>o"  where
   "is_banach_functor(M,X,Y,f,g,W,b) \<equiv>
@@ -42,6 +45,42 @@ lemma (in M_basic) banach_functor_closed:
   shows "\<forall>W[M]. M(banach_functor(X,Y,f,g,W))"
   unfolding banach_functor_def using assms image_closed
   by simp
+
+context M_trancl
+begin
+
+lemma iterates_banach_functor_closed:
+  assumes "n\<in>\<omega>" "M(X)" "M(Y)" "M(f)" "M(g)"
+  shows "M(banach_functor(X,Y,f,g)^n(0))"
+  using assms banach_functor_closed
+  by (induct) simp_all
+
+lemma banach_repl_iter':
+  assumes
+    "\<And>A. M(A) \<Longrightarrow> separation(M, \<lambda>b. \<exists>x\<in>A. x \<in> \<omega> \<and> b = banach_functor(X, Y, f, g)^x (0))"
+    "M(X)" "M(Y)" "M(f)" "M(g)"
+  shows
+    "strong_replacement(M, \<lambda>x y. x\<in>nat \<and> y = banach_functor(X, Y, f, g)^x (0))"
+  unfolding strong_replacement_def
+proof clarsimp
+  fix A
+  let ?Z="{b \<in> Pow\<^bsup>M\<^esup>(X) . (\<exists>x\<in>A. x \<in> \<omega> \<and> b = banach_functor(X, Y, f, g)^x (0))}"
+  assume "M(A)"
+  moreover
+  note assms
+  moreover from calculation
+  have "M(?Z)" by simp
+  moreover from assms(2-)
+  have "b \<in> ?Z \<longleftrightarrow> (\<exists>x\<in>A. x \<in> \<omega> \<and> b = banach_functor(X, Y, f, g)^x (0))" for b
+    by (auto, rename_tac x, induct_tac x, (auto simp:def_Pow_rel)[1],
+        rule_tac def_Pow_rel[THEN iffD2, OF iterates_banach_functor_closed[of _ X Y f g]])
+          (simp_all add:banach_functor_subset)
+  ultimately
+  show "\<exists>Z[M]. \<forall>b[M]. b \<in> Z \<longleftrightarrow> (\<exists>x\<in>A. x \<in> \<omega> \<and> b = banach_functor(X, Y, f, g)^x (0))"
+    by (intro rexI[of _ ?Z]) simp
+qed
+
+end \<comment> \<open>\<^locale>\<open>M_trancl\<close>\<close>
 
 locale M_cardinals = M_ordertype + M_trancl + M_Perm + M_replacement_extra +
   assumes
