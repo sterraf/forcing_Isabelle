@@ -49,7 +49,6 @@ locale M_ZF1 = M_Z_basic +
     "replacement_assm(M,env,eclose_repl1_intf_fm)"
     "replacement_assm(M,env,eclose_repl2_intf_fm)"
     "replacement_assm(M,env,powapply_repl_fm)"
-    "replacement_assm(M,env,phrank_repl_fm)"
     "replacement_assm(M,env,wfrec_rank_fm)"
     "replacement_assm(M,env,trans_repl_HVFrom_fm)"
     "replacement_assm(M,env,tl_repl_intf_fm)"
@@ -62,19 +61,18 @@ definition instances1_fms where "instances1_fms \<equiv>
     eclose_repl1_intf_fm,
     eclose_repl2_intf_fm,
     powapply_repl_fm,
-    phrank_repl_fm,
     wfrec_rank_fm,
     trans_repl_HVFrom_fm,
     tl_repl_intf_fm
  }"
 
-text\<open>This set has 11 internalized formulas.\<close>
+text\<open>This set has 10 internalized formulas.\<close>
 
 lemmas replacement_instances1_defs =
   list_repl1_intf_fm_def list_repl2_intf_fm_def
   formula_repl1_intf_fm_def formula_repl2_intf_fm_def
   eclose_repl1_intf_fm_def eclose_repl2_intf_fm_def
-  powapply_repl_fm_def phrank_repl_fm_def wfrec_rank_fm_def
+  powapply_repl_fm_def wfrec_rank_fm_def
   trans_repl_HVFrom_fm_def tl_repl_intf_fm_def
 
 lemma instances1_fms_type[TC]: "instances1_fms \<subseteq> formula"
@@ -679,7 +677,7 @@ lemma tl_repl_intf:
   shows "iterates_replacement(##M,\<lambda>l' t. is_tl(##M,l',t),l)"
   using assms arity_tl_fm ord_simp_union
     iterates_repl_intf[where is_F_fm="tl_fm(1,0)"]
-    replacement_ax1(11)[unfolded replacement_assm_def]
+    replacement_ax1(10)[unfolded replacement_assm_def]
   by simp
 
 lemma eclose_repl1_intf:
@@ -825,7 +823,6 @@ synthesize "is_Vset" from_schematic "sats_is_Vset_fm_auto"
 arity_theorem for "is_Vset_fm"
 
 declare is_Hrank_fm_def[fm_definitions add]
-declare PHrank_fm_def[fm_definitions add]
 
 context M_ZF1_trans
 begin
@@ -849,30 +846,6 @@ proof -
   show ?thesis
     using replacement_ax1(7)[unfolded replacement_assm_def]
     by (rule_tac strong_replacement_cong[THEN iffD2,OF iff],simp_all)
-qed
-
-lemma phrank_repl :
-  assumes
-    "f\<in>M"
-  shows
-    "strong_replacement(##M, \<lambda>x y. y = succ(f`x))"
-proof -
-  note assms
-  moreover from this
-  have iff:"y = succ(f ` x) \<longleftrightarrow> M, [x, y, f] \<Turnstile> PHrank_fm(2, 0, 1)" if "x\<in>M" "y\<in>M" for x y
-    using PHrank_iff_sats[of 2 "[x,y,f]" f 0 _ 1 _ M] zero_in_M that
-      apply_closed
-    unfolding PHrank_def
-    by simp
-  moreover
-  have "arity(PHrank_fm(2,0,1)) = 3"
-    unfolding PHrank_fm_def
-    by (simp add:arity ord_simp_union)
-  ultimately
-  show ?thesis
-    using replacement_ax1(8)[unfolded replacement_assm_def]
-    unfolding PHrank_def
-    by(rule_tac strong_replacement_cong[THEN iffD2,OF iff],simp_all)
 qed
 
 lemma wfrec_rank :
@@ -907,7 +880,7 @@ proof -
     by simp
   moreover from calculation
   have "strong_replacement(##M,\<lambda>x z. (M, [x,z,rrank(X)] \<Turnstile> ?f))"
-    using replacement_ax1(9)[unfolded replacement_assm_def] rrank_in_M
+    using replacement_ax1(8)[unfolded replacement_assm_def] rrank_in_M
     by simp
   ultimately
   show ?thesis
@@ -960,7 +933,7 @@ proof -
       by simp
     moreover from calculation
     have "strong_replacement(##M,\<lambda>x z. (M, [x,z,A,mesa] \<Turnstile> ?f))"
-      using replacement_ax1(10)[unfolded replacement_assm_def]
+      using replacement_ax1(9)[unfolded replacement_assm_def]
       by simp
     ultimately
     have "wfrec_replacement(##M,is_HVfrom(##M,A),mesa)"
@@ -975,11 +948,6 @@ proof -
 qed
 
 end \<comment> \<open>\<^locale>\<open>M_ZF1_trans\<close>\<close>
-
-sublocale M_ZF1_trans \<subseteq> M_Vfrom "##M"
-  using power_ax Powapply_repl phrank_repl trans_repl_HVFrom wfrec_rank
-  by unfold_locales auto
-
 
 subsection\<open>Interface for proving Collects and Replace in M.\<close>
 context M_ZF1_trans

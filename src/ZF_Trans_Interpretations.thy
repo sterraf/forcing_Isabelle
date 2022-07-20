@@ -329,7 +329,6 @@ locale M_ZF4 = M_ZF3 +
     "ground_replacement_assm(M,env,formula_repl2_intf_fm)"
     "ground_replacement_assm(M,env,eclose_repl2_intf_fm)"
     "ground_replacement_assm(M,env,powapply_repl_fm)"
-    "ground_replacement_assm(M,env,phrank_repl_fm)"
     "ground_replacement_assm(M,env,wfrec_rank_fm)"
     "ground_replacement_assm(M,env,trans_repl_HVFrom_fm)"
     "ground_replacement_assm(M,env,tl_repl_intf_fm)"
@@ -365,7 +364,6 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(formula_repl2_intf_fm),
     ground_repl_fm(eclose_repl2_intf_fm),
     ground_repl_fm(powapply_repl_fm),
-    ground_repl_fm(phrank_repl_fm),
     ground_repl_fm(wfrec_rank_fm),
     ground_repl_fm(trans_repl_HVFrom_fm),
     ground_repl_fm(tl_repl_intf_fm),
@@ -391,7 +389,7 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(Lambda_in_M_fm(is_converse_fm(0,1),0)),
     ground_repl_fm(Lambda_in_M_fm(domain_fm(0,1),0)) }"
 
-text\<open>This set has 34 internalized formulas, corresponding to the total
+text\<open>This set has 33 internalized formulas, corresponding to the total
 count of previous replacement instances (apart from those 4 in
 \<^term>\<open>instances_ground_fms\<close>).\<close>
 
@@ -400,7 +398,7 @@ definition overhead where
      instances4_fms \<union> instances_ground_fms"
 
 text\<open>Hence, the “overhead” to force $\CH$ and its negation consists
-of 72 replacement instances.\<close>
+of 70 replacement instances.\<close>
 
 (*
 axiomatization
@@ -409,10 +407,10 @@ axiomatization
   card_cons [simp]: "card(cons(x,y)) = succ(card(y))"
 
 schematic_goal
-  "card(instances1_fms) = ?n" (* 11 *)
+  "card(instances1_fms) = ?n" (* 10 *)
   "card(instances2_fms) = ?m" (* 19 *)
   "card(instances3_fms) = ?o" (*  4 *)
-  "card(instances4_fms) = ?p" (* 34 *)
+  "card(instances4_fms) = ?p" (* 33 *)
   unfolding instances1_fms_def instances2_fms_def instances3_fms_def instances4_fms_def
   by simp_all
 *)

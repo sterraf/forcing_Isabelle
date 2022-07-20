@@ -2121,6 +2121,15 @@ lemma lam_replacement_RepFun_cons':
   using assms RepFun_cons_in_Union unfolding RepFun_cons_def
   by (rule_tac bounded_lam_replacement_binary[of _ "\<lambda>X. Pow\<^bsup>M\<^esup>(Pow\<^bsup>M\<^esup>(X \<times> \<Union>X))"]) auto
 
+lemma phrank_repl:
+  assumes
+    "M(f)"
+  shows
+    "strong_replacement(M, \<lambda>x y. y = succ(f`x))"
+  using assms lam_replacement_succ lam_replacement_apply
+    lam_replacement_imp_strong_replacement lam_replacement_hcomp
+  by auto
+
 end \<comment> \<open>\<^locale>\<open>M_replacement\<close>\<close>
 
 locale M_Pi_replacement = M_Pi + M_replacement

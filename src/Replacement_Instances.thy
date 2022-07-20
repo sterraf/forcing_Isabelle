@@ -1537,4 +1537,8 @@ lemma separation_cdeqgamma:
 
 end \<comment> \<open>\<^locale>\<open>M_ZF2_trans\<close>\<close>
 
+sublocale M_ZF2_trans \<subseteq> M_Vfrom "##M"
+  using power_ax Powapply_repl phrank_repl trans_repl_HVFrom wfrec_rank
+  by unfold_locales auto
+
 end
