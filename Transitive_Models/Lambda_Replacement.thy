@@ -447,7 +447,7 @@ proof -
     by simp
 qed
 
-lemma lam_replacement_converse:
+lemma lam_replacement_converse':
   assumes "\<forall>A[M]. separation(M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, converse(x)\<rangle>)"
   shows "lam_replacement(M, \<lambda>r . converse(r))"
 proof -
