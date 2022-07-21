@@ -1,0 +1,38 @@
+Count of internalized replacement instances
+===========================================
+
+M_ZF1: 9 True, 1 fake.
+M_ZF2: 5 True (2 for ground only!), 14 fake.
+M_ZF3: 3 True, 1 fake
+M_ZF_ground: 4 True.
+
+
+The two instances in M_ZF2 that should be in M_ZF_ground are used to
+obtain `cardinal_lib_assms6`. A tree of dependencies of this
+assumption follows. It seems that all of its uses are restricted to
+work on the ground model exclusively, so a re-engineering of locales
+should make `cardinal_lib_assms6` unnecessary for M[G].
+
+
+cardinal_lib_assms6  --> lambda_rec_constr_closed --> bounded_cardinal_rel_selection
+                     \
+		       -->  rec_constr_type_rel --> rec_constr_closed --X
+		    		    	      	--> (bounded_cardinal_rel_selection)
+                                              	--> (lambda_rec_constr_closed)
+
+bounded_cardinal_rel_selection --> Infinite_iff_lepoll_rel_nat
+                               --> delta_system_Aleph_rel1
+
+Infinite_iff_lepoll_rel_nat --> Infinite_InfCard_rel_cardinal_rel
+                            --> InfCard_rel_imp_n_lesspoll_rel --> cons_in_Fn_rel
+
+Infinite_InfCard_rel_cardinal_rel --> Finite_to_one_rel_surj_rel_imp_cardinal_rel_eq
+                                  --> InfCard_rel_lesspoll_rel_Un
+
+Finite_to_one_rel_surj_rel_imp_cardinal_rel_eq --> cardinal_rel_map_Un --> delta_system_Aleph_rel1
+
+InfCard_rel_lesspoll_rel_Un --> Fn_rel_unionI --> (cons_in_Fn_rel)
+                            --> restrict_eq_imp_compat_rel --> Cohen_Posets_Relative
+
+cons_in_Fn_rel --> dense_dom_dense  --> (Not_)CH
+               --> dense_surj_dense --> CH
