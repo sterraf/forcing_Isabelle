@@ -338,9 +338,7 @@ locale M_ZF4 = M_ZF3 +
     "ground_replacement_assm(M,env,replacement_is_fst2_snd2_fm)"
     "ground_replacement_assm(M,env,replacement_is_sndfst_fst2_snd2_fm)"
     "ground_replacement_assm(M,env,replacement_is_order_eq_map_fm)"
-    "ground_replacement_assm(M,env,replacement_transrec_apply_image_body_fm)"
     "ground_replacement_assm(M,env,banach_replacement_iterates_fm)"
-    "ground_replacement_assm(M,env,replacement_is_trans_apply_image_fm)"
     "ground_replacement_assm(M,env,banach_iterates_fm)"
     "ground_replacement_assm(M,env,Lambda_in_M_fm(fst_fm(0,1),0))"
     "ground_replacement_assm(M,env,Lambda_in_M_fm(big_union_fm(0,1),0))"
@@ -373,9 +371,7 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(replacement_is_fst2_snd2_fm),
     ground_repl_fm(replacement_is_sndfst_fst2_snd2_fm),
     ground_repl_fm(replacement_is_order_eq_map_fm),
-    ground_repl_fm(replacement_transrec_apply_image_body_fm),
     ground_repl_fm(banach_replacement_iterates_fm),
-    ground_repl_fm(replacement_is_trans_apply_image_fm),
     ground_repl_fm(banach_iterates_fm),
     ground_repl_fm(Lambda_in_M_fm(fst_fm(0,1),0)),
     ground_repl_fm(Lambda_in_M_fm(big_union_fm(0,1),0)),
@@ -389,8 +385,8 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(Lambda_in_M_fm(is_converse_fm(0,1),0)),
     ground_repl_fm(Lambda_in_M_fm(domain_fm(0,1),0)) }"
 
-text\<open>This set has 33 internalized formulas, corresponding to the total
-count of previous replacement instances (apart from those 4 in
+text\<open>This set has 31 internalized formulas, corresponding to the total
+count of previous replacement instances (apart from those 6 in
 \<^term>\<open>instances_ground_fms\<close>).\<close>
 
 definition overhead where
@@ -398,7 +394,7 @@ definition overhead where
      instances4_fms \<union> instances_ground_fms"
 
 text\<open>Hence, the “overhead” to force $\CH$ and its negation consists
-of 70 replacement instances.\<close>
+of 68 replacement instances.\<close>
 
 (*
 axiomatization
@@ -407,11 +403,13 @@ axiomatization
   card_cons [simp]: "card(cons(x,y)) = succ(card(y))"
 
 schematic_goal
-  "card(instances1_fms) = ?n" (* 10 *)
-  "card(instances2_fms) = ?m" (* 19 *)
-  "card(instances3_fms) = ?o" (*  4 *)
-  "card(instances4_fms) = ?p" (* 33 *)
-  unfolding instances1_fms_def instances2_fms_def instances3_fms_def instances4_fms_def
+  "card(instances1_fms) = ?n"       (* 10 *)
+  "card(instances2_fms) = ?m"       (* 17 *)
+  "card(instances3_fms) = ?o"       (*  4 *)
+  "card(instances_ground_fms) = ?r" (*  6 *)
+  "card(instances4_fms) = ?p"       (* 31 *)
+  unfolding instances1_fms_def instances2_fms_def instances3_fms_def
+   instances4_fms_def instances_ground_fms_def
   by simp_all
 *)
 
@@ -425,6 +423,7 @@ lemma overhead_type: "overhead \<subseteq> formula"
   using instances1_fms_type instances2_fms_type instances_ground_fms_type
   unfolding overhead_def instances3_fms_def instances4_fms_def
     replacement_instances1_defs replacement_instances2_defs replacement_instances3_defs
+    replacement_instances_ground_defs
   using ground_repl_fm_type Lambda_in_M_fm_type
   by (auto simp del: Lambda_in_M_fm_def)
 

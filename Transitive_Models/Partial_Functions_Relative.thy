@@ -736,6 +736,11 @@ lemma Finite_imp_lesspoll_rel_nat:
   using Finite_imp_lesspoll_nat assms lesspoll_nat_imp_lesspoll_rel
   by auto
 
+end \<comment> \<open>\<^locale>\<open>M_cardinal_library\<close>\<close>
+
+context M_cardinal_library_extra
+begin
+
 lemma InfCard_rel_lesspoll_rel_Un:
   includes Ord_dests
   assumes "InfCard_rel(M,\<kappa>)" "A \<prec>\<^bsup>M\<^esup> \<kappa>" "B \<prec>\<^bsup>M\<^esup> \<kappa>"
@@ -790,6 +795,7 @@ proof -
       by simp
   qed
 qed
+
 lemma Fn_rel_unionI:
   assumes "p \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)" "q\<in>Fn\<^bsup>M\<^esup>(\<kappa>,I,J)" "InfCard\<^bsup>M\<^esup>(\<kappa>)"
     "M(\<kappa>)" "M(I)" "M(J)" "domain(p) \<inter> domain(q) = 0"
@@ -870,7 +876,7 @@ next
   show ?thesis using Fn_relD by blast
 qed
 
-lemma domain_lepoll_rel :
+lemma (in M_cardinal_library) domain_lepoll_rel :
   assumes "function(r)" "M(r)"
   shows "domain(r) \<lesssim>\<^bsup>M\<^esup> r"
 proof -
@@ -936,6 +942,6 @@ proof -
     using Fnle_relI by blast
 qed
 
-end \<comment> \<open>\<^locale>\<open>M_cardinal_library\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_cardinal_library_extra\<close>\<close>
 
 end

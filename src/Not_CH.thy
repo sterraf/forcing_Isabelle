@@ -127,10 +127,9 @@ lemmas (in M_ZF3_trans) sep_instances =
   separation_is_dcwit_body separation_cdltgamma separation_cdeqgamma
 
 lemmas (in M_ZF3_trans) repl_instances = lam_replacement_inj_rel
-  replacement_trans_apply_image
 
 sublocale M_ZFC3_ground_trans \<subseteq> M_master "##M"
-  using replacement_dcwit_repl_body \<comment> \<open>this is another replacement instance\<close>
+  using replacement_dcwit_repl_body replacement_trans_apply_image
   by unfold_locales (simp_all add:repl_instances sep_instances del:setclass_iff
       add: transrec_replacement_def wfrec_replacement_def dcwit_repl_body_def)
 

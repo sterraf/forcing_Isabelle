@@ -348,12 +348,8 @@ locale M_cardinal_library = M_library + M_replacement +
     cardinal_rel_separation :
     "separation(M, \<lambda>\<langle>x,y\<rangle>. cardinal_rel(M,x) = y)"
     and
-    cardinal_lib_assms5 :
+    separation_cardinal_rel_lt :
     "M(\<gamma>) \<Longrightarrow> separation(M, \<lambda>Z . cardinal_rel(M,Z) < \<gamma>)"
-    and
-    cardinal_lib_assms6:
-    "M(f) \<Longrightarrow> M(\<beta>) \<Longrightarrow> Ord(\<beta>) \<Longrightarrow>
-      strong_replacement(M, \<lambda>x y. x\<in>\<beta> \<and> y = \<langle>x, transrec(x, \<lambda>a g. f ` (g `` a))\<rangle>)"
 
 begin
 
@@ -701,8 +697,16 @@ proof -
   show ?thesis using \<open>n\<in>_\<close> by auto
 qed
 
+end \<comment> \<open>\<^locale>\<open>M_cardinal_library\<close>\<close>
 
 subsection\<open>Applications of transfinite recursive constructions\<close>
+
+locale M_cardinal_library_extra = M_cardinal_library +
+  assumes
+    replacement_trans_apply_image:
+    "M(f) \<Longrightarrow> M(\<beta>) \<Longrightarrow> Ord(\<beta>) \<Longrightarrow>
+      strong_replacement(M, \<lambda>x y. x\<in>\<beta> \<and> y = \<langle>x, transrec(x, \<lambda>a g. f ` (g `` a))\<rangle>)"
+begin
 
 lemma rec_constr_type_rel:
   assumes "f:Pow_rel(M,G)\<rightarrow>\<^bsup>M\<^esup> G" "Ord(\<alpha>)" "M(G)"
@@ -717,7 +721,7 @@ proof(induct rule:trans_induct)
     by auto
   moreover from assms this step \<open>M(\<beta>)\<close> \<open>Ord(\<beta>)\<close>
   have "M({y . x \<in> \<beta>, y=<x,rec_constr(f, x)>})" (is "M(?Z)")
-    using strong_replacement_closed[OF cardinal_lib_assms6,of f \<beta> \<beta>,OF _ _ _ _
+    using strong_replacement_closed[OF replacement_trans_apply_image,of f \<beta> \<beta>,OF _ _ _ _
         univalent_conjI2[where P="\<lambda>x _ . x\<in>\<beta>",OF univalent_triv]]
       transM[OF _ \<open>M(\<beta>)\<close>] transM[OF step(2) \<open>M(G)\<close>] Ord_in_Ord
     unfolding rec_constr_def
@@ -767,7 +771,7 @@ lemma rec_constr_closed :
 lemma lambda_rec_constr_closed :
   assumes "Ord(\<gamma>)" "M(\<gamma>)" "M(f)" "f:Pow_rel(M,G)\<rightarrow>\<^bsup>M\<^esup> G" "M(G)"
   shows "M(\<lambda>\<alpha>\<in>\<gamma> . rec_constr(f,\<alpha>))"
-  using lam_closed2[OF cardinal_lib_assms6,unfolded rec_constr_def[symmetric],of f \<gamma>]
+  using lam_closed2[OF replacement_trans_apply_image,unfolded rec_constr_def[symmetric],of f \<gamma>]
     rec_constr_type_rel[OF \<open>f\<in>_\<close> Ord_in_Ord[of \<gamma>]] transM[OF _ \<open>M(G)\<close>] assms
   by simp
 
@@ -790,7 +794,7 @@ proof -
     and ?inQ="\<lambda>Y.{a\<in>G. \<forall>s\<in>Y. <s,a>\<in>Q}"
   from \<open>M(G)\<close> \<open>Card_rel(M,\<gamma>)\<close> \<open>M(\<gamma>)\<close>
   have "M(?cdlt\<gamma>)" "Ord(\<gamma>)"
-    using cardinal_lib_assms5[OF \<open>M(\<gamma>)\<close>] Card_rel_is_Ord
+    using separation_cardinal_rel_lt[OF \<open>M(\<gamma>)\<close>] Card_rel_is_Ord
     by simp_all
   from assms
   have H:"\<exists>a. a \<in> ?inQ(Y)" if "Y\<in>?cdlt\<gamma>" for Y
@@ -1142,6 +1146,11 @@ proof -
     using Finite_to_one_rel_surj_rel_imp_cardinal_rel_eq by simp
 qed
 
+end \<comment> \<open>\<^locale>\<open>M_cardinal_library_extra\<close>\<close>
+
+context M_cardinal_library
+begin
+
 subsection\<open>Results on relative cardinal exponentiation\<close>
 
 lemma cexp_rel_eqpoll_rel_cong:
@@ -1226,10 +1235,8 @@ proof -
   show ?thesis .
 qed
 
-end \<comment> \<open>\<^locale>\<open>M_cardinal_library\<close>\<close>
-
 (* TODO: This can be generalized. *)
-lemma (in M_cardinal_library) countable_fun_imp_countable_image:
+lemma countable_fun_imp_countable_image:
   assumes "f:C \<rightarrow>\<^bsup>M\<^esup> B" "countable\<^bsup>M\<^esup>(C)" "\<And>c. c\<in>C \<Longrightarrow> countable\<^bsup>M\<^esup>(f`c)"
     "M(C)" "M(B)"
   shows "countable\<^bsup>M\<^esup>(\<Union>(f``C))"
@@ -1239,5 +1246,7 @@ lemma (in M_cardinal_library) countable_fun_imp_countable_image:
     countable_rel_iff_cardinal_rel_le_nat
   by (rule_tac countable_rel_union_countable_rel)
     (auto dest:transM del:imageE)
+
+end \<comment> \<open>\<^locale>\<open>M_cardinal_library\<close>\<close>
 
 end

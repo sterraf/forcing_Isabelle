@@ -348,9 +348,7 @@ locale M_ZF2 = M_ZF1 +
     "replacement_assm(M,env,replacement_is_fst2_snd2_fm)" (* fake *)
     "replacement_assm(M,env,replacement_is_sndfst_fst2_snd2_fm)" (* fake *)
     "replacement_assm(M,env,replacement_is_order_eq_map_fm)"
-    "replacement_assm(M,env,replacement_transrec_apply_image_body_fm)"
     "replacement_assm(M,env,banach_replacement_iterates_fm)" (* fake *)
-    "replacement_assm(M,env,replacement_is_trans_apply_image_fm)"
     "replacement_assm(M,env,banach_iterates_fm)"
     and
     Lambda_in_M_replacement2:
@@ -373,9 +371,7 @@ definition instances2_fms where "instances2_fms \<equiv>
     replacement_is_fst2_snd2_fm,
     replacement_is_sndfst_fst2_snd2_fm,
     replacement_is_order_eq_map_fm,
-    replacement_transrec_apply_image_body_fm,
     banach_replacement_iterates_fm,
-    replacement_is_trans_apply_image_fm,
     banach_iterates_fm,
     Lambda_in_M_fm(fst_fm(0,1),0),
     Lambda_in_M_fm(domain_fm(0,1),0),
@@ -396,9 +392,7 @@ lemmas replacement_instances2_defs =
   replacement_is_fst2_snd2_fm_def
   replacement_is_sndfst_fst2_snd2_fm_def
   replacement_is_order_eq_map_fm_def
-  replacement_transrec_apply_image_body_fm_def
   banach_replacement_iterates_fm_def
-  replacement_is_trans_apply_image_fm_def
   banach_iterates_fm_def
 
 declare (in M_ZF2) replacement_instances2_defs [simp]
@@ -421,6 +415,8 @@ locale M_ZF_ground = M_ZF2 +
     "replacement_assm(M,env,wfrec_Hcheck_fm)"
     "replacement_assm(M,env,Lambda_in_M_fm(check_fm(2,0,1),1))"
     "replacement_assm(M,env,replacement_dcwit_repl_body_fm)"
+    "replacement_assm(M,env,replacement_transrec_apply_image_body_fm)"
+    "replacement_assm(M,env,replacement_is_trans_apply_image_fm)"
 
 locale M_ZF_ground_trans = M_ZF2_trans + M_ZF_ground
 
@@ -428,12 +424,22 @@ definition instances_ground_fms where "instances_ground_fms \<equiv>
   { wfrec_Hfrc_at_fm,
     wfrec_Hcheck_fm,
     Lambda_in_M_fm(check_fm(2,0,1),1),
-    replacement_dcwit_repl_body_fm }"
+    replacement_dcwit_repl_body_fm,
+    replacement_transrec_apply_image_body_fm,
+    replacement_is_trans_apply_image_fm }"
+
+lemmas replacement_instances_ground_defs =
+  wfrec_Hfrc_at_fm_def wfrec_Hcheck_fm_def
+  replacement_dcwit_repl_body_fm_def
+  replacement_transrec_apply_image_body_fm_def
+  replacement_is_trans_apply_image_fm_def
+
+declare (in M_ZF_ground) replacement_instances_ground_defs [simp]
 
 lemma instances_ground_fms_type[TC]: "instances_ground_fms \<subseteq> formula"
   using Lambda_in_M_fm_type
-  unfolding instances_ground_fms_def wfrec_Hfrc_at_fm_def wfrec_Hcheck_fm_def
-    replacement_dcwit_repl_body_fm_def by simp
+  unfolding instances_ground_fms_def replacement_instances_ground_defs
+  by simp
 
 locale M_ZFC2 = M_ZFC1 + M_ZF2
 
@@ -731,7 +737,7 @@ proof -
   have "strong_replacement(##M, \<lambda> x z . banach_body_iterates(##M,X,Y,f,g,W,n,x,z))" if "n\<in>\<omega>" for n
     using assms that arity_banach_body_iterates_fm ord_simp_union nat_into_M
       strong_replacement_rel_in_ctm[where \<phi>="banach_body_iterates_fm(7,6,5,4,3,2,0,1)"
-        and env="[n,W,g,f,Y,X]"] replacement_ax2(8)
+        and env="[n,W,g,f,Y,X]"] replacement_ax2(6)
     by simp
   then
   show ?thesis
@@ -748,7 +754,7 @@ proof -
   have "strong_replacement(##M, \<lambda> n z . banach_is_iterates_body(##M,X,Y,f,g,W,n,z))"
     using assms arity_banach_is_iterates_body_fm ord_simp_union nat_into_M
       strong_replacement_rel_in_ctm[where \<phi>="banach_is_iterates_body_fm(6,5,4,3,2,0,1)"
-        and env="[W,g,f,Y,X]"] replacement_ax2(6)
+        and env="[W,g,f,Y,X]"] replacement_ax2(5)
     by simp
   then
   show ?thesis
@@ -779,11 +785,16 @@ lemma (in M_basic) apply_image_closed':
   shows "M(f) \<Longrightarrow> \<forall>x[M]. \<forall>g[M]. M(trans_apply_image(f, x, g))"
   unfolding trans_apply_image_def by simp
 
+end \<comment> \<open>\<^locale>\<open>M_ZF2_trans\<close>\<close>
+
+context M_ZF_ground_trans
+begin
+
 lemma replacement_transrec_apply_image_body :
   "(##M)(f) \<Longrightarrow> (##M)(mesa) \<Longrightarrow> strong_replacement(##M,transrec_apply_image_body(##M,f,mesa))"
   using strong_replacement_rel_in_ctm[where \<phi>="transrec_apply_image_body_fm(3,2,0,1)" and env="[mesa,f]"]
     zero_in_M arity_transrec_apply_image_body_fm ord_simp_union
-    replacement_ax2(5)
+    ZF_ground_replacements(5)
   by simp
 
 lemma transrec_replacement_apply_image:
@@ -808,7 +819,7 @@ lemma replacement_is_trans_apply_image:
         where P="\<lambda> x z. M,[x,z,\<beta>,f] \<Turnstile> is_trans_apply_image_body_fm(3,2,0,1)",THEN iffD1])
    apply(rule_tac is_trans_apply_image_body_iff_sats[symmetric,unfolded is_trans_apply_image_body_def,where env="[_,_,\<beta>,f]"])
             apply(simp_all add:zero_in_M)
-  apply(rule_tac replacement_ax2(7)[unfolded replacement_assm_def, rule_format, where env="[\<beta>,f]",simplified])
+  apply(rule_tac ZF_ground_replacements(6)[unfolded replacement_assm_def, rule_format, where env="[\<beta>,f]",simplified])
     apply(simp_all add: arity_is_trans_apply_image_body_fm is_trans_apply_image_body_fm_type ord_simp_union)
   done
 
@@ -829,7 +840,7 @@ lemma replacement_trans_apply_image:
     trans_apply_abs Ord_in_Ord
   by simp
 
-end
+end \<comment> \<open>\<^locale>\<open>M_ZF_ground_trans\<close>\<close>
 
 definition ifrFb_body where
   "ifrFb_body(M,b,f,x,i) \<equiv> x \<in>

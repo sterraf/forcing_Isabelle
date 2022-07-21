@@ -7,7 +7,7 @@ begin
 
 relativize functional "delta_system" "delta_system_rel" external
 
-locale M_delta = M_cardinal_library +
+locale M_delta = M_cardinal_library_extra +
   assumes
     countable_lepoll_assms:
     "M(G) \<Longrightarrow> M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> separation(M, \<lambda>y. \<exists>x\<in>A.

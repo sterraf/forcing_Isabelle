@@ -2,16 +2,26 @@ Count of internalized replacement instances
 ===========================================
 
 M_ZF1: 9 True, 1 fake.
-M_ZF2: 5 True (2 for ground only!), 14 fake.
+M_ZF2: 3 True, 14 fake.
 M_ZF3: 3 True, 1 fake
-M_ZF_ground: 4 True.
+M_ZF_ground: 6 True.
 
+
+-------------------------------------------
+Old state of affairs:
+====================
+
+(We had
+    M_ZF2: 5 True (2 for ground only!), 14 fake.
+    M_ZF_ground: 4 True.
+)
 
 The two instances in M_ZF2 that should be in M_ZF_ground are used to
-obtain `cardinal_lib_assms6`. A tree of dependencies of this
-assumption follows. It seems that all of its uses are restricted to
-work on the ground model exclusively, so a re-engineering of locales
-should make `cardinal_lib_assms6` unnecessary for M[G].
+obtain `cardinal_lib_assms6` (now `replacement_trans_apply_image`). A
+graph of dependencies of this assumption follows. It seems that all of
+its uses are restricted to work on the ground model exclusively, so a
+re-engineering of locales should make `cardinal_lib_assms6`
+unnecessary for M[G].
 
 
 cardinal_lib_assms6  --> lambda_rec_constr_closed --> bounded_cardinal_rel_selection
