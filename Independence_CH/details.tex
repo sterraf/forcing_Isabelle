@@ -1,15 +1,15 @@
 \section{Details of the formalization}
 
-\subsection{33 replacement instances to rule them all}
+\subsection{36 replacement instances to rule them all}
 \label{sec:repl-instances}
 
-We isolated 33 instances of Replacement that are sufficient to force
-$\CH$/$\neg\CH$. The first 14 instances are needed to set up
+We isolated 36 instances of Replacement that are sufficient to force
+$\CH$/$\neg\CH$. The first 15 instances are needed to set up
 cardinal arithmetic in $M$. Many of these were already present in
 relational form in the \session{ZF-Constructible} library.
 
 \begin{itemize}
-\item 7 instances for iteration of operations. For each construct,
+\item 8 instances for iteration of operations. For each construct,
   Paulson used one replacement instance in order to have absoluteness,
   and a second one to obtain closure.
   \begin{itemize}
@@ -30,6 +30,8 @@ relational form in the \session{ZF-Constructible} library.
     \isatt{tl{\uscore}repl{\uscore}intf{\uscore}fm}. By transitivity,
     we do not need an instance for closure; the only instance was required
     for absoluteness.
+  \item Absoluteness of the recursive construction in the proof of the
+    Schröder-Bernstein Theorem \isatt{banach{\uscore}iterates{\uscore}fm}.
   \end{itemize}
 \item
   2 instances for definition of ordertypes.
@@ -68,8 +70,8 @@ the \isatt{ground{\uscore}replacement{\uscore}assm(M,\isasymphi)} predicate
 obtained by replacing $\phi$ by
 $\isatt{ground{\uscore}repl{\uscore}fm}(\phi)$ in Eq.~(\ref{eq:replacement_assm_def}).
 
-That makes 28 instances up to now. For the setup of forcing, we
-require the following 5 instances (the first two are needed for the $\Delta$-system Lemma):
+That makes 30 instances up to now. For the setup of forcing, we
+require the following 6 instances (the first two are needed for the $\Delta$-System Lemma):
 
 \begin{itemize}
 %\verb|replacement_ax2(6)| \verb|replacement_transrec_apply_image_body_fm| seems fake!
@@ -79,6 +81,8 @@ require the following 5 instances (the first two are needed for the $\Delta$-sys
 %\item $x\mapsto |x|^M$
 %  \isatt{Lambda{\uscore}in{\uscore}M{\uscore}fm(is{\uscore}cardinal{\uscore}fm(0,1),0)}. % fake since the image is known
 \item Absoluteness of the previous construction \isatt{replacement{\uscore}transrec{\uscore}apply{\uscore}image{\uscore}body{\uscore}fm}.
+\item Absoluteness of the recursive construction in the proof of the
+    Dependent Choices \isatt{replacement{\uscore}dcwit{\uscore}repl{\uscore}body{\uscore}fm}.
 \item 2 instances for definitions by well-founded recursion.
   \begin{itemize}
   \item
@@ -89,10 +93,19 @@ require the following 5 instances (the first two are needed for the $\Delta$-sys
   \end{itemize}
 \item Replacement through $x\mapsto \lb\check{x},x\rb$ (for the
   definition of $\punto{G}$)
-  \isatt{G{\uscore}dot{\uscore}in{\uscore}M{\uscore}fm}.
+  \isatt{Lambda{\uscore}in{\uscore}M{\uscore}fm(check{\uscore}fm(2,0,1),1)}.
 % \item Name of choice functions in $M[G]$ \isatt{repl{\uscore}opname{\uscore}check{\uscore}fm}.
 % \item 2 instances for the slalom needed for cardinal preservation by ccc forcing.
 \end{itemize}
+
+The need for some of the instances above arose from the particular
+engineering of the some of the proofs. For instance, the construction
+of the cardinal successor should go through by reusing the replacement
+$x\mapsto \otype(x)$. Nevertheless, we relativized Paulson's
+approach direclty, which had an alternative formulation to obtain a
+simpler proof of Hartogs' Theorem (in particular, that $\kappa^+$ is
+indeed a cardinal).
+% https://isabelle.in.tum.de/dist/library/ZF/ZF/CardinalArith.html#CardinalArith.jump_cardinal_def|fact
 
 It is to be noted that application of the Forcing Theorems do not
 require any extra replacement instances on $M$ (independently of the

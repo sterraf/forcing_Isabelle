@@ -345,28 +345,28 @@ locale M_ZF2 = M_ZF1 +
   assumes
     replacement_ax2:
     "replacement_assm(M,env,replacement_HAleph_wfrec_repl_body_fm)"
-    "replacement_assm(M,env,replacement_is_fst2_snd2_fm)"
-    "replacement_assm(M,env,replacement_is_sndfst_fst2_snd2_fm)"
+    "replacement_assm(M,env,replacement_is_fst2_snd2_fm)" (* fake *)
+    "replacement_assm(M,env,replacement_is_sndfst_fst2_snd2_fm)" (* fake *)
     "replacement_assm(M,env,replacement_is_order_eq_map_fm)"
     "replacement_assm(M,env,replacement_transrec_apply_image_body_fm)"
-    "replacement_assm(M,env,banach_replacement_iterates_fm)"
+    "replacement_assm(M,env,banach_replacement_iterates_fm)" (* fake *)
     "replacement_assm(M,env,replacement_is_trans_apply_image_fm)"
     "replacement_assm(M,env,banach_iterates_fm)"
     and
     Lambda_in_M_replacement2:
-    "replacement_assm(M,env,Lambda_in_M_fm(fst_fm(0,1),0))"
-    "replacement_assm(M,env,Lambda_in_M_fm(domain_fm(0,1),0))"
-    "replacement_assm(M,env,Lambda_in_M_fm(snd_fm(0,1),0))"
-    "replacement_assm(M,env,Lambda_in_M_fm(big_union_fm(0,1),0))"
-    "replacement_assm(M,env,Lambda_in_M_fm(is_converse_fm(0,1),0))"
+    "replacement_assm(M,env,Lambda_in_M_fm(fst_fm(0,1),0))" (* fake *)
+    "replacement_assm(M,env,Lambda_in_M_fm(domain_fm(0,1),0))" (* fake *)
+    "replacement_assm(M,env,Lambda_in_M_fm(snd_fm(0,1),0))" (* fake *)
+    "replacement_assm(M,env,Lambda_in_M_fm(big_union_fm(0,1),0))" (* fake *)
+    "replacement_assm(M,env,Lambda_in_M_fm(is_converse_fm(0,1),0))" (* fake *)
     and
     LambdaPair_in_M_replacement2:
-    "replacement_assm(M,env,LambdaPair_in_M_fm(image_fm(0,1,2),0))"
-    "replacement_assm(M,env,LambdaPair_in_M_fm(setdiff_fm(0,1,2),0))"
-    "replacement_assm(M,env,LambdaPair_in_M_fm(minimum_fm(0,1,2),0))"
-    "replacement_assm(M,env,LambdaPair_in_M_fm(upair_fm(0,1,2),0))"
-    "replacement_assm(M,env,LambdaPair_in_M_fm(is_RepFun_body_fm(0,1,2),0))"
-    "replacement_assm(M,env,LambdaPair_in_M_fm(composition_fm(0,1,2),0))"
+    "replacement_assm(M,env,LambdaPair_in_M_fm(image_fm(0,1,2),0))" (* fake *)
+    "replacement_assm(M,env,LambdaPair_in_M_fm(setdiff_fm(0,1,2),0))" (* fake *)
+    "replacement_assm(M,env,LambdaPair_in_M_fm(minimum_fm(0,1,2),0))" (* fake *)
+    "replacement_assm(M,env,LambdaPair_in_M_fm(upair_fm(0,1,2),0))" (* fake *)
+    "replacement_assm(M,env,LambdaPair_in_M_fm(is_RepFun_body_fm(0,1,2),0))" (* fake *)
+    "replacement_assm(M,env,LambdaPair_in_M_fm(composition_fm(0,1,2),0))" (* fake *)
 
 definition instances2_fms where "instances2_fms \<equiv>
   { replacement_HAleph_wfrec_repl_body_fm,

@@ -48,7 +48,7 @@ locale M_ZF1 = M_Z_basic +
     "replacement_assm(M,env,formula_repl2_intf_fm)"
     "replacement_assm(M,env,eclose_repl1_intf_fm)"
     "replacement_assm(M,env,eclose_repl2_intf_fm)"
-    "replacement_assm(M,env,powapply_repl_fm)"
+    "replacement_assm(M,env,powapply_repl_fm)" (* fake *)
     "replacement_assm(M,env,wfrec_rank_fm)"
     "replacement_assm(M,env,trans_repl_HVFrom_fm)"
     "replacement_assm(M,env,tl_repl_intf_fm)"

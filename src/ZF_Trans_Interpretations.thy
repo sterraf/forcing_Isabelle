@@ -15,7 +15,7 @@ locale M_ZF3 = M_ZF2 +
     "replacement_assm(M,env,replacement_is_jump_cardinal_body_fm)"
     and
     LambdaPair_in_M_replacement3:
-    "replacement_assm(M,env,LambdaPair_in_M_fm(is_inj_fm(0,1,2),0))"
+    "replacement_assm(M,env,LambdaPair_in_M_fm(is_inj_fm(0,1,2),0))" (* fake *)
 
 definition instances3_fms where "instances3_fms \<equiv>
   { replacement_is_order_body_fm,
