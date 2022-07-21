@@ -1,16 +1,13 @@
-Better Hierarchy of Locales
-===========================
+Tidying up sources for release
+==============================
 
-The following items are not obvious!
-
-- Move dcwit to M_ZF_ground
-
-- Revise the comment in Not_CH about other instances (Pedro):
-    ground_replacement_assm(M,env,LambdaPair_in_M_fm(is_inj_fm(0,1,2),0))
-    ground_replacement_assm(M,env,replacement_transrec_apply_image_body_fm)
-    ground_replacement_assm(M,env,replacement_is_trans_apply_image_fm)
-
-- Can we remove lam_replacement_image?
+- *New* Revise consistency of source comments in Definitions_Main.thy.
+- Put all the development according to the style guides.
+- Remove "Try0" imports.
+- Remove auxiliary commands (find_theorems, try, try0).
+- Remove diagnostic commands (term, thm --- keep this last one in
+  Definitions_Main.thy!)
+- Clean up warnings (as of this commit, unavoidable in 3 theories)
 
 
 FIXMEs
@@ -26,12 +23,7 @@ Miguel, 2022-02-28: I think I've tried and I couldn't.
 Unaddressed issues in Transitive_Models
 =======================================
 
-- Duplication of
-    declare [[syntax_ambiguity_warning = false]]
-  in Discipline_Base and Discipline_Cardinal.
-
 - Enable more "mem_model" patterns for iff_sats.
-
 
 
 General Tasks
@@ -70,17 +62,6 @@ General Tasks
   theorems.
 
 
-Tidying up sources for release
-==============================
-
-- Put all the development according to the style guides.
-- Remove "Try0" imports.
-- Remove auxiliary commands (find_theorems, try, try0).
-- Remove diagnostic commands (term, thm --- keep this last one in
-  Definitions_Main.thy!)
-- Clean up warnings (as of this commit, unavoidable in 3 theories)
-
-
 ZF-Constructible
 ================
 
@@ -105,9 +86,6 @@ Assorted To-Dos
 
 - Have instances of valcheck in forcing_data, G_generic (discharging
   assumptions). Add it to the simpset?
-
-- Relocate material on antichains (in Forcing_Notions?) and results on
-  range (both now in Cardinal_Preservation).
 
 
 ;; Local Variables:

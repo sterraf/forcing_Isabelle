@@ -156,6 +156,7 @@ definition
   "antichain(P,leq,A) \<equiv> A\<subseteq>P \<and> (\<forall>p\<in>A. \<forall>q\<in>A. p\<noteq>q \<longrightarrow> \<not>compat_in(P,leq,p,q))"
 
 relativize relational  "antichain" "antichain_rel"
+
 definition
   ccc :: "i \<Rightarrow> i \<Rightarrow> o" where
   "ccc(P,leq) \<equiv> \<forall>A. antichain(P,leq,A) \<longrightarrow> |A| \<le> nat"
