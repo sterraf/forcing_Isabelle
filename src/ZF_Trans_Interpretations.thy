@@ -328,7 +328,6 @@ locale M_ZF4 = M_ZF3 +
     "ground_replacement_assm(M,env,list_repl2_intf_fm)"
     "ground_replacement_assm(M,env,formula_repl2_intf_fm)"
     "ground_replacement_assm(M,env,eclose_repl2_intf_fm)"
-    "ground_replacement_assm(M,env,powapply_repl_fm)"
     "ground_replacement_assm(M,env,wfrec_rank_fm)"
     "ground_replacement_assm(M,env,trans_repl_HVFrom_fm)"
     "ground_replacement_assm(M,env,tl_repl_intf_fm)"
@@ -356,7 +355,6 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(list_repl2_intf_fm),
     ground_repl_fm(formula_repl2_intf_fm),
     ground_repl_fm(eclose_repl2_intf_fm),
-    ground_repl_fm(powapply_repl_fm),
     ground_repl_fm(wfrec_rank_fm),
     ground_repl_fm(trans_repl_HVFrom_fm),
     ground_repl_fm(tl_repl_intf_fm),
@@ -375,7 +373,7 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(LambdaPair_in_M_fm(is_RepFun_body_fm(0,1,2),0)),
     ground_repl_fm(LambdaPair_in_M_fm(composition_fm(0,1,2),0)) }"
 
-text\<open>This set has 26 internalized formulas, corresponding to the total
+text\<open>This set has 25 internalized formulas, corresponding to the total
 count of previous replacement instances (apart from those 6 in
 \<^term>\<open>instances_ground_fms\<close>).\<close>
 
@@ -384,7 +382,7 @@ definition overhead where
      instances4_fms \<union> instances_ground_fms"
 
 text\<open>Hence, the “overhead” to force $\CH$ and its negation consists
-of 66 replacement instances.\<close>
+of 56 replacement instances.\<close>
 
 (*
 axiomatization
@@ -393,11 +391,11 @@ axiomatization
   card_cons [simp]: "card(cons(x,y)) = succ(card(y))"
 
 schematic_goal
-  "card(instances1_fms) = ?n"       (* 10 *)
+  "card(instances1_fms) = ?n"       (*  9 *)
   "card(instances2_fms) = ?m"       (* 12 *)
   "card(instances3_fms) = ?o"       (*  4 *)
   "card(instances_ground_fms) = ?r" (*  6 *)
-  "card(instances4_fms) = ?p"       (* 26 *)
+  "card(instances4_fms) = ?p"       (* 25 *)
   unfolding instances1_fms_def instances2_fms_def instances3_fms_def
    instances4_fms_def instances_ground_fms_def
   by simp_all

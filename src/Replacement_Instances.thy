@@ -637,6 +637,17 @@ sublocale M_ZF2_trans \<subseteq> M_replacement "##M"
 context M_ZF2_trans
 begin
 
+lemma separation_Pow_rel: "A\<in>M \<Longrightarrow>
+    separation(##M, \<lambda>y. \<exists>x \<in> M . x\<in>A \<and> y = \<langle>x, Pow\<^bsup>##M\<^esup>(x)\<rangle>)"
+  using separation_assm_sats[of "is_Pow_fm(0,1)"] arity_is_Pow_fm ord_simp_union
+    Pow_rel_closed nonempty Pow_rel_iff
+  by simp
+
+lemma strong_replacement_Powapply_rel:
+  "f\<in>M \<Longrightarrow> strong_replacement(##M, \<lambda>x y. y = Powapply\<^bsup>##M\<^esup>(f,x))"
+  using Powapply_rel_replacement separation_Pow_rel transM
+  by simp
+
 lemma RepFun_SigFun_closed: "x \<in> M \<Longrightarrow> z \<in> M \<Longrightarrow> {{\<langle>z, x\<rangle>} . x \<in> x} \<in> M"
   using lam_replacement_sing_const_id lam_replacement_imp_strong_replacement RepFun_closed
     transitivity singleton_in_M_iff pair_in_M_iff
@@ -1495,7 +1506,7 @@ lemma separation_cdeqgamma:
 end \<comment> \<open>\<^locale>\<open>M_ZF2_trans\<close>\<close>
 
 sublocale M_ZF2_trans \<subseteq> M_Vfrom "##M"
-  using power_ax Powapply_repl phrank_repl trans_repl_HVFrom wfrec_rank
+  using power_ax strong_replacement_Powapply_rel phrank_repl trans_repl_HVFrom wfrec_rank
   by unfold_locales auto
 
 end

@@ -48,7 +48,6 @@ locale M_ZF1 = M_Z_basic +
     "replacement_assm(M,env,formula_repl2_intf_fm)"
     "replacement_assm(M,env,eclose_repl1_intf_fm)"
     "replacement_assm(M,env,eclose_repl2_intf_fm)"
-    "replacement_assm(M,env,powapply_repl_fm)" (* fake *)
     "replacement_assm(M,env,wfrec_rank_fm)"
     "replacement_assm(M,env,trans_repl_HVFrom_fm)"
     "replacement_assm(M,env,tl_repl_intf_fm)"
@@ -60,20 +59,18 @@ definition instances1_fms where "instances1_fms \<equiv>
     formula_repl2_intf_fm,
     eclose_repl1_intf_fm,
     eclose_repl2_intf_fm,
-    powapply_repl_fm,
     wfrec_rank_fm,
     trans_repl_HVFrom_fm,
     tl_repl_intf_fm
  }"
 
-text\<open>This set has 10 internalized formulas.\<close>
+text\<open>This set has 9 internalized formulas.\<close>
 
 lemmas replacement_instances1_defs =
   list_repl1_intf_fm_def list_repl2_intf_fm_def
   formula_repl1_intf_fm_def formula_repl2_intf_fm_def
   eclose_repl1_intf_fm_def eclose_repl2_intf_fm_def
-  powapply_repl_fm_def wfrec_rank_fm_def
-  trans_repl_HVFrom_fm_def tl_repl_intf_fm_def
+  wfrec_rank_fm_def trans_repl_HVFrom_fm_def tl_repl_intf_fm_def
 
 lemma instances1_fms_type[TC]: "instances1_fms \<subseteq> formula"
   using Lambda_in_M_fm_type
@@ -677,7 +674,7 @@ lemma tl_repl_intf:
   shows "iterates_replacement(##M,\<lambda>l' t. is_tl(##M,l',t),l)"
   using assms arity_tl_fm ord_simp_union
     iterates_repl_intf[where is_F_fm="tl_fm(1,0)"]
-    replacement_ax1(10)[unfolded replacement_assm_def]
+    replacement_ax1(9)[unfolded replacement_assm_def]
   by simp
 
 lemma eclose_repl1_intf:
@@ -827,27 +824,6 @@ declare is_Hrank_fm_def[fm_definitions add]
 context M_ZF1_trans
 begin
 
-lemma Powapply_repl :
-  assumes "f\<in>M"
-  shows "strong_replacement(##M,\<lambda>x y. y=Powapply_rel(##M,f,x))"
-proof -
-  note assms
-  moreover
-  have "arity(is_Powapply_fm(2,0,1)) = 3"
-    unfolding is_Powapply_fm_def
-    by (simp add:arity ord_simp_union)
-  moreover from calculation
-  have iff:"z=Powapply_rel(##M,f,p) \<longleftrightarrow> (M, [p,z,f] \<Turnstile> is_Powapply_fm(2,0,1) )"
-    if "p\<in>M" "z\<in>M" for p z
-    using that zero_in_M sats_is_Powapply_fm[of 2 0 1 "[p,z,f]" M] is_Powapply_iff
-      replacement_ax1[unfolded replacement_assm_def]
-    by simp
-  ultimately
-  show ?thesis
-    using replacement_ax1(7)[unfolded replacement_assm_def]
-    by (rule_tac strong_replacement_cong[THEN iffD2,OF iff],simp_all)
-qed
-
 lemma wfrec_rank :
   assumes "X\<in>M"
   shows "wfrec_replacement(##M,is_Hrank(##M),rrank(X))"
@@ -880,7 +856,7 @@ proof -
     by simp
   moreover from calculation
   have "strong_replacement(##M,\<lambda>x z. (M, [x,z,rrank(X)] \<Turnstile> ?f))"
-    using replacement_ax1(8)[unfolded replacement_assm_def] rrank_in_M
+    using replacement_ax1(7)[unfolded replacement_assm_def] rrank_in_M
     by simp
   ultimately
   show ?thesis
@@ -933,7 +909,7 @@ proof -
       by simp
     moreover from calculation
     have "strong_replacement(##M,\<lambda>x z. (M, [x,z,A,mesa] \<Turnstile> ?f))"
-      using replacement_ax1(9)[unfolded replacement_assm_def]
+      using replacement_ax1(8)[unfolded replacement_assm_def]
       by simp
     ultimately
     have "wfrec_replacement(##M,is_HVfrom(##M,A),mesa)"
