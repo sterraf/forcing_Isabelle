@@ -1484,7 +1484,25 @@ lemma arity_separation_assm_fm : "A \<in> \<omega> \<Longrightarrow> x \<in> \<o
   unfolding separation_assm_fm_def
   by (auto simp add:arity)
 
-lemma (in M_Z_trans) separation_assm_sats : 
+definition separation_assm_bin_fm where
+  "separation_assm_bin_fm(A,y,f_fm) \<equiv> 
+    (\<cdot>\<exists>(\<cdot>\<exists>(\<cdot>\<exists>(\<cdot>\<exists>(\<cdot>(\<cdot>\<cdot>3 \<in> A +\<^sub>\<omega> 4\<cdot> \<and>  \<cdot>\<langle>3,2\<rangle> is y +\<^sub>\<omega> 4\<cdot>\<cdot> ) \<and> \<cdot>f_fm \<and> \<cdot> \<cdot>fst(3) is 0 \<cdot> \<and> \<cdot>snd(3) is 1\<cdot>\<cdot>\<cdot>\<cdot> ) \<cdot>)\<cdot>)\<cdot>)\<cdot>) "
+
+lemma separation_assm_bin_fm_type[TC]: 
+  "A \<in> \<omega> \<Longrightarrow> y \<in> \<omega> \<Longrightarrow> f_fm \<in> formula \<Longrightarrow> separation_assm_bin_fm(A, y,f_fm) \<in> formula"
+  unfolding separation_assm_bin_fm_def
+  by simp
+
+lemma arity_separation_assm_bin_fm : "A \<in> \<omega> \<Longrightarrow> x \<in> \<omega> \<Longrightarrow> f_fm \<in> formula \<Longrightarrow>
+  arity(separation_assm_bin_fm(A, x, f_fm)) = succ(A) \<union> succ(x) \<union> (pred^4(arity(f_fm)))"
+  using pred_Un_distrib
+  unfolding separation_assm_bin_fm_def
+  by (auto simp add:arity)
+
+context M_Z_trans
+begin
+
+lemma separation_assm_sats : 
   assumes
     f_fm:  "\<phi> \<in> formula" and
     f_ar:  "arity(\<phi>) = 2" and
@@ -1516,8 +1534,37 @@ proof -
     by(rule_tac separation_cong[THEN iffD1],auto)
 qed
 
-context M_Z_trans
-begin
+lemma separation_assm_bin_sats :
+  assumes
+    f_fm:  "\<phi> \<in> formula" and
+    f_ar:  "arity(\<phi>) = 3" and
+    fsats: "\<And>env x z y. env\<in>list(M) \<Longrightarrow> x\<in>M \<Longrightarrow> z\<in>M \<Longrightarrow> y\<in>M \<Longrightarrow> (M,[x,z,y]@env \<Turnstile> \<phi>) \<longleftrightarrow> is_f(x,z,y)" and
+    fabs:  "\<And>x z y. x\<in>M \<Longrightarrow>  z\<in>M \<Longrightarrow> y\<in>M \<Longrightarrow> is_f(x,z,y) \<longleftrightarrow> y = f(x,z)" and
+    fclosed: "\<And>x z . x\<in>M \<Longrightarrow>  z\<in>M \<Longrightarrow> f(x,z) \<in> M" and
+    "A\<in>M"
+  shows "separation(##M, \<lambda>y. \<exists>x \<in> M . x\<in>A \<and> y = \<langle>x, f(fst(x),snd(x))\<rangle>)"
+proof -
+  let ?\<phi>'="separation_assm_bin_fm(1,0,\<phi>)"
+  let ?p="\<lambda>y. \<exists>x\<in>M . x\<in>A \<and> y = \<langle>x, f(fst(x),snd(x))\<rangle>"
+  from f_fm
+  have "?\<phi>'\<in>formula"
+     by simp
+  moreover from this f_ar f_fm
+  have "arity(?\<phi>') = 2"
+    using arity_separation_assm_bin_fm[of 1 0 \<phi>] ord_simp_union  
+    by simp
+  moreover from \<open>A\<in>M\<close> calculation
+  have "separation(##M,\<lambda>y . M,[y,A] \<Turnstile> ?\<phi>')"
+    using separation_ax by auto
+  moreover
+  have "y\<in>M \<Longrightarrow> (M,[y,A] \<Turnstile> ?\<phi>') \<longleftrightarrow> ?p(y)" for y
+    using assms transitivity[OF _ \<open>A\<in>M\<close>] pair_in_M_iff fst_abs snd_abs fst_closed snd_closed
+    unfolding separation_assm_bin_fm_def
+    by auto
+  ultimately
+  show ?thesis
+    by(rule_tac separation_cong[THEN iffD1],auto)
+qed
 
 lemma separation_domain: "A\<in>M \<Longrightarrow>
     separation(##M, \<lambda>y. \<exists>x \<in> M . x\<in>A \<and> y = \<langle>x, domain(x)\<rangle>)"
@@ -1563,6 +1610,17 @@ lemma separation_converse: "A\<in>M \<Longrightarrow>
 
 lemma lam_replacement_converse: "lam_replacement(##M, converse)"
   using lam_replacement_converse' separation_converse transM by simp
+
+
+lemma separation_Upair: "A\<in>M \<Longrightarrow>
+     separation(##M, \<lambda>y. \<exists>x\<in>M. x \<in> A \<and> y = \<langle>x, Upair(fst(x), snd(x))\<rangle>)"
+  using  arity_upair_fm ord_simp_union
+    nonempty Upair_closed upair_abs
+  by(rule_tac separation_assm_bin_sats[of "upair_fm(0,1,2)"],auto)
+
+lemma lam_replacement_Upair: "lam_replacement(##M, \<lambda>x . Upair(fst(x),snd(x)))"
+  using lam_replacement_Upair' separation_Upair 
+  by simp
 
 end \<comment> \<open>\<^locale>\<open>M_Z_trans\<close>\<close>
 
