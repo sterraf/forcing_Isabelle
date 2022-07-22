@@ -327,9 +327,6 @@ arity_theorem for "transrec_apply_image_body_fm"
 synthesize "is_trans_apply_image_body" from_definition assuming "nonempty"
 arity_theorem for "is_trans_apply_image_body_fm"
 
-synthesize "is_converse" from_definition assuming "nonempty"
-arity_theorem for "is_converse_fm"
-
 definition replacement_is_omega_funspace_fm where "replacement_is_omega_funspace_fm \<equiv>  omega_funspace_fm(2,0,1)"
 definition replacement_HAleph_wfrec_repl_body_fm where "replacement_HAleph_wfrec_repl_body_fm \<equiv>  HAleph_wfrec_repl_body_fm(2,0,1)"
 definition replacement_is_fst2_snd2_fm where "replacement_is_fst2_snd2_fm \<equiv>  is_fst2_snd2_fm(0,1)"
@@ -351,13 +348,6 @@ locale M_ZF2 = M_ZF1 +
     "replacement_assm(M,env,banach_replacement_iterates_fm)" (* fake *)
     "replacement_assm(M,env,banach_iterates_fm)"
     and
-    Lambda_in_M_replacement2:
-    "replacement_assm(M,env,Lambda_in_M_fm(fst_fm(0,1),0))" (* fake *)
-    "True"
-    "replacement_assm(M,env,Lambda_in_M_fm(snd_fm(0,1),0))" (* fake *)
-    "replacement_assm(M,env,Lambda_in_M_fm(big_union_fm(0,1),0))" (* fake *)
-    "replacement_assm(M,env,Lambda_in_M_fm(is_converse_fm(0,1),0))" (* fake *)
-    and
     LambdaPair_in_M_replacement2:
     "replacement_assm(M,env,LambdaPair_in_M_fm(image_fm(0,1,2),0))" (* fake *)
     "replacement_assm(M,env,LambdaPair_in_M_fm(setdiff_fm(0,1,2),0))" (* fake *)
@@ -373,10 +363,6 @@ definition instances2_fms where "instances2_fms \<equiv>
     replacement_is_order_eq_map_fm,
     banach_replacement_iterates_fm,
     banach_iterates_fm,
-    Lambda_in_M_fm(fst_fm(0,1),0),
-    Lambda_in_M_fm(snd_fm(0,1),0),
-    Lambda_in_M_fm(big_union_fm(0,1),0),
-    Lambda_in_M_fm(is_converse_fm(0,1),0),
     LambdaPair_in_M_fm(image_fm(0,1,2),0),
     LambdaPair_in_M_fm(setdiff_fm(0,1,2),0),
     LambdaPair_in_M_fm(minimum_fm(0,1,2),0),
@@ -384,7 +370,7 @@ definition instances2_fms where "instances2_fms \<equiv>
     LambdaPair_in_M_fm(is_RepFun_body_fm(0,1,2),0),
     LambdaPair_in_M_fm(composition_fm(0,1,2),0) }"
 
-text\<open>This set has 19 internalized formulas.\<close>
+text\<open>This set has 12 internalized formulas.\<close>
 
 lemmas replacement_instances2_defs =
   replacement_HAleph_wfrec_repl_body_fm_def
@@ -495,38 +481,6 @@ lemma dcwit_replacement:"Ord(na) \<Longrightarrow>
 
 context M_ZF2_trans
 begin
-
-lemma lam_replacement_converse : "lam_replacement(##M, converse)"
-  using lam_replacement_iff_lam_closed[THEN iffD2,of converse] nonempty
-    Lambda_in_M[where \<phi>="is_converse_fm(0,1)" and env="[]"]
-    is_converse_fm_type converse_abs
-    arity_is_converse_fm[of 0 1] ord_simp_union transitivity converse_closed
-    Lambda_in_M_replacement2(5)
-  by simp
-
-lemma lam_replacement_fst : "lam_replacement(##M, fst)"
-  using lam_replacement_iff_lam_closed[THEN iffD2,of fst]
-    Lambda_in_M[where \<phi>="fst_fm(0,1)" and env="[]"]
-    fst_iff_sats[symmetric] fst_abs fst_type
-    arity_fst_fm[of 0 1] ord_simp_union transitivity fst_closed
-    Lambda_in_M_replacement2(1)
-  by simp
-
-lemma lam_replacement_snd : "lam_replacement(##M, snd)"
-  using lam_replacement_iff_lam_closed[THEN iffD2,of snd]
-    Lambda_in_M[where \<phi>="snd_fm(0,1)" and env="[]"]
-    snd_iff_sats[symmetric] snd_abs snd_type
-    arity_snd_fm[of 0 1] ord_simp_union transitivity snd_closed
-    Lambda_in_M_replacement2(3)
-  by simp
-
-lemma lam_replacement_Union : "lam_replacement(##M, Union)"
-  using lam_replacement_iff_lam_closed[THEN iffD2,of Union]
-    Lambda_in_M[where \<phi>="big_union_fm(0,1)" and env="[]"] Union_abs
-    union_fm_def big_union_iff_sats[symmetric]
-    arity_big_union_fm[of 0 1] ord_simp_union transitivity Union_closed
-    Lambda_in_M_replacement2(4)
-  by simp
 
 lemma lam_replacement_image:
   "lam_replacement(##M, \<lambda>p. fst(p) `` snd(p))"

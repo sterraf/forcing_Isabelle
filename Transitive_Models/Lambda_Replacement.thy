@@ -421,19 +421,19 @@ qed
 \<comment> \<open>Below we assume the replacement instance for @{term fst}. Alternatively it follows from the
 instance of separation assumed in this lemma.\<close>
 lemma lam_replacement_fst':
-  assumes "\<forall>A[M]. separation(M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, fst(x)\<rangle>)"
+  assumes "\<forall>A[M]. separation(M, \<lambda>y. \<exists>x[M]. x\<in>A \<and> y = \<langle>x, fst(x)\<rangle>)"
   shows "lam_replacement(M,fst)"
   using fst_in_double_Union assms
     bounded_lam_replacement[of fst "\<lambda>X. {0} \<union> \<Union>\<Union>X"] by simp
 
 lemma lam_replacement_snd':
-  assumes "\<forall>A[M]. separation(M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, snd(x)\<rangle>)"
+  assumes "\<forall>A[M]. separation(M, \<lambda>y. \<exists>x[M]. x\<in>A \<and> y = \<langle>x, snd(x)\<rangle>)"
   shows "lam_replacement(M,snd)"
   using snd_in_double_Union assms
     bounded_lam_replacement[of snd "\<lambda>X. {0} \<union> \<Union>\<Union>X"] by simp
 
 lemma lam_replacement_restrict:
-  assumes "\<forall>A[M]. separation(M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, restrict(x,B)\<rangle>)"  "M(B)"
+  assumes "\<forall>A[M]. separation(M, \<lambda>y. \<exists>x[M]. x\<in>A \<and> y = \<langle>x, restrict(x,B)\<rangle>)"  "M(B)"
   shows "lam_replacement(M, \<lambda>r . restrict(r,B))"
 proof -
   from assms
@@ -459,7 +459,7 @@ lemma range_sub_Union3:
   by (clarsimp, auto simp add:Pair_def,rule_tac x="r" in rev_bexI,auto simp add:assms)
 
 lemma lam_replacement_converse':
-  assumes "\<forall>A[M]. separation(M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, converse(x)\<rangle>)"
+  assumes "\<forall>A[M]. separation(M, \<lambda>y. \<exists>x[M]. x\<in>A \<and> y = \<langle>x, converse(x)\<rangle>)"
   shows "lam_replacement(M, \<lambda>r . converse(r))"
 proof -
   have "converse(r) \<subseteq> range(r) \<times> domain(r)" for r
@@ -1796,7 +1796,7 @@ proof -
     by simp
 qed
 
-lemma restrict_eq_separation': "M(B) \<Longrightarrow> \<forall>A[M]. separation(M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, restrict(x, B)\<rangle>)"
+lemma restrict_eq_separation': "M(B) \<Longrightarrow> \<forall>A[M]. separation(M, \<lambda>y. \<exists>x[M]. x\<in>A \<and> y = \<langle>x, restrict(x, B)\<rangle>)"
 proof(clarify)
   fix A
   have "restrict(r,B) = r \<inter> (B \<times> range(r))" for r
@@ -1812,7 +1812,7 @@ proof(clarify)
       lam_replacement_CartProd separation_bex separation_eq
     by simp_all
   ultimately
-  show "separation(M, \<lambda>y. \<exists>x\<in>A. y = \<langle>x, restrict(x, B)\<rangle>)"
+  show "separation(M, \<lambda>y. \<exists>x[M]. x\<in>A \<and> y = \<langle>x, restrict(x, B)\<rangle>)"
     by simp
 qed
 

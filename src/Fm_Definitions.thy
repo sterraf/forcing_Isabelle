@@ -29,6 +29,9 @@ on its theory.
 declare arity_subset_fm [simp del] arity_ordinal_fm[simp del, arity] arity_transset_fm[simp del]
   FOL_arities[simp del]
 
+synthesize "is_converse" from_definition assuming "nonempty"
+arity_theorem for "is_converse_fm"
+
 lemma is_lambda_iff_sats[iff_sats]:
   assumes is_F_iff_sats:
     "!!a0 a1 a2.

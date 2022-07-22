@@ -340,16 +340,12 @@ locale M_ZF4 = M_ZF3 +
     "ground_replacement_assm(M,env,replacement_is_order_eq_map_fm)"
     "ground_replacement_assm(M,env,banach_replacement_iterates_fm)"
     "ground_replacement_assm(M,env,banach_iterates_fm)"
-    "ground_replacement_assm(M,env,Lambda_in_M_fm(fst_fm(0,1),0))"
-    "ground_replacement_assm(M,env,Lambda_in_M_fm(big_union_fm(0,1),0))"
-    "ground_replacement_assm(M,env,Lambda_in_M_fm(snd_fm(0,1),0))"
     "ground_replacement_assm(M,env,LambdaPair_in_M_fm(image_fm(0,1,2),0))"
     "ground_replacement_assm(M,env,LambdaPair_in_M_fm(setdiff_fm(0,1,2),0))"
     "ground_replacement_assm(M,env,LambdaPair_in_M_fm(minimum_fm(0,1,2),0))"
     "ground_replacement_assm(M,env,LambdaPair_in_M_fm(upair_fm(0,1,2),0))"
     "ground_replacement_assm(M,env,LambdaPair_in_M_fm(is_RepFun_body_fm(0,1,2),0))"
     "ground_replacement_assm(M,env,LambdaPair_in_M_fm(composition_fm(0,1,2),0))"
-    "ground_replacement_assm(M,env,Lambda_in_M_fm(is_converse_fm(0,1),0))"
 
 definition instances4_fms where "instances4_fms \<equiv>
   { ground_repl_fm(replacement_is_order_body_fm),
@@ -372,18 +368,14 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(replacement_is_order_eq_map_fm),
     ground_repl_fm(banach_replacement_iterates_fm),
     ground_repl_fm(banach_iterates_fm),
-    ground_repl_fm(Lambda_in_M_fm(fst_fm(0,1),0)),
-    ground_repl_fm(Lambda_in_M_fm(big_union_fm(0,1),0)),
-    ground_repl_fm(Lambda_in_M_fm(snd_fm(0,1),0)),
     ground_repl_fm(LambdaPair_in_M_fm(image_fm(0,1,2),0)),
     ground_repl_fm(LambdaPair_in_M_fm(setdiff_fm(0,1,2),0)),
     ground_repl_fm(LambdaPair_in_M_fm(minimum_fm(0,1,2),0)),
     ground_repl_fm(LambdaPair_in_M_fm(upair_fm(0,1,2),0)),
     ground_repl_fm(LambdaPair_in_M_fm(is_RepFun_body_fm(0,1,2),0)),
-    ground_repl_fm(LambdaPair_in_M_fm(composition_fm(0,1,2),0)),
-    ground_repl_fm(Lambda_in_M_fm(is_converse_fm(0,1),0)) }"
+    ground_repl_fm(LambdaPair_in_M_fm(composition_fm(0,1,2),0)) }"
 
-text\<open>This set has 30 internalized formulas, corresponding to the total
+text\<open>This set has 26 internalized formulas, corresponding to the total
 count of previous replacement instances (apart from those 6 in
 \<^term>\<open>instances_ground_fms\<close>).\<close>
 
@@ -402,10 +394,10 @@ axiomatization
 
 schematic_goal
   "card(instances1_fms) = ?n"       (* 10 *)
-  "card(instances2_fms) = ?m"       (* 16 *)
+  "card(instances2_fms) = ?m"       (* 12 *)
   "card(instances3_fms) = ?o"       (*  4 *)
   "card(instances_ground_fms) = ?r" (*  6 *)
-  "card(instances4_fms) = ?p"       (* 30 *)
+  "card(instances4_fms) = ?p"       (* 26 *)
   unfolding instances1_fms_def instances2_fms_def instances3_fms_def
    instances4_fms_def instances_ground_fms_def
   by simp_all

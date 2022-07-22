@@ -1540,11 +1540,54 @@ proof -
     by(rule_tac separation_cong[THEN iffD1],auto)
 qed
 
-lemma (in M_Z_trans) separation_domain : "A\<in>M \<Longrightarrow> separation(##M, \<lambda>y. \<exists>x \<in> M . x\<in>A \<and> y = \<langle>x, domain(x)\<rangle>)"
-  using separation_assm_sats[of "domain_fm(0,1)"] arity_domain_fm ord_simp_union domain_closed[simplified]
+context M_Z_trans
+begin
+
+lemma separation_domain: "A\<in>M \<Longrightarrow>
+    separation(##M, \<lambda>y. \<exists>x \<in> M . x\<in>A \<and> y = \<langle>x, domain(x)\<rangle>)"
+  using separation_assm_sats[of "domain_fm(0,1)"] arity_domain_fm ord_simp_union
+    domain_closed[simplified]
   by simp
 
-lemma (in M_Z_trans) lam_replacement_domain : "lam_replacement(##M, domain)"
+lemma lam_replacement_domain: "lam_replacement(##M, domain)"
   using lam_replacement_domain' separation_domain transM by simp
+
+lemma separation_Union: "A\<in>M \<Longrightarrow>
+    separation(##M, \<lambda>y. \<exists>x \<in> M . x\<in>A \<and> y = \<langle>x, Union(x)\<rangle>)"
+  using separation_assm_sats[of "big_union_fm(0,1)"] arity_big_union_fm ord_simp_union
+    Union_closed[simplified]
+  by simp
+
+lemma lam_replacement_Union: "lam_replacement(##M, Union)"
+  using lam_replacement_Union' separation_Union transM by simp
+
+lemma separation_fst: "A\<in>M \<Longrightarrow>
+    separation(##M, \<lambda>y. \<exists>x \<in> M . x\<in>A \<and> y = \<langle>x, fst(x)\<rangle>)"
+  using separation_assm_sats[of "fst_fm(0,1)"] arity_fst_fm ord_simp_union
+    fst_closed fst_abs
+  by simp
+
+lemma lam_replacement_fst: "lam_replacement(##M, fst)"
+  using lam_replacement_fst' separation_fst transM by simp
+
+lemma separation_snd: "A\<in>M \<Longrightarrow>
+    separation(##M, \<lambda>y. \<exists>x \<in> M . x\<in>A \<and> y = \<langle>x, snd(x)\<rangle>)"
+  using separation_assm_sats[of "snd_fm(0,1)"] arity_snd_fm ord_simp_union
+    snd_closed[simplified] snd_abs
+  by simp
+
+lemma lam_replacement_snd: "lam_replacement(##M, snd)"
+  using lam_replacement_snd' separation_snd transM by simp
+
+lemma separation_converse: "A\<in>M \<Longrightarrow>
+    separation(##M, \<lambda>y. \<exists>x \<in> M . x\<in>A \<and> y = \<langle>x, converse(x)\<rangle>)"
+  using separation_assm_sats[of "is_converse_fm(0,1)"] arity_is_converse_fm ord_simp_union
+    converse_closed[simplified] nonempty
+  by simp
+
+lemma lam_replacement_converse: "lam_replacement(##M, converse)"
+  using lam_replacement_converse' separation_converse transM by simp
+
+end \<comment> \<open>\<^locale>\<open>M_Z_trans\<close>\<close>
 
 end
