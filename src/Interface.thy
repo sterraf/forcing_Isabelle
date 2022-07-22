@@ -1492,7 +1492,8 @@ proof -
     by(rule_tac separation_cong[THEN iffD2,OF iff_trans[OF 0 1]],clarify,force)
 qed
 end
-definition separation_assm_fm :: "[i,i,i] \<Rightarrow> i" 
+
+definition separation_assm_fm :: "[i,i,i] \<Rightarrow> i"
   where
   "separation_assm_fm(A,x,f_fm) \<equiv> (\<cdot>\<exists> (\<cdot>\<exists> \<cdot>\<cdot>0 \<in> A +\<^sub>\<omega> 2\<cdot> \<and> \<cdot>\<cdot>\<langle>0,1\<rangle> is x+\<^sub>\<omega> 2 \<cdot> \<and> f_fm \<cdot>\<cdot>\<cdot>)\<cdot>)" 
 
@@ -1506,7 +1507,6 @@ lemma arity_separation_assm_fm : "A \<in> \<omega> \<Longrightarrow> x \<in> \<o
   using pred_Un_distrib
   unfolding separation_assm_fm_def
   by (auto simp add:arity)
-
 
 lemma (in M_Z_trans) separation_assm_sats : 
   assumes
@@ -1544,7 +1544,7 @@ lemma (in M_Z_trans) separation_domain : "A\<in>M \<Longrightarrow> separation(#
   using separation_assm_sats[of "domain_fm(0,1)"] arity_domain_fm ord_simp_union domain_closed[simplified]
   by simp
 
-lemma (in M_Z_trans) lam_domain : "lam_replacement(##M, domain)"
+lemma (in M_Z_trans) lam_replacement_domain : "lam_replacement(##M, domain)"
   using lam_replacement_domain' separation_domain transM by simp
 
 end

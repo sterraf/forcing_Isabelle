@@ -353,7 +353,7 @@ locale M_ZF2 = M_ZF1 +
     and
     Lambda_in_M_replacement2:
     "replacement_assm(M,env,Lambda_in_M_fm(fst_fm(0,1),0))" (* fake *)
-    "replacement_assm(M,env,Lambda_in_M_fm(domain_fm(0,1),0))" (* fake *)
+    "True"
     "replacement_assm(M,env,Lambda_in_M_fm(snd_fm(0,1),0))" (* fake *)
     "replacement_assm(M,env,Lambda_in_M_fm(big_union_fm(0,1),0))" (* fake *)
     "replacement_assm(M,env,Lambda_in_M_fm(is_converse_fm(0,1),0))" (* fake *)
@@ -374,7 +374,6 @@ definition instances2_fms where "instances2_fms \<equiv>
     banach_replacement_iterates_fm,
     banach_iterates_fm,
     Lambda_in_M_fm(fst_fm(0,1),0),
-    Lambda_in_M_fm(domain_fm(0,1),0),
     Lambda_in_M_fm(snd_fm(0,1),0),
     Lambda_in_M_fm(big_union_fm(0,1),0),
     Lambda_in_M_fm(is_converse_fm(0,1),0),
@@ -385,7 +384,7 @@ definition instances2_fms where "instances2_fms \<equiv>
     LambdaPair_in_M_fm(is_RepFun_body_fm(0,1,2),0),
     LambdaPair_in_M_fm(composition_fm(0,1,2),0) }"
 
-text\<open>This set has 20 internalized formulas.\<close>
+text\<open>This set has 19 internalized formulas.\<close>
 
 lemmas replacement_instances2_defs =
   replacement_HAleph_wfrec_repl_body_fm_def
@@ -496,13 +495,6 @@ lemma dcwit_replacement:"Ord(na) \<Longrightarrow>
 
 context M_ZF2_trans
 begin
-
-lemma lam_replacement_domain : "lam_replacement(##M, domain)"
-  using lam_replacement_iff_lam_closed[THEN iffD2,of domain]
-    Lambda_in_M[where \<phi>="domain_fm(0,1)" and env="[]"] domain_type domain_abs
-    Lambda_in_M_replacement2(2)
-    arity_domain_fm[of 0 1] ord_simp_union transitivity domain_closed
-  by simp
 
 lemma lam_replacement_converse : "lam_replacement(##M, converse)"
   using lam_replacement_iff_lam_closed[THEN iffD2,of converse] nonempty
