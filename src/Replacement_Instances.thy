@@ -403,27 +403,6 @@ locale M_ctm2 = M_ctm1 + M_ZF_ground_trans
 
 locale M_ctm2_AC = M_ctm2 + M_ZFC2_trans
 
-lemma is_minimum_eq :
-  "M(R) \<Longrightarrow> M(X) \<Longrightarrow> M(u) \<Longrightarrow> is_minimum(M,R,X,u) \<longleftrightarrow> is_minimum'(M,R,X,u)"
-  unfolding is_minimum_def is_minimum'_def is_The_def is_first_def by simp
-
-context M_trivial
-begin
-
-lemma first_closed:
-  "M(B) \<Longrightarrow> M(r) \<Longrightarrow> first(u,r,B) \<Longrightarrow> M(u)"
-  using transM[OF first_is_elem] by simp
-
-is_iff_rel for "first"
-  unfolding is_first_def first_rel_def by auto
-
-is_iff_rel for "minimum"
-  unfolding is_minimum_def minimum_rel_def
-  using is_first_iff The_abs nonempty
-  by force
-
-end \<comment> \<open>\<^locale>\<open>M_trivial\<close>\<close>
-
 lemma dcwit_replacement:"Ord(na) \<Longrightarrow>
     N(na) \<Longrightarrow>
     N(A) \<Longrightarrow>

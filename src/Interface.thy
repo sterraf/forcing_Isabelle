@@ -1656,7 +1656,7 @@ lemma lam_replacement_comp: "lam_replacement(##M, \<lambda>x . comp(fst(x),snd(x
 
 lemma separation_middle_del: "A\<in>M \<Longrightarrow>
      separation(##M, \<lambda>y. \<exists>x\<in>M. x \<in> A \<and> y = \<langle>x, middle_del(fst(x), snd(x))\<rangle>)"
-  using  arity_is_middle_del_fm ord_simp_union nonempty
+ using  arity_is_middle_del_fm ord_simp_union nonempty
     fst_abs snd_abs fst_closed snd_closed pair_in_M_iff
   by (rule_tac separation_assm_bin_sats[of "is_middle_del_fm(0,1,2)"],
       auto simp:is_middle_del_def middle_del_def)
@@ -1667,7 +1667,7 @@ lemma middle_del_replacement: "strong_replacement(##M, \<lambda>x y. y=\<langle>
 
 lemma separation_prodRepl: "A\<in>M \<Longrightarrow>
      separation(##M, \<lambda>y. \<exists>x\<in>M. x \<in> A \<and> y = \<langle>x, prodRepl(fst(x), snd(x))\<rangle>)"
-  using  arity_is_prodRepl_fm ord_simp_union nonempty
+   using  arity_is_prodRepl_fm ord_simp_union nonempty
     fst_abs snd_abs fst_closed snd_closed pair_in_M_iff
   by (rule_tac separation_assm_bin_sats[of "is_prodRepl_fm(0,1,2)"],
       auto simp:is_prodRepl_def prodRepl_def)
@@ -1676,10 +1676,36 @@ lemma product_replacement: "strong_replacement(##M, \<lambda>x y. y=\<langle>snd
   using product_replacement' separation_prodRepl
   by simp
 
+end  \<comment> \<open>\<^locale>\<open>M_Z_trans\<close>\<close>
+
+context M_trivial
+begin
+
+lemma first_closed:
+  "M(B) \<Longrightarrow> M(r) \<Longrightarrow> first(u,r,B) \<Longrightarrow> M(u)"
+  using transM[OF first_is_elem] by simp
+
+is_iff_rel for "first"
+  unfolding is_first_def first_rel_def by auto
+
+is_iff_rel for "minimum"
+  unfolding is_minimum_def minimum_rel_def
+  using is_first_iff The_abs nonempty
+  by force
+
+end \<comment> \<open>\<^locale>\<open>M_trivial\<close>\<close>
+
+context M_Z_trans
+begin
+
+lemma (in M_basic) is_minimum_equivalence :
+  "M(R) \<Longrightarrow> M(X) \<Longrightarrow> M(u) \<Longrightarrow> is_minimum(M,R,X,u) \<longleftrightarrow> is_minimum'(M,R,X,u)"
+  unfolding is_minimum_def is_minimum'_def is_The_def is_first_def by simp
+
 lemma separation_minimum: "A\<in>M \<Longrightarrow>
      separation(##M, \<lambda>y. \<exists>x\<in>M. x \<in> A \<and> y = \<langle>x, minimum(fst(x), snd(x))\<rangle>)"
-  using  arity_minimum_fm ord_simp_union
-    nonempty minimum_closed minimum_abs
+  using  arity_minimum_fm ord_simp_union is_minimum_iff minimum_abs
+    is_minimum_equivalence nonempty minimum_closed minimum_abs
   by (rule_tac separation_assm_bin_sats[of "minimum_fm(0,1,2)"], auto)
 
 lemma lam_replacement_minimum: "lam_replacement(##M, \<lambda>x . minimum(fst(x),snd(x)))"
