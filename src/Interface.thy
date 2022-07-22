@@ -1612,6 +1612,8 @@ lemma lam_replacement_converse: "lam_replacement(##M, converse)"
   using lam_replacement_converse' separation_converse transM by simp
 
 
+text\<open>Binary lambda-replacements\<close>
+
 lemma separation_Upair: "A\<in>M \<Longrightarrow>
      separation(##M, \<lambda>y. \<exists>x\<in>M. x \<in> A \<and> y = \<langle>x, Upair(fst(x), snd(x))\<rangle>)"
   using  arity_upair_fm ord_simp_union
@@ -1620,6 +1622,68 @@ lemma separation_Upair: "A\<in>M \<Longrightarrow>
 
 lemma lam_replacement_Upair: "lam_replacement(##M, \<lambda>x . Upair(fst(x),snd(x)))"
   using lam_replacement_Upair' separation_Upair 
+  by simp
+
+lemma separation_Diff: "A\<in>M \<Longrightarrow>
+     separation(##M, \<lambda>y. \<exists>x\<in>M. x \<in> A \<and> y = \<langle>x, Diff(fst(x), snd(x))\<rangle>)"
+  using  arity_setdiff_fm ord_simp_union
+    nonempty Diff_closed setdiff_abs
+  by (rule_tac separation_assm_bin_sats[of "setdiff_fm(0,1,2)"],auto)
+
+lemma lam_replacement_Diff: "lam_replacement(##M, \<lambda>x . Diff(fst(x),snd(x)))"
+  using lam_replacement_Diff'' separation_Diff
+  by simp
+
+lemma separation_Image: "A\<in>M \<Longrightarrow>
+     separation(##M, \<lambda>y. \<exists>x\<in>M. x \<in> A \<and> y = \<langle>x, fst(x) `` snd(x)\<rangle>)"
+  using  arity_image_fm ord_simp_union
+    nonempty image_closed image_abs
+  by (rule_tac separation_assm_bin_sats[of "image_fm(0,1,2)"],auto)
+
+lemma lam_replacement_Image: "lam_replacement(##M, \<lambda>x . fst(x) `` snd(x))"
+  using lam_replacement_Image' separation_Image
+  by simp
+
+lemma separation_comp: "A\<in>M \<Longrightarrow>
+     separation(##M, \<lambda>y. \<exists>x\<in>M. x \<in> A \<and> y = \<langle>x, comp(fst(x), snd(x))\<rangle>)"
+  using  arity_composition_fm ord_simp_union
+    nonempty comp_closed composition_abs
+  by (rule_tac separation_assm_bin_sats[of "composition_fm(0,1,2)"],auto)
+
+lemma lam_replacement_comp: "lam_replacement(##M, \<lambda>x . comp(fst(x),snd(x)))"
+  using lam_replacement_comp'' separation_comp
+  by simp
+
+lemma separation_middle_del: "A\<in>M \<Longrightarrow>
+     separation(##M, \<lambda>y. \<exists>x\<in>M. x \<in> A \<and> y = \<langle>x, middle_del(fst(x), snd(x))\<rangle>)"
+  using  arity_is_middle_del_fm ord_simp_union nonempty
+    fst_abs snd_abs fst_closed snd_closed pair_in_M_iff
+  by (rule_tac separation_assm_bin_sats[of "is_middle_del_fm(0,1,2)"],
+      auto simp:is_middle_del_def middle_del_def)
+
+lemma middle_del_replacement: "strong_replacement(##M, \<lambda>x y. y=\<langle>fst(fst(x)),snd(snd(x))\<rangle>)"
+  using middle_del_replacement' separation_middle_del
+  by simp
+
+lemma separation_prodRepl: "A\<in>M \<Longrightarrow>
+     separation(##M, \<lambda>y. \<exists>x\<in>M. x \<in> A \<and> y = \<langle>x, prodRepl(fst(x), snd(x))\<rangle>)"
+  using  arity_is_prodRepl_fm ord_simp_union nonempty
+    fst_abs snd_abs fst_closed snd_closed pair_in_M_iff
+  by (rule_tac separation_assm_bin_sats[of "is_prodRepl_fm(0,1,2)"],
+      auto simp:is_prodRepl_def prodRepl_def)
+
+lemma product_replacement: "strong_replacement(##M, \<lambda>x y. y=\<langle>snd(fst(x)),\<langle>fst(fst(x)),snd(snd(x))\<rangle>\<rangle>)"
+  using product_replacement' separation_prodRepl
+  by simp
+
+lemma separation_minimum: "A\<in>M \<Longrightarrow>
+     separation(##M, \<lambda>y. \<exists>x\<in>M. x \<in> A \<and> y = \<langle>x, minimum(fst(x), snd(x))\<rangle>)"
+  using  arity_minimum_fm ord_simp_union
+    nonempty minimum_closed minimum_abs
+  by (rule_tac separation_assm_bin_sats[of "minimum_fm(0,1,2)"], auto)
+
+lemma lam_replacement_minimum: "lam_replacement(##M, \<lambda>x . minimum(fst(x),snd(x)))"
+  using lam_replacement_minimum' separation_minimum
   by simp
 
 end \<comment> \<open>\<^locale>\<open>M_Z_trans\<close>\<close>

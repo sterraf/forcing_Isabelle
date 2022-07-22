@@ -29,8 +29,27 @@ on its theory.
 declare arity_subset_fm [simp del] arity_ordinal_fm[simp del, arity] arity_transset_fm[simp del]
   FOL_arities[simp del]
 
+synthesize "setdiff" from_definition "setdiff" assuming "nonempty"
+arity_theorem for "setdiff_fm"
+
 synthesize "is_converse" from_definition assuming "nonempty"
 arity_theorem for "is_converse_fm"
+
+relationalize "first_rel" "is_first" external
+synthesize "first_fm" from_definition "is_first" assuming "nonempty"
+
+relationalize "minimum_rel" "is_minimum" external
+definition is_minimum' where
+  "is_minimum'(M,R,X,u) \<equiv> (M(u) \<and> u \<in> X \<and> (\<forall>v[M]. \<exists>a[M]. (v \<in> X \<longrightarrow> v \<noteq> u \<longrightarrow> a \<in> R) \<and> pair(M, u, v, a))) \<and>
+    (\<exists>x[M].
+        (M(x) \<and> x \<in> X \<and> (\<forall>v[M]. \<exists>a[M]. (v \<in> X \<longrightarrow> v \<noteq> x \<longrightarrow> a \<in> R) \<and> pair(M, x, v, a))) \<and>
+        (\<forall>y[M]. M(y) \<and> y \<in> X \<and> (\<forall>v[M]. \<exists>a[M]. (v \<in> X \<longrightarrow> v \<noteq> y \<longrightarrow> a \<in> R) \<and> pair(M, y, v, a)) \<longrightarrow> y = x)) \<or>
+    \<not> (\<exists>x[M]. (M(x) \<and> x \<in> X \<and> (\<forall>v[M]. \<exists>a[M]. (v \<in> X \<longrightarrow> v \<noteq> x \<longrightarrow> a \<in> R) \<and> pair(M, x, v, a))) \<and>
+               (\<forall>y[M]. M(y) \<and> y \<in> X \<and> (\<forall>v[M]. \<exists>a[M]. (v \<in> X \<longrightarrow> v \<noteq> y \<longrightarrow> a \<in> R) \<and> pair(M, y, v, a)) \<longrightarrow> y = x)) \<and>
+    empty(M, u)"
+
+synthesize "minimum" from_definition "is_minimum'" assuming "nonempty"
+arity_theorem for "minimum_fm"
 
 lemma is_lambda_iff_sats[iff_sats]:
   assumes is_F_iff_sats:

@@ -334,8 +334,6 @@ locale M_ZF4 = M_ZF3 +
     "ground_replacement_assm(M,env,formula_repl1_intf_fm)"
     "ground_replacement_assm(M,env,eclose_repl1_intf_fm)"
     "ground_replacement_assm(M,env,replacement_HAleph_wfrec_repl_body_fm)"
-    "ground_replacement_assm(M,env,replacement_is_fst2_snd2_fm)"
-    "ground_replacement_assm(M,env,replacement_is_sndfst_fst2_snd2_fm)"
     "ground_replacement_assm(M,env,replacement_is_order_eq_map_fm)"
     "ground_replacement_assm(M,env,banach_replacement_iterates_fm)"
     "ground_replacement_assm(M,env,banach_iterates_fm)"
@@ -361,8 +359,6 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(formula_repl1_intf_fm),
     ground_repl_fm(eclose_repl1_intf_fm),
     ground_repl_fm(replacement_HAleph_wfrec_repl_body_fm),
-    ground_repl_fm(replacement_is_fst2_snd2_fm),
-    ground_repl_fm(replacement_is_sndfst_fst2_snd2_fm),
     ground_repl_fm(replacement_is_order_eq_map_fm),
     ground_repl_fm(banach_replacement_iterates_fm),
     ground_repl_fm(banach_iterates_fm),

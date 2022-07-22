@@ -627,6 +627,11 @@ definition
   middle_del :: "i\<Rightarrow>i\<Rightarrow>i" where
   "middle_del(x,y) \<equiv> \<langle>fst(x),snd(y)\<rangle>"
 
+relativize functional "middle_del" "middle_del_rel"
+relationalize "middle_del_rel" "is_middle_del"
+synthesize "is_middle_del" from_definition
+arity_theorem for "is_middle_del_fm"
+
 context M_basic
 begin
 
@@ -658,6 +663,11 @@ end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
 definition
   prodRepl :: "i\<Rightarrow>i\<Rightarrow>i" where
   "prodRepl(x,y) \<equiv> \<langle>snd(x),\<langle>fst(x),snd(y)\<rangle>\<rangle>"
+
+relativize functional "prodRepl" "prodRepl_rel"
+relationalize "prodRepl_rel" "is_prodRepl"
+synthesize "is_prodRepl" from_definition
+arity_theorem for "is_prodRepl_fm"
 
 context M_basic
 begin
@@ -2176,9 +2186,27 @@ lemma curry_closed :
   unfolding curry_def
   by auto
 
+end \<comment> \<open>\<^locale>\<open>M_replacement\<close>\<close>
+
 definition
   RepFun_cons :: "i\<Rightarrow>i\<Rightarrow>i" where
   "RepFun_cons(x,y) \<equiv> RepFun(x, \<lambda>z. {\<langle>y,z\<rangle>})"
+
+relativize functional "RepFun_cons" "RepFun_cons_rel"
+relationalize "RepFun_cons_rel" "is_RepFun_cons"
+synthesize "is_RepFun_cons" from_definition assuming "nonempty"
+arity_theorem intermediate for "is_RepFun_cons_fm"
+
+lemma arity_is_RepFun_cons_fm[arity]:
+  "x \<in> \<omega> \<Longrightarrow> y \<in> \<omega> \<Longrightarrow> d \<in> \<omega> \<Longrightarrow>
+   arity(is_RepFun_cons_fm(x, y, d)) = succ(d) \<union> succ(x) \<union> succ(y)"
+  using arity_is_RepFun_cons_fm'  pred_Un_distrib
+  by (simp, subst arity_Exists[THEN [5] arity_Replace_fm[where
+          p="(\<cdot>\<exists>\<cdot>\<cdot>cons(0,3) is 2 \<cdot> \<and> \<cdot>\<langle>succ(succ(succ(succ(y)))),1\<rangle> is 0 \<cdot>\<cdot>\<cdot>)"]])
+    (simp_all add:arity)
+
+context M_replacement
+begin
 
 lemma RepFun_cons_in_Union:
   assumes "x\<in>X" "y\<in>X" "M(X)"
