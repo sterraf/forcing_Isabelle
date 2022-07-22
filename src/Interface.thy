@@ -1491,7 +1491,60 @@ proof -
   show ?thesis
     by(rule_tac separation_cong[THEN iffD2,OF iff_trans[OF 0 1]],clarify,force)
 qed
+end
+definition separation_assm_fm :: "[i,i,i] \<Rightarrow> i" 
+  where
+  "separation_assm_fm(A,x,f_fm) \<equiv> (\<cdot>\<exists> (\<cdot>\<exists> \<cdot>\<cdot>0 \<in> A +\<^sub>\<omega> 2\<cdot> \<and> \<cdot>\<cdot>\<langle>0,1\<rangle> is x+\<^sub>\<omega> 2 \<cdot> \<and> f_fm \<cdot>\<cdot>\<cdot>)\<cdot>)" 
 
-end \<comment> \<open>\<^locale>\<open>M_Z_trans\<close>\<close>
+lemma separation_assm_fm_type[TC]: 
+  "A \<in> \<omega> \<Longrightarrow> y \<in> \<omega> \<Longrightarrow> f_fm \<in> formula \<Longrightarrow> separation_assm_fm(A, y,f_fm) \<in> formula"
+  unfolding separation_assm_fm_def
+  by simp
+
+lemma arity_separation_assm_fm : "A \<in> \<omega> \<Longrightarrow> x \<in> \<omega> \<Longrightarrow> f_fm \<in> formula \<Longrightarrow>
+  arity(separation_assm_fm(A, x, f_fm)) = succ(A) \<union> succ(x) \<union> pred(pred(arity(f_fm)))"
+  using pred_Un_distrib
+  unfolding separation_assm_fm_def
+  by (auto simp add:arity)
+
+
+lemma (in M_Z_trans) separation_assm_sats : 
+  assumes
+    f_fm:  "\<phi> \<in> formula" and
+    f_ar:  "arity(\<phi>) = 2" and
+    fsats: "\<And>env x y. env\<in>list(M) \<Longrightarrow> x\<in>M \<Longrightarrow> y\<in>M \<Longrightarrow> (M,[x,y]@env \<Turnstile> \<phi>) \<longleftrightarrow> is_f(x,y)" and
+    fabs:  "\<And>x y. x\<in>M \<Longrightarrow> y\<in>M \<Longrightarrow> is_f(x,y) \<longleftrightarrow> y = f(x)" and
+    fclosed: "\<And>x. x\<in>M \<Longrightarrow> f(x) \<in> M" and
+    "A\<in>M"
+  shows "separation(##M, \<lambda>y. \<exists>x \<in> M . x\<in>A \<and> y = \<langle>x, f(x)\<rangle>)"
+proof -
+  let ?\<phi>'="separation_assm_fm(1,0,\<phi>)"
+  let ?p="\<lambda>y. \<exists>x\<in>M . x\<in>A \<and> y = \<langle>x, f(x)\<rangle>"
+  from f_fm
+  have "?\<phi>'\<in>formula"
+     by simp
+  moreover from this f_ar f_fm
+  have "arity(?\<phi>') = 2"
+    using arity_separation_assm_fm[of 1 0 \<phi>] ord_simp_union  
+    by simp
+  moreover from \<open>A\<in>M\<close> calculation
+  have "separation(##M,\<lambda>y . M,[y,A] \<Turnstile> ?\<phi>')"
+    using separation_ax by auto
+  moreover
+  have "y\<in>M \<Longrightarrow> (M,[y,A] \<Turnstile> ?\<phi>') \<longleftrightarrow> ?p(y)" for y
+    using assms transitivity[OF _ \<open>A\<in>M\<close>]
+    unfolding separation_assm_fm_def
+    by auto  
+  ultimately
+  show ?thesis
+    by(rule_tac separation_cong[THEN iffD1],auto)
+qed
+
+lemma (in M_Z_trans) separation_domain : "A\<in>M \<Longrightarrow> separation(##M, \<lambda>y. \<exists>x \<in> M . x\<in>A \<and> y = \<langle>x, domain(x)\<rangle>)"
+  using separation_assm_sats[of "domain_fm(0,1)"] arity_domain_fm ord_simp_union domain_closed[simplified]
+  by simp
+
+lemma (in M_Z_trans) lam_domain : "lam_replacement(##M, domain)"
+  using lam_replacement_domain' separation_domain transM by simp
 
 end
