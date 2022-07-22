@@ -5,34 +5,15 @@ theory Cardinal_Preservation
     Forcing_Main
 begin
 
-context forcing_notion
-begin
-
-definition
-  antichain :: "i\<Rightarrow>o" where
-  "antichain(A) \<equiv> A\<subseteq>P \<and> (\<forall>p\<in>A. \<forall>q\<in>A. p \<noteq> q \<longrightarrow> p \<bottom> q)"
-
-definition
-  ccc :: "o" where
-  "ccc \<equiv> \<forall>A. antichain(A) \<longrightarrow> |A| \<le> \<omega>"
-
-end \<comment> \<open>\<^locale>\<open>forcing_notion\<close>\<close>
-
 context forcing_data1
 
 begin
-abbreviation
-  antichain_r' :: "i \<Rightarrow> o" where
-  "antichain_r'(A) \<equiv> antichain_rel(##M,P,leq,A)"
 
 lemma antichain_abs' [absolut]:
-  "\<lbrakk> A\<in>M \<rbrakk> \<Longrightarrow> antichain_r'(A) \<longleftrightarrow> antichain(A)"
+  "\<lbrakk> A\<in>M \<rbrakk> \<Longrightarrow> antichain\<^bsup>M\<^esup>(P,leq,A) \<longleftrightarrow> antichain(P,leq,A)"
   unfolding antichain_rel_def antichain_def compat_def
   using transitivity[of _ A]
   by (auto simp add:absolut)
-
-lemma (in forcing_notion) Incompatible_imp_not_eq: "\<lbrakk> p \<bottom> q; p\<in>P; q\<in>P \<rbrakk>\<Longrightarrow> p \<noteq> q"
-  using refl_leq by blast
 
 lemma inconsistent_imp_incompatible:
   assumes "p \<tturnstile> \<phi> env" "q \<tturnstile> Neg(\<phi>) env" "p\<in>P" "q\<in>P"
@@ -471,11 +452,11 @@ proof -
         by auto
     qed
     moreover from calculation
-    have "antichain(range(q))"
+    have "antichain(P,leq,range(q))"
       using Pi_range_eq[of _  _ "\<lambda>_ . P"]
-      unfolding antichain_def by auto
+      unfolding antichain_def compat_in_def by auto
     moreover from this and \<open>q\<in>M\<close>
-    have "antichain_r'(range(q))"
+    have "antichain\<^bsup>M\<^esup>(P,leq,range(q))"
       by (simp add:absolut del:P_in_M)
     moreover from calculation
     have "q`b \<noteq> q`c" if "b \<noteq> c" "b \<in> F`a" "c \<in> F`a" for b c
@@ -488,7 +469,7 @@ proof -
     have "|F`a|\<^bsup>M\<^esup> \<le> |range(q)|\<^bsup>M\<^esup>"
       using def_lepoll_rel
       by (rule_tac lepoll_rel_imp_cardinal_rel_le) auto
-    also from \<open>antichain_r'(range(q))\<close> \<open>ccc\<^bsup>M\<^esup>(P,leq)\<close> \<open>q\<in>M\<close>
+    also from \<open>antichain\<^bsup>M\<^esup>(P,leq,range(q))\<close> \<open>ccc\<^bsup>M\<^esup>(P,leq)\<close> \<open>q\<in>M\<close>
     have "|range(q)|\<^bsup>M\<^esup> \<le> \<omega>"
       using def_ccc_rel by simp
     finally
