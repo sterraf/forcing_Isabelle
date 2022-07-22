@@ -548,7 +548,22 @@ lemma replacement_RepFun_body:
 lemma RepFun_cons_closed:
   assumes "x\<in>M" "y\<in>M"
   shows "RepFun_cons(x,y) \<in> M"
-  sorry
+proof -
+  from assms
+  have "{y}\<times>x \<in> M" (is "?P \<in>_")
+    using singleton_closed cartprod_closed
+    by simp
+  then
+  have "{{v} . v\<in>?P} \<in> M"
+    using lam_replacement_sing lam_replacement_imp_strong_replacement singleton_closed
+      transitivity RepFun_closed[simplified]
+    by simp
+  moreover
+  have "{{v} . v\<in>?P} = RepFun_cons(x,y)" 
+    unfolding RepFun_cons_def by auto
+  ultimately
+  show ?thesis by simp
+qed
 
 lemma separation_RepFun_cons: "A\<in>M \<Longrightarrow>
      separation(##M, \<lambda>y. \<exists>x\<in>M. x \<in> A \<and> y = \<langle>x, RepFun_cons(fst(x), snd(x))\<rangle>)"
