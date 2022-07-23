@@ -13,17 +13,11 @@ locale M_ZF3 = M_ZF2 +
     "replacement_assm(M,env,replacement_is_order_body_fm)"
     "replacement_assm(M,env,wfrec_replacement_order_pred_fm)"
     "replacement_assm(M,env,replacement_is_jump_cardinal_body_fm)"
-    and
-    LambdaPair_in_M_replacement3:
-    "replacement_assm(M,env,LambdaPair_in_M_fm(is_inj_fm(0,1,2),0))" (* fake *)
 
 definition instances3_fms where "instances3_fms \<equiv>
   { replacement_is_order_body_fm,
     wfrec_replacement_order_pred_fm,
-    replacement_is_jump_cardinal_body_fm,
-    LambdaPair_in_M_fm(is_inj_fm(0,1,2),0) }"
-
-text\<open>This set has 4 internalized formulas.\<close>
+    replacement_is_jump_cardinal_body_fm }"
 
 lemmas replacement_instances3_defs =
   replacement_is_order_body_fm_def wfrec_replacement_order_pred_fm_def
@@ -55,16 +49,6 @@ lemmas (in M_ZF2_trans) separation_instances =
   separation_obase_equals separation_is_obase
   separation_PiP_rel separation_surjP_rel
   separation_radd_body separation_rmult_body
-
-lemma (in M_ZF3_trans) lam_replacement_inj_rel:
-  shows
-    "lam_replacement(##M, \<lambda>p. inj\<^bsup>##M\<^esup>(fst(p),snd(p)))"
-  using lam_replacement_iff_lam_closed[THEN iffD2,of "\<lambda>p. inj\<^bsup>M\<^esup>(fst(p),snd(p))"]
-    LambdaPair_in_M[where \<phi>="is_inj_fm(0,1,2)" and is_f="is_inj(##M)" and env="[]",OF
-      is_inj_fm_type _ is_inj_iff_sats[symmetric] inj_rel_iff,simplified]
-    arity_is_inj_fm[of 0 1 2] ord_simp_union transitivity fst_snd_closed
-    inj_rel_closed zero_in_M LambdaPair_in_M_replacement3
-  by simp
 
 arity_theorem for "is_transitive_fm"
 arity_theorem for "is_linear_fm"
@@ -323,7 +307,6 @@ locale M_ZF4 = M_ZF3 +
     "ground_replacement_assm(M,env,replacement_is_order_body_fm)"
     "ground_replacement_assm(M,env,wfrec_replacement_order_pred_fm)"
     "ground_replacement_assm(M,env,replacement_is_jump_cardinal_body_fm)"
-    "ground_replacement_assm(M,env,LambdaPair_in_M_fm(is_inj_fm(0,1,2),0))"
     "ground_replacement_assm(M,env,list_repl1_intf_fm)"
     "ground_replacement_assm(M,env,list_repl2_intf_fm)"
     "ground_replacement_assm(M,env,formula_repl2_intf_fm)"
@@ -337,18 +320,11 @@ locale M_ZF4 = M_ZF3 +
     "ground_replacement_assm(M,env,replacement_is_order_eq_map_fm)"
     "ground_replacement_assm(M,env,banach_replacement_iterates_fm)"
     "ground_replacement_assm(M,env,banach_iterates_fm)"
-    "ground_replacement_assm(M,env,LambdaPair_in_M_fm(image_fm(0,1,2),0))"
-    "ground_replacement_assm(M,env,LambdaPair_in_M_fm(setdiff_fm(0,1,2),0))"
-    "ground_replacement_assm(M,env,LambdaPair_in_M_fm(minimum_fm(0,1,2),0))"
-    "ground_replacement_assm(M,env,LambdaPair_in_M_fm(upair_fm(0,1,2),0))"
-    "ground_replacement_assm(M,env,LambdaPair_in_M_fm(is_RepFun_body_fm(0,1,2),0))"
-    "ground_replacement_assm(M,env,LambdaPair_in_M_fm(composition_fm(0,1,2),0))"
 
 definition instances4_fms where "instances4_fms \<equiv>
   { ground_repl_fm(replacement_is_order_body_fm),
     ground_repl_fm(wfrec_replacement_order_pred_fm),
     ground_repl_fm(replacement_is_jump_cardinal_body_fm),
-    ground_repl_fm(LambdaPair_in_M_fm(is_inj_fm(0,1,2),0)),
     ground_repl_fm(list_repl1_intf_fm),
     ground_repl_fm(list_repl2_intf_fm),
     ground_repl_fm(formula_repl2_intf_fm),
@@ -361,15 +337,9 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(replacement_HAleph_wfrec_repl_body_fm),
     ground_repl_fm(replacement_is_order_eq_map_fm),
     ground_repl_fm(banach_replacement_iterates_fm),
-    ground_repl_fm(banach_iterates_fm),
-    ground_repl_fm(LambdaPair_in_M_fm(image_fm(0,1,2),0)),
-    ground_repl_fm(LambdaPair_in_M_fm(setdiff_fm(0,1,2),0)),
-    ground_repl_fm(LambdaPair_in_M_fm(minimum_fm(0,1,2),0)),
-    ground_repl_fm(LambdaPair_in_M_fm(upair_fm(0,1,2),0)),
-    ground_repl_fm(LambdaPair_in_M_fm(is_RepFun_body_fm(0,1,2),0)),
-    ground_repl_fm(LambdaPair_in_M_fm(composition_fm(0,1,2),0)) }"
+    ground_repl_fm(banach_iterates_fm) }"
 
-text\<open>This set has 25 internalized formulas, corresponding to the total
+text\<open>This set has 16 internalized formulas, corresponding to the total
 count of previous replacement instances (apart from those 6 in
 \<^term>\<open>instances_ground_fms\<close>).\<close>
 
@@ -378,7 +348,7 @@ definition overhead where
      instances4_fms \<union> instances_ground_fms"
 
 text\<open>Hence, the “overhead” to force $\CH$ and its negation consists
-of 56 replacement instances.\<close>
+of 38 replacement instances.\<close>
 
 (*
 axiomatization
@@ -388,10 +358,10 @@ axiomatization
 
 schematic_goal
   "card(instances1_fms) = ?n"       (*  9 *)
-  "card(instances2_fms) = ?m"       (* 12 *)
-  "card(instances3_fms) = ?o"       (*  4 *)
+  "card(instances2_fms) = ?m"       (*  4 *)
+  "card(instances3_fms) = ?o"       (*  3 *)
   "card(instances_ground_fms) = ?r" (*  6 *)
-  "card(instances4_fms) = ?p"       (* 25 *)
+  "card(instances4_fms) = ?p"       (* 16 *)
   unfolding instances1_fms_def instances2_fms_def instances3_fms_def
    instances4_fms_def instances_ground_fms_def
   by simp_all

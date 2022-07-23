@@ -323,8 +323,6 @@ locale M_ZF2 = M_ZF1 +
   assumes
     replacement_ax2:
     "replacement_assm(M,env,replacement_HAleph_wfrec_repl_body_fm)"
-    "True"
-    "True"
     "replacement_assm(M,env,replacement_is_order_eq_map_fm)"
     "replacement_assm(M,env,banach_replacement_iterates_fm)"
     "replacement_assm(M,env,banach_iterates_fm)"
@@ -600,11 +598,22 @@ sublocale M_ZF2_trans \<subseteq> M_pre_seqspace "##M"
 context M_ZF2_trans
 begin
 
+lemma separation_inj_rel: "A\<in>M \<Longrightarrow>
+     separation(##M, \<lambda>y. \<exists>x\<in>M. x \<in> A \<and> y = \<langle>x, inj_rel(##M,fst(x), snd(x))\<rangle>)"
+  using arity_is_inj_fm ord_simp_union
+    nonempty inj_rel_closed[simplified] inj_rel_iff[simplified]
+  by (rule_tac separation_assm_bin_sats[of "is_inj_fm(0,1,2)"])
+    (simp_all add:setclass_def)
+
+lemma lam_replacement_inj_rel: "lam_replacement(##M, \<lambda>x . inj_rel(##M,fst(x),snd(x)))"
+  using lam_replacement_inj_rel' separation_inj_rel
+  by simp
+
 lemma replacement_is_order_eq_map:
   "A\<in>M \<Longrightarrow> r\<in>M \<Longrightarrow> strong_replacement(##M, order_eq_map(##M,A,r))"
   using strong_replacement_rel_in_ctm[where \<phi>="order_eq_map_fm(2,3,0,1)" and env="[A,r]"  and f="order_eq_map(##M,A,r)"]
     order_eq_map_iff_sats[where env="[_,_,A,r]"] zero_in_M fst_snd_closed pair_in_M_iff
-    arity_order_eq_map_fm ord_simp_union replacement_ax2(4)
+    arity_order_eq_map_fm ord_simp_union replacement_ax2(2)
   by simp
 
 lemma banach_iterates:
@@ -614,7 +623,7 @@ proof -
   have "strong_replacement(##M, \<lambda> x z . banach_body_iterates(##M,X,Y,f,g,W,n,x,z))" if "n\<in>\<omega>" for n
     using assms that arity_banach_body_iterates_fm ord_simp_union nat_into_M
       strong_replacement_rel_in_ctm[where \<phi>="banach_body_iterates_fm(7,6,5,4,3,2,0,1)"
-        and env="[n,W,g,f,Y,X]"] replacement_ax2(6)
+        and env="[n,W,g,f,Y,X]"] replacement_ax2(4)
     by simp
   then
   show ?thesis
@@ -631,7 +640,7 @@ proof -
   have "strong_replacement(##M, \<lambda> n z . banach_is_iterates_body(##M,X,Y,f,g,W,n,z))"
     using assms arity_banach_is_iterates_body_fm ord_simp_union nat_into_M
       strong_replacement_rel_in_ctm[where \<phi>="banach_is_iterates_body_fm(6,5,4,3,2,0,1)"
-        and env="[W,g,f,Y,X]"] replacement_ax2(5)
+        and env="[W,g,f,Y,X]"] replacement_ax2(3)
     by simp
   then
   show ?thesis
