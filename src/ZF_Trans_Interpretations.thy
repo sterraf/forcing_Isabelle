@@ -345,7 +345,7 @@ definition instances4_fms where "instances4_fms \<equiv>
 
 text\<open>This set has 16 internalized formulas, corresponding to the total
 count of previous replacement instances (apart from those 6 in
-\<^term>\<open>instances_ground_fms\<close>).\<close>
+\<^term>\<open>instances_ground_fms\<close> and \<^term>\<open>replacement_dcwit_repl_body_fm\<close>).\<close>
 
 definition overhead where
   "overhead \<equiv> instances1_fms \<union> instances2_fms \<union> instances3_fms \<union>
@@ -355,7 +355,7 @@ definition overhead_CH where
   "overhead_CH \<equiv> overhead \<union> { replacement_dcwit_repl_body_fm }"
 
 text\<open>Hence, the “overhead” to force $\neg\CH$ and its negation consists
-of 38 replacement instances, and one further instance is needed to
+of 37 replacement instances, and one further instance is needed to
 force $\CH$.\<close>
 
 (*
@@ -368,7 +368,7 @@ schematic_goal
   "card(instances1_fms) = ?n"       (*  9 *)
   "card(instances2_fms) = ?m"       (*  4 *)
   "card(instances3_fms) = ?o"       (*  3 *)
-  "card(instances_ground_fms) = ?r" (*  6 *)
+  "card(instances_ground_fms) = ?r" (*  5 *)
   "card(instances4_fms) = ?p"       (* 16 *)
   unfolding instances1_fms_def instances2_fms_def instances3_fms_def
    instances4_fms_def instances_ground_fms_def

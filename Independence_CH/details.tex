@@ -4,7 +4,7 @@
 \label{sec:repl-instances}
 
 We isolated 36 instances of Replacement that are sufficient to force
-$\CH$/$\neg\CH$. The first 15 instances are needed to set up
+$\CH$ or $\neg\CH$. The first 15 instances are needed to set up
 cardinal arithmetic in $M$. Many of these were already present in
 relational form in the \session{ZF-Constructible} library.
 
@@ -71,7 +71,7 @@ obtained by replacing $\phi$ by
 $\isatt{ground{\uscore}repl{\uscore}fm}(\phi)$ in Eq.~(\ref{eq:replacement_assm_def}).
 
 That makes 30 instances up to now. For the setup of forcing, we
-require the following 6 instances (the first two are needed for the $\Delta$-System Lemma):
+require the following 5 instances (the first two are needed for the $\Delta$-System Lemma):
 
 \begin{itemize}
 %\verb|replacement_ax2(6)| \verb|replacement_transrec_apply_image_body_fm| seems fake!
@@ -81,8 +81,6 @@ require the following 6 instances (the first two are needed for the $\Delta$-Sys
 %\item $x\mapsto |x|^M$
 %  \isatt{Lambda{\uscore}in{\uscore}M{\uscore}fm(is{\uscore}cardinal{\uscore}fm(0,1),0)}. % fake since the image is known
 \item Absoluteness of the previous construction \isatt{replacement{\uscore}transrec{\uscore}apply{\uscore}image{\uscore}body{\uscore}fm}.
-\item Absoluteness of the recursive construction in the proof of the
-    Dependent Choices \isatt{replacement{\uscore}dcwit{\uscore}repl{\uscore}body{\uscore}fm}.
 \item 2 instances for definitions by well-founded recursion.
   \begin{itemize}
   \item
@@ -94,8 +92,13 @@ require the following 6 instances (the first two are needed for the $\Delta$-Sys
 \item Replacement through $x\mapsto \lb\check{x},x\rb$ (for the
   definition of $\punto{G}$)
   \isatt{Lambda{\uscore}in{\uscore}M{\uscore}fm(check{\uscore}fm(2,0,1),1)}.
-% \item Name of choice functions in $M[G]$ \isatt{repl{\uscore}opname{\uscore}check{\uscore}fm}.
-% \item 2 instances for the slalom needed for cardinal preservation by ccc forcing.
+\end{itemize}
+%
+This is enough to force $\neg\CH$. To force $\CH$, one further instance is needed:
+%
+\begin{itemize}
+\item Absoluteness of the recursive construction in the proof of the
+  Dependent Choices \isatt{replacement{\uscore}dcwit{\uscore}repl{\uscore}body{\uscore}fm}.
 \end{itemize}
 
 The need for some of the instances above arose from the particular
@@ -131,7 +134,7 @@ paragraph of \cite[Thm.~IV.2.27]{kunen2011set}:
   M^{\mathbb{P}}$ such that $\tau_{G}=a$. Let
   $Q=(\mathcal{P}(\operatorname{dom}(\tau) \times
   \mathbb{P}))^{M}$. This is the set of all names $\vartheta \in
-  M^{\mathcal{P}}$ such that $\operatorname{dom}(\vartheta) \subseteq
+  M^{\mathbb{P}}$ such that $\operatorname{dom}(\vartheta) \subseteq
   \operatorname{dom}(\tau)$. Let $\pi=Q \times\{\1\}$ and let
   $b=\pi_{G}=$ $\left\{\vartheta_{G}: \vartheta \in Q\right\}$. Now,
   consider any $c \in \mathcal{P}(a) \cap M[G]$; we need to show that
@@ -174,7 +177,7 @@ will intersperse the relevant passages of the proof.
 \ {\isacharquery}{\kern0pt}Q{\isacharequal}{\kern0pt}{\isachardoublequoteopen}Pow{\isacharparenleft}{\kern0pt}domain{\isacharparenleft}{\kern0pt}{\isasymtau}{\isacharparenright}{\kern0pt}{\isasymtimes}P{\isacharparenright}{\kern0pt}\ {\isasyminter}\ M{\isachardoublequoteclose}
 \end{isabelle}
 \textit{This is the set of all names $\vartheta \in
-  M^{\mathcal{P}}$} [\dots]---it is pretty laborious to show that things
+  M^{\mathbb{P}}$} [\dots]---it is pretty laborious to show that things
 are in $M$; it takes 17 more lines of code (not shown below) that
 apply further previously proved lemmas.
 \begin{isabelle}
