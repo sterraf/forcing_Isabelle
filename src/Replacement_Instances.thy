@@ -360,7 +360,6 @@ locale M_ZF_ground = M_ZF2 +
     "replacement_assm(M,env,wfrec_Hfrc_at_fm)"
     "replacement_assm(M,env,wfrec_Hcheck_fm)"
     "replacement_assm(M,env,Lambda_in_M_fm(check_fm(2,0,1),1))"
-    "replacement_assm(M,env,replacement_dcwit_repl_body_fm)"
     "replacement_assm(M,env,replacement_transrec_apply_image_body_fm)"
     "replacement_assm(M,env,replacement_is_trans_apply_image_fm)"
 
@@ -370,13 +369,11 @@ definition instances_ground_fms where "instances_ground_fms \<equiv>
   { wfrec_Hfrc_at_fm,
     wfrec_Hcheck_fm,
     Lambda_in_M_fm(check_fm(2,0,1),1),
-    replacement_dcwit_repl_body_fm,
     replacement_transrec_apply_image_body_fm,
     replacement_is_trans_apply_image_fm }"
 
 lemmas replacement_instances_ground_defs =
   wfrec_Hfrc_at_fm_def wfrec_Hcheck_fm_def
-  replacement_dcwit_repl_body_fm_def
   replacement_transrec_apply_image_body_fm_def
   replacement_is_trans_apply_image_fm_def
 
@@ -386,6 +383,14 @@ lemma instances_ground_fms_type[TC]: "instances_ground_fms \<subseteq> formula"
   using Lambda_in_M_fm_type
   unfolding instances_ground_fms_def replacement_instances_ground_defs
   by simp
+
+locale M_ZF_ground_CH = M_ZF_ground +
+  assumes
+    dcwit_replacement: "replacement_assm(M,env,replacement_dcwit_repl_body_fm)"
+
+declare (in M_ZF_ground_CH) replacement_dcwit_repl_body_fm_def [simp]
+
+locale M_ZF_ground_CH_trans = M_ZF_ground_trans + M_ZF_ground_CH
 
 locale M_ZFC2 = M_ZFC1 + M_ZF2
 
@@ -400,24 +405,6 @@ locale M_ctm1_AC = M_ctm1 + M_ZFC1_trans
 locale M_ctm2 = M_ctm1 + M_ZF_ground_trans
 
 locale M_ctm2_AC = M_ctm2 + M_ZFC2_trans
-
-lemma dcwit_replacement:"Ord(na) \<Longrightarrow>
-    N(na) \<Longrightarrow>
-    N(A) \<Longrightarrow>
-    N(a) \<Longrightarrow>
-    N(s) \<Longrightarrow>
-    N(R) \<Longrightarrow>
-    transrec_replacement
-     (N, \<lambda>n f ntc.
-            is_nat_case
-             (N, a,
-              \<lambda>m bmfm.
-                 \<exists>fm[N]. \<exists>cp[N].
-                    is_apply(N, f, m, fm) \<and>
-                    is_Collect(N, A, \<lambda>x. \<exists>fmx[N]. (N(x) \<and> fmx \<in> R) \<and> pair(N, fm, x, fmx), cp) \<and>
-                    is_apply(N, s, cp, bmfm),
-              n, ntc),na)"
-  unfolding transrec_replacement_def wfrec_replacement_def oops
 
 context M_ZF2_trans
 begin
@@ -453,16 +440,16 @@ lemma HAleph_wfrec_repl:
   using replacement_HAleph_wfrec_repl_body unfolding HAleph_wfrec_repl_body_def by simp
 
 
-lemma (in M_ZF_ground_trans) replacement_dcwit_repl_body:
+lemma (in M_ZF_ground_CH_trans) replacement_dcwit_repl_body:
   "(##M)(mesa) \<Longrightarrow> (##M)(A) \<Longrightarrow> (##M)(a) \<Longrightarrow> (##M)(s) \<Longrightarrow> (##M)(R) \<Longrightarrow>
    strong_replacement(##M, dcwit_repl_body(##M,mesa,A,a,s,R))"
   using strong_replacement_rel_in_ctm[where \<phi>="dcwit_repl_body_fm(6,5,4,3,2,0,1)"
       and env="[R,s,a,A,mesa]" and f="dcwit_repl_body(##M,mesa,A,a,s,R)"]
-    zero_in_M arity_dcwit_repl_body ZF_ground_replacements(4)
+    zero_in_M arity_dcwit_repl_body dcwit_replacement
   unfolding replacement_dcwit_repl_body_fm_def
   by simp
 
-lemma (in M_ZF_ground_trans) dcwit_repl:
+lemma (in M_ZF_ground_CH_trans) dcwit_repl:
   "(##M)(sa) \<Longrightarrow>
         (##M)(esa) \<Longrightarrow>
         (##M)(mesa) \<Longrightarrow> (##M)(A) \<Longrightarrow> (##M)(a) \<Longrightarrow> (##M)(s) \<Longrightarrow> (##M)(R) \<Longrightarrow>
@@ -728,7 +715,7 @@ lemma replacement_transrec_apply_image_body :
   "(##M)(f) \<Longrightarrow> (##M)(mesa) \<Longrightarrow> strong_replacement(##M,transrec_apply_image_body(##M,f,mesa))"
   using strong_replacement_rel_in_ctm[where \<phi>="transrec_apply_image_body_fm(3,2,0,1)" and env="[mesa,f]"]
     zero_in_M arity_transrec_apply_image_body_fm ord_simp_union
-    ZF_ground_replacements(5)
+    ZF_ground_replacements(4)
   by simp
 
 lemma transrec_replacement_apply_image:
@@ -753,7 +740,7 @@ lemma replacement_is_trans_apply_image:
         where P="\<lambda> x z. M,[x,z,\<beta>,f] \<Turnstile> is_trans_apply_image_body_fm(3,2,0,1)",THEN iffD1])
    apply(rule_tac is_trans_apply_image_body_iff_sats[symmetric,unfolded is_trans_apply_image_body_def,where env="[_,_,\<beta>,f]"])
             apply(simp_all add:zero_in_M)
-  apply(rule_tac ZF_ground_replacements(6)[unfolded replacement_assm_def, rule_format, where env="[\<beta>,f]",simplified])
+  apply(rule_tac ZF_ground_replacements(5)[unfolded replacement_assm_def, rule_format, where env="[\<beta>,f]",simplified])
     apply(simp_all add: arity_is_trans_apply_image_body_fm is_trans_apply_image_body_fm_type ord_simp_union)
   done
 

@@ -164,12 +164,16 @@ qed
 
 end \<comment> \<open>\<^locale>\<open>M_ctm3_AC\<close>\<close>
 
-locale collapse_generic4 = G_generic4_AC "Fn\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" "Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" 0
+sublocale M_ZFC3_trans \<subseteq> M_library "##M"
+  by unfold_locales (simp_all add:repl_instances sep_instances del:setclass_iff
+      add: transrec_replacement_def wfrec_replacement_def)
 
-sublocale collapse_generic4 \<subseteq> forcing_notion "Coll" "Colleq" 0
+locale collapse_CH = G_generic4_AC_CH "Fn\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" "Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" 0
+
+sublocale collapse_CH \<subseteq> forcing_notion "Coll" "Colleq" 0
   using zero_lt_Aleph_rel1 by unfold_locales
 
-context collapse_generic4
+context collapse_CH
 begin
 
 notation Leq (infixl "\<preceq>" 50)
@@ -341,35 +345,37 @@ theorem CH: "\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> = 2\<^bsup>\<up>\<ale
     le_anti_sym
   by auto
 
-end \<comment> \<open>\<^locale>\<open>collapse_generic4\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>collapse_CH\<close>\<close>
 
 subsection\<open>Models of fragments of $\ZFC + \CH$\<close>
 
 theorem ctm_of_CH:
   assumes
-    "M \<approx> \<omega>" "Transset(M)" "M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead}"
+    "M \<approx> \<omega>" "Transset(M)"
+    "M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead_CH}"
     "\<Phi> \<subseteq> formula" "M \<Turnstile> { \<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in> \<Phi>}"
   shows
     "\<exists>N.
       M \<subseteq> N \<and> N \<approx> \<omega> \<and> Transset(N) \<and> N \<Turnstile> ZC \<union> {\<cdot>CH\<cdot>} \<union> { \<cdot>Replacement(\<phi>)\<cdot> . \<phi> \<in> \<Phi>} \<and>
       (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> (\<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N))"
 proof -
-  from \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead}\<close>
+  from \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead_CH}\<close>
   interpret M_ZFC4 M
-    using M_satT_overhead_imp_M_ZF4 by simp
-  from \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead}\<close>
-  have "M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms \<union> instances_ground_fms }"
-    unfolding overhead_def ZC_def
+    using M_satT_overhead_imp_M_ZF4 unfolding overhead_CH_def by auto
+  from \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead_CH}\<close>
+  have "M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms \<union>
+            instances_ground_fms \<union> {replacement_dcwit_repl_body_fm}}"
+    unfolding overhead_CH_def overhead_def ZC_def
     by auto
   with \<open>Transset(M)\<close>
-  interpret M_ZF_ground_trans M
-    using M_satT_imp_M_ZF_ground_trans
+  interpret M_ZF_ground_CH_trans M
+    using M_satT_imp_M_ZF_ground_CH_trans
     by simp
   from \<open>M \<approx> \<omega>\<close>
   obtain enum where "enum \<in> bij(\<omega>,M)"
     using eqpoll_sym unfolding eqpoll_def by blast
   then
-  interpret M_ctm3_AC M enum by unfold_locales
+  interpret M_ctm3_AC_CH M enum by unfold_locales
   interpret forcing_data1 "Coll" "Colleq" 0 M enum
     using zero_in_Fn_rel[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"]
       zero_top_Fn_rel[of _ "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"]
@@ -380,7 +386,7 @@ proof -
     using generic_filter_existence[OF one_in_P]
     by auto
   moreover from this
-  interpret collapse_generic4 M enum G by unfold_locales
+  interpret collapse_CH M enum G by unfold_locales
   have "\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> = 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup>"
     using CH .
   then
@@ -418,7 +424,7 @@ proof -
         N \<Turnstile> ZC \<and> N \<Turnstile> {\<cdot>CH\<cdot>} \<and> N \<Turnstile> {\<cdot>Replacement(x)\<cdot> . x \<in> formula} \<and> (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)"
     using ctm_of_CH[of M formula] satT_ZFC_imp_satT_ZC[of M]
       satT_mono[OF _ ground_repl_fm_sub_ZFC, of M]
-      satT_mono[OF _ ZF_replacement_overhead_sub_ZFC, of M]
+      satT_mono[OF _ ZF_replacement_overhead_CH_sub_ZFC, of M]
       satT_mono[OF _ ZF_replacement_fms_sub_ZFC, of M]
     by (simp add: satT_Un_iff)
   then

@@ -173,7 +173,14 @@ proof -
   show ?thesis by auto
 qed
 
-context G_generic4_AC begin
+locale M_master_CH = M_master + M_library_DC
+
+sublocale M_ZFC3_ground_CH_trans \<subseteq> M_master_CH "##M"
+  using replacement_dcwit_repl_body
+  by unfold_locales (simp_all add:sep_instances del:setclass_iff
+      add: transrec_replacement_def wfrec_replacement_def dcwit_repl_body_def)
+
+context G_generic4_AC_CH begin
 
 context
   includes G_generic1_lemmas

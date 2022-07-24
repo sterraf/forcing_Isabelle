@@ -30,7 +30,7 @@ abbreviation
 lemma (in M_aleph) Aleph_rel2_closed[intro,simp]: "M(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>)"
   using nat_into_Ord by simp
 
-locale M_master = M_cohen + M_library_DC +
+locale M_master = M_cohen + M_library +
   assumes
     UN_lepoll_assumptions:
     "M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> M(A') \<Longrightarrow> separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x\<in>if_range_F_else_F((`)(A), b, f, i)\<rangle>)"
@@ -129,16 +129,12 @@ lemmas (in M_ZF3_trans) sep_instances =
 lemmas (in M_ZF3_trans) repl_instances = lam_replacement_inj_rel
 
 sublocale M_ZFC3_ground_trans \<subseteq> M_master "##M"
-  using replacement_dcwit_repl_body replacement_trans_apply_image
+  using replacement_trans_apply_image
   by unfold_locales (simp_all add:repl_instances sep_instances del:setclass_iff
-      add: transrec_replacement_def wfrec_replacement_def dcwit_repl_body_def)
+      add: transrec_replacement_def wfrec_replacement_def)
 
 sublocale M_ZFC3_trans \<subseteq> M_Pi_replacement "##M"
   by unfold_locales
-
-sublocale M_ZFC3_trans \<subseteq> M_cardinal_library "##M"
-  by unfold_locales (simp_all add:repl_instances sep_instances del:setclass_iff
-      add: transrec_replacement_def wfrec_replacement_def)
 
 subsection\<open>Cohen forcing is ccc\<close>
 
@@ -563,6 +559,9 @@ qed
 
 lemma ZF_replacement_overhead_sub_ZFC: "{\<cdot>Replacement(p)\<cdot> . p \<in> overhead} \<subseteq> ZFC"
   using overhead_type unfolding ZFC_def ZF_def ZF_schemes_def by auto
+
+lemma ZF_replacement_overhead_CH_sub_ZFC: "{\<cdot>Replacement(p)\<cdot> . p \<in> overhead_CH} \<subseteq> ZFC"
+  using overhead_CH_type unfolding ZFC_def ZF_def ZF_schemes_def by auto
 
 corollary ctm_ZFC_imp_ctm_not_CH:
   assumes

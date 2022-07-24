@@ -45,6 +45,8 @@ locale G_generic3_AC = G_generic2_AC + G_generic3
 locale G_generic4 = G_generic3 + forcing_data4
 locale G_generic4_AC = G_generic3_AC + G_generic4
 
+locale G_generic4_AC_CH = G_generic4_AC + M_ZFC3_ground_CH_trans
+
 sublocale G_generic4_AC \<subseteq> ext:M_ZFC3_trans "M[G]"
   using ground_replacements4 replacement_assm_MG
   by unfold_locales simp_all

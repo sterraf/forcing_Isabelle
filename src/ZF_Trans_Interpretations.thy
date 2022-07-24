@@ -40,9 +40,13 @@ locale M_ZFC3_ground = M_ZFC3 + M_ZF3_ground
 
 locale M_ZFC3_ground_trans = M_ZFC3_trans + M_ZF3_ground_trans
 
+locale M_ZFC3_ground_CH_trans = M_ZFC3_ground_trans + M_ZF_ground_CH_trans
+
 locale M_ctm3 = M_ctm2 + M_ZF3_ground_trans
 
 locale M_ctm3_AC = M_ctm3 + M_ctm1_AC + M_ZFC3_ground_trans
+
+locale M_ctm3_AC_CH = M_ctm3_AC + M_ZFC3_ground_CH_trans
 
 lemmas (in M_ZF2_trans) separation_instances =
   separation_well_ord
@@ -347,8 +351,12 @@ definition overhead where
   "overhead \<equiv> instances1_fms \<union> instances2_fms \<union> instances3_fms \<union>
      instances4_fms \<union> instances_ground_fms"
 
-text\<open>Hence, the “overhead” to force $\CH$ and its negation consists
-of 38 replacement instances.\<close>
+definition overhead_CH where
+  "overhead_CH \<equiv> overhead \<union> { replacement_dcwit_repl_body_fm }"
+
+text\<open>Hence, the “overhead” to force $\neg\CH$ and its negation consists
+of 38 replacement instances, and one further instance is needed to
+force $\CH$.\<close>
 
 (*
 axiomatization
@@ -380,6 +388,10 @@ lemma overhead_type: "overhead \<subseteq> formula"
     replacement_instances_ground_defs
   using ground_repl_fm_type Lambda_in_M_fm_type
   by (auto simp del: Lambda_in_M_fm_def)
+
+lemma overhead_CH_type: "overhead_CH \<subseteq> formula"
+  using overhead_type unfolding overhead_CH_def replacement_dcwit_repl_body_fm_def
+  by auto
 
 locale M_ZF4_trans = M_ZF3_trans + M_ZF4
 
@@ -494,6 +506,32 @@ proof -
   then
   show ?thesis
     unfolding instances_ground_fms_def
+    by unfold_locales (simp_all add:replacement_assm_def)
+qed
+
+theorem M_satT_imp_M_ZF_ground_CH_trans:
+  assumes
+    "Transset(M)"
+    "M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms
+          \<union> instances_ground_fms \<union> {replacement_dcwit_repl_body_fm}}"
+  shows "M_ZF_ground_CH_trans(M)"
+proof -
+  from assms
+  interpret M_ZF_ground_trans M
+    using M_satT_imp_M_ZF_ground_trans by auto
+  {
+    fix env
+    assume "env \<in> list(M)"
+    moreover from assms
+    have "M, [] \<Turnstile> \<cdot>Replacement(replacement_dcwit_repl_body_fm)\<cdot>" by auto
+    ultimately
+    have "arity(replacement_dcwit_repl_body_fm) \<le> succ(succ(length(env)))
+      \<Longrightarrow> strong_replacement(##M,\<lambda>x y. sats(M,replacement_dcwit_repl_body_fm,Cons(x,Cons(y, env))))"
+      using sats_ZF_replacement_fm_iff[of replacement_dcwit_repl_body_fm]
+      by (auto simp:replacement_dcwit_repl_body_fm_def)
+  }
+  then
+  show ?thesis
     by unfold_locales (simp_all add:replacement_assm_def)
 qed
 
