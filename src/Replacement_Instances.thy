@@ -485,7 +485,7 @@ lemmas M_replacement_ZF_instances = lam_replacement_domain
   lam_replacement_fst lam_replacement_snd lam_replacement_Union
   lam_replacement_Upair lam_replacement_Image
   lam_replacement_Diff lam_replacement_converse
-  middle_del_replacement product_replacement
+  lam_replacement_middle_del lam_replacement_prodRepl
   lam_replacement_comp
 
 lemmas M_separation_ZF_instances = separation_fstsnd_in_sndsnd separation_sndfst_eq_fstsnd
@@ -614,7 +614,7 @@ proof -
      by(rule_tac lam_replacement_iff_lam_closed[THEN iffD2],simp_all)
  qed
 
-lemma (in M_replacement) lam_replacement_RepFun_cons :
+lemma (in M_replacement) lam_replacement_RepFun_cons'':
   shows "lam_replacement(M, \<lambda>x . RepFun_cons(fst(x),snd(x)))"
   unfolding RepFun_cons_def
   using lam_replacement_fst fst_closed snd_closed
@@ -624,7 +624,7 @@ lam_replacement_snd lam_replacement_hcomp lam_replacement_sing_fun
   by(simp_all)
 
 lemma RepFun_cons_replacement: "lam_replacement(##M, \<lambda>p. RepFun(fst(p), \<lambda>x. {\<langle>snd(p),x\<rangle>}))"
-  using lam_replacement_RepFun_cons unfolding RepFun_cons_def
+  using lam_replacement_RepFun_cons'' unfolding RepFun_cons_def
   by simp
 
 end

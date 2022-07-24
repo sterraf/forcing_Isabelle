@@ -415,7 +415,7 @@ abbreviation
   uncountable_rel :: "[i\<Rightarrow>o,i]\<Rightarrow>o" where
   "uncountable_rel(M,X) \<equiv> \<not> countable_rel(M,X)"
 
-context M_cardinal_library
+context M_library
 begin
 
 lemma uncountable_rel_iff_nat_lt_cardinal_rel:
@@ -512,6 +512,11 @@ lemma mem_F_bound1:
   shows "x\<in>F(A,c) \<Longrightarrow> c \<in> (range(f) \<union> domain(G) )"
   using apply_0 unfolding F_def
   by (cases "M(c)", auto simp:F_def drSR_Y_def dC_F_def)
+
+end \<comment> \<open>\<^locale>\<open>M_library\<close>\<close>
+
+context M_cardinal_library
+begin
 
 lemma lt_Aleph_rel_imp_cardinal_rel_UN_le_nat: "function(G) \<Longrightarrow> domain(G) \<lesssim>\<^bsup>M\<^esup> \<omega> \<Longrightarrow>
    \<forall>n\<in>domain(G). |G`n|\<^bsup>M\<^esup><\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> M(G) \<Longrightarrow> |\<Union>n\<in>domain(G). G`n|\<^bsup>M\<^esup>\<le>\<omega>"
@@ -1148,7 +1153,7 @@ qed
 
 end \<comment> \<open>\<^locale>\<open>M_cardinal_library_extra\<close>\<close>
 
-context M_cardinal_library
+context M_library
 begin
 
 subsection\<open>Results on relative cardinal exponentiation\<close>
@@ -1235,8 +1240,10 @@ proof -
   show ?thesis .
 qed
 
+end \<comment> \<open>\<^locale>\<open>M_library\<close>\<close>
+
 (* TODO: This can be generalized. *)
-lemma countable_fun_imp_countable_image:
+lemma (in M_cardinal_library) countable_fun_imp_countable_image:
   assumes "f:C \<rightarrow>\<^bsup>M\<^esup> B" "countable\<^bsup>M\<^esup>(C)" "\<And>c. c\<in>C \<Longrightarrow> countable\<^bsup>M\<^esup>(f`c)"
     "M(C)" "M(B)"
   shows "countable\<^bsup>M\<^esup>(\<Union>(f``C))"
@@ -1246,7 +1253,5 @@ lemma countable_fun_imp_countable_image:
     countable_rel_iff_cardinal_rel_le_nat
   by (rule_tac countable_rel_union_countable_rel)
     (auto dest:transM del:imageE)
-
-end \<comment> \<open>\<^locale>\<open>M_cardinal_library\<close>\<close>
 
 end

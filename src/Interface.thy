@@ -141,11 +141,11 @@ definition CartProd where
 synthesize "CartProd" from_definition "CartProd" assuming "nonempty"
 arity_theorem for "CartProd_fm"
 
-definition Image where
-  "Image(N,B,r,y) \<equiv> (\<exists>p[N]. p\<in>r \<and> (\<exists>x[N]. x\<in>B \<and> pair(N,x,y,p)))"
+definition ImageSep where
+  "ImageSep(N,B,r,y) \<equiv> (\<exists>p[N]. p\<in>r \<and> (\<exists>x[N]. x\<in>B \<and> pair(N,x,y,p)))"
 
-synthesize "Image" from_definition "Image" assuming "nonempty"
-arity_theorem for "Image_fm"
+synthesize "ImageSep" from_definition  assuming "nonempty"
+arity_theorem for "ImageSep_fm"
 
 definition Converse where
   "Converse(N,R,z) \<equiv> \<exists>p[N]. p\<in>R \<and> (\<exists>x[N].\<exists>y[N]. pair(N,x,y,p) \<and> pair(N,y,x,z))"
@@ -222,10 +222,10 @@ lemma cartprod_sep_intf :
 lemma image_sep_intf :
   assumes "A\<in>M" and "B\<in>M"
   shows "separation(##M, \<lambda>y. \<exists>p\<in>M. p\<in>B \<and> (\<exists>x\<in>M. x\<in>A \<and> pair(##M,x,y,p)))"
-  using assms separation_in_ctm[of "Image_fm(1,2,0)" "[A,B]" "Image(##M,A,B)"]
-    Image_iff_sats[of 1 "[_,A,B]" _ 2 _ 0 _ M] arity_Image_fm Image_fm_type
+  using assms separation_in_ctm[of "ImageSep_fm(1,2,0)" "[A,B]" "ImageSep(##M,A,B)"]
+    ImageSep_iff_sats[of 1 "[_,A,B]" _ 2 _ 0 _ M] arity_ImageSep_fm ImageSep_fm_type
     ord_simp_union zero_in_M
-  unfolding Image_def
+  unfolding ImageSep_def
   by simp
 
 lemma converse_sep_intf :
@@ -1661,8 +1661,8 @@ lemma separation_middle_del: "A\<in>M \<Longrightarrow>
   by (rule_tac separation_assm_bin_sats[of "is_middle_del_fm(0,1,2)"],
       auto simp:is_middle_del_def middle_del_def)
 
-lemma middle_del_replacement: "strong_replacement(##M, \<lambda>x y. y=\<langle>fst(fst(x)),snd(snd(x))\<rangle>)"
-  using middle_del_replacement' separation_middle_del
+lemma lam_replacement_middle_del: "lam_replacement(##M, \<lambda>r . middle_del(fst(r),snd(r)))"
+  using lam_replacement_middle_del' separation_middle_del
   by simp
 
 lemma separation_prodRepl: "A\<in>M \<Longrightarrow>
@@ -1672,8 +1672,8 @@ lemma separation_prodRepl: "A\<in>M \<Longrightarrow>
   by (rule_tac separation_assm_bin_sats[of "is_prodRepl_fm(0,1,2)"],
       auto simp:is_prodRepl_def prodRepl_def)
 
-lemma product_replacement: "strong_replacement(##M, \<lambda>x y. y=\<langle>snd(fst(x)),\<langle>fst(fst(x)),snd(snd(x))\<rangle>\<rangle>)"
-  using product_replacement' separation_prodRepl
+lemma lam_replacement_prodRepl: "lam_replacement(##M, \<lambda>r . prodRepl(fst(r),snd(r)))"
+  using lam_replacement_prodRepl' separation_prodRepl
   by simp
 
 end  \<comment> \<open>\<^locale>\<open>M_Z_trans\<close>\<close>

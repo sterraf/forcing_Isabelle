@@ -641,22 +641,13 @@ lemma middle_del_in_cartprod:
     using assms Pow_rel_char transM[of _ X] fst_in_double_Union snd_in_double_Union
     unfolding middle_del_def by auto
 
-lemma lam_replacement_middle_del:
+lemma lam_replacement_middle_del':
   assumes
     "\<forall>A[M]. separation(M,\<lambda>y. \<exists>x[M]. x\<in>A \<and> y = \<langle>x, middle_del(fst(x),snd(x))\<rangle>)"
   shows
     "lam_replacement(M, \<lambda>r . middle_del(fst(r),snd(r)))"
   using assms middle_del_in_cartprod
   by (rule_tac bounded_lam_replacement_binary[of _ "\<lambda>X. ({0} \<union> \<Union>\<Union>X) \<times> ({0} \<union> \<Union>\<Union>X)"]) auto
-
-lemma middle_del_replacement':
-  assumes
-    "\<forall>A[M]. separation(M,\<lambda>y. \<exists>x[M]. x\<in>A \<and> y = \<langle>x, middle_del(fst(x),snd(x))\<rangle>)"
-  shows
-    "strong_replacement(M, \<lambda>x y. y=\<langle>fst(fst(x)),snd(snd(x))\<rangle>)"
-  using assms lam_replacement_middle_del lam_replacement_imp_strong_replacement_aux
-  unfolding middle_del_def
-  by auto
 
 end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
 
@@ -678,7 +669,7 @@ lemma prodRepl_in_cartprod:
     using assms Pow_rel_char transM[of _ X] fst_in_double_Union snd_in_double_Union
     unfolding prodRepl_def by auto
 
-lemma lam_replacement_prodRepl:
+lemma lam_replacement_prodRepl':
   assumes
     "\<forall>A[M]. separation(M,\<lambda>y. \<exists>x[M]. x\<in>A \<and> y = \<langle>x, prodRepl(fst(x),snd(x))\<rangle>)"
   shows
@@ -686,15 +677,6 @@ lemma lam_replacement_prodRepl:
   using assms prodRepl_in_cartprod
   by (rule_tac bounded_lam_replacement_binary[of _
         "\<lambda>X. ({0} \<union> \<Union>\<Union>X) \<times> ({0} \<union> \<Union>\<Union>X) \<times> ({0} \<union> \<Union>\<Union>X)"]) auto
-
-lemma product_replacement':
-  assumes
-    "\<forall>A[M]. separation(M,\<lambda>y. \<exists>x[M]. x\<in>A \<and> y = \<langle>x, prodRepl(fst(x),snd(x))\<rangle>)"
-  shows
-    "strong_replacement(M, \<lambda>x y. y=\<langle>snd(fst(x)),\<langle>fst(fst(x)),snd(snd(x))\<rangle>\<rangle>)"
-  using assms lam_replacement_prodRepl lam_replacement_imp_strong_replacement_aux
-  unfolding prodRepl_def
-  by auto
 
 end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
 
@@ -727,10 +709,9 @@ locale M_replacement = M_basic +
     and
     lam_replacement_Union: "lam_replacement(M,Union)"
     and
-    middle_del_replacement: "strong_replacement(M, \<lambda>x y. y=\<langle>fst(fst(x)),snd(snd(x))\<rangle>)"
+    lam_replacement_middle_del: "lam_replacement(M, \<lambda>r. middle_del(fst(r),snd(r)))"
     and
-    product_replacement:
-    "strong_replacement(M, \<lambda>x y. y=\<langle>snd(fst(x)),\<langle>fst(fst(x)),snd(snd(x))\<rangle>\<rangle>)"
+    lam_replacement_prodRepl: "lam_replacement(M, \<lambda>r. prodRepl(fst(r),snd(r)))"
     and
     lam_replacement_Upair:"lam_replacement(M, \<lambda>p. Upair(fst(p),snd(p)))"
     and
@@ -876,7 +857,9 @@ proof -
       using middle_separation by simp
     moreover from calculation
     have "M({ \<langle>snd(fst(p)),\<langle>fst(fst(p)),snd(snd(p))\<rangle>\<rangle> . p\<in>?P })" (is "M(?R)")
-      using RepFun_closed[OF product_replacement \<open>M(?P)\<close> ] by simp
+      using RepFun_closed[OF lam_replacement_prodRepl[THEN
+            lam_replacement_imp_strong_replacement] \<open>M(?P)\<close> ]
+      unfolding prodRepl_def by simp
     ultimately
     have "b \<in> ?R \<longleftrightarrow> (\<exists>x[M]. x \<in> A \<and> b = \<langle>x,\<langle>f(x),g(x)\<rangle>\<rangle>)" if "M(b)" for b
       using that
@@ -942,7 +925,9 @@ proof -
       using middle_separation by simp
     moreover from calculation
     have "M({ \<langle>fst(fst(p)),snd(snd(p))\<rangle> . p\<in>?P })" (is "M(?R)")
-      using RepFun_closed[OF middle_del_replacement \<open>M(?P)\<close>] by simp
+      using RepFun_closed[OF lam_replacement_middle_del[THEN
+            lam_replacement_imp_strong_replacement] \<open>M(?P)\<close>]
+      unfolding middle_del_def by simp
     ultimately
     have "b \<in> ?R \<longleftrightarrow> (\<exists>x[M]. x \<in> A \<and> b = \<langle>x,g(f(x))\<rangle>)" if "M(b)" for b
       using that assms(3)
