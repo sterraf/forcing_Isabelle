@@ -533,50 +533,98 @@ lemma RepFun_SigFun_closed: "x \<in> M \<Longrightarrow> z \<in> M \<Longrightar
     transitivity singleton_in_M_iff pair_in_M_iff
   by simp
 
-(*
-lemma replacement_RepFun_body:
-  "lam_replacement(##M, \<lambda>p . {{\<langle>snd(p), x\<rangle>} . x \<in> fst(p)})"
-  using lam_replacement2_in_ctm[where \<phi>="is_RepFun_body_fm(0,1,2)" and env="[]" and f="\<lambda>p q . {{\<langle>q, x\<rangle>} . x \<in> p}"]
-    RepFun_SigFun_closed[OF fst_snd_closed[THEN conjunct1,simplified] fst_snd_closed[THEN conjunct2,simplified]]
-    arity_RepFun ord_simp_union transitivity zero_in_M RepFun_body_def RepFun_body_abs RepFun_SigFun_closed
-    LambdaPair_in_M_replacement2(5)
+lemma (in M_replacement) lam_replacement_sing_fun: 
+  assumes "lam_replacement(M, f)" "\<forall>x[M]. M(f(x))"
+  shows "lam_replacement(M, \<lambda>x. {f(x)})"
+  using lam_replacement_constant lam_replacement_cons
+    lam_replacement_hcomp2[of "f" "\<lambda>_. 0" cons] assms
+  by auto
 
-*)
-
-lemma RepFun_cons_closed:
-  assumes "x\<in>M" "y\<in>M"
-  shows "RepFun_cons(x,y) \<in> M"
+lemma (in M_replacement) RepFun_cons_closed:
+  assumes "M(x)"
+  shows "M(RepFun_cons(fst(x),snd(x)))"
 proof -
   from assms
-  have "{y}\<times>x \<in> M" (is "?P \<in>_")
+  have "M({snd(x)}\<times>fst(x))" (is "M(?P)")
     using singleton_closed cartprod_closed
     by simp
   then
-  have "{{v} . v\<in>?P} \<in> M"
-    using lam_replacement_sing lam_replacement_imp_strong_replacement singleton_closed
-      transitivity RepFun_closed[simplified]
+  have "M({{v} . v\<in>?P})"
+    using lam_replacement_sing lam_replacement_imp_strong_replacement
+      transM[of _ ?P] RepFun_closed[simplified]
     by simp
   moreover
-  have "{{v} . v\<in>?P} = RepFun_cons(x,y)" 
+  have "{{v} . v\<in>?P} = RepFun_cons(fst(x),snd(x))"
     unfolding RepFun_cons_def by auto
   ultimately
   show ?thesis by simp
 qed
 
-lemma separation_RepFun_cons: "A\<in>M \<Longrightarrow>
-     separation(##M, \<lambda>y. \<exists>x\<in>M. x \<in> A \<and> y = \<langle>x, RepFun_cons(fst(x), snd(x))\<rangle>)"
-  using arity_is_RepFun_cons_fm ord_simp_union nonempty
-    pair_in_M_iff cons_abs RepFun_cons_closed
-    (* Replace_abs[where P="\<lambda>x a. x \<in> M \<and> is_cons(##M, \<langle>_, x\<rangle>, 0, a)"] *)
-  apply (rule_tac separation_assm_bin_sats[of "is_RepFun_cons_fm(0,1,2)" "is_RepFun_cons(##M)"])
-       apply (simp_all add:is_RepFun_cons_def)
-   apply (subst Replace_abs)
-       apply (simp,simp) unfolding univalent_def apply simp
-   apply (auto simp:is_RepFun_cons_def RepFun_cons_def)
-  sorry
+lemma (in M_replacement) lam_replacement_RepFun :
+  assumes "lam_replacement(M,\<lambda>x . f(fst(x),snd(x)))" "lam_replacement(M,g)" "\<forall>x[M].\<forall>y[M].M(f(x,y))" "\<forall>x[M].M(g(x))"
+  shows "lam_replacement(M,\<lambda>x .  {f(x,z) . z\<in>g(x)})"
+proof -
+  from assms
+  have 1:"lam_replacement(M,\<lambda>x.{x}\<times>g(x))"
+    using lam_replacement_CartProd lam_replacement_sing 
+    by auto
+  moreover from assms
+  have "M({f(x,z) . z \<in> g(x)})" if "M(x)" for x 
+      using singleton_closed transM[of _ A] lam_replacement_imp_strong_replacement
+        lam_replacement_product[OF lam_replacement_fst]
+        lam_replacement_hcomp[OF lam_replacement_snd ] fst_closed snd_closed
+        cartprod_closed transM[of _ "g(_)"] that
+        assms(1)[THEN [5] lam_replacement_hcomp2,OF lam_replacement_constant[of x]]
+        lam_replacement_identity
+      by(rule_tac RepFun_closed,simp_all)
+    moreover
+  have "M(\<lambda>z\<in>A.{f(z,u) . u \<in> g(z)})" if "M(A)" for A
+  proof -
+    from that assms 1
+    have "M(\<Union>{{x}\<times>g(x) . x\<in>A})" (is "M(?C)")
+      using lam_replacement_imp_strong_replacement singleton_closed transM[of _ A]
+       RepFun_closed by simp
+    with assms \<open>M(A)\<close>
+    have "M({<fst(x),f(fst(x),snd(x))> . x \<in>?C})" (is "M(?B)")
+      using singleton_closed transM[of _ A] lam_replacement_imp_strong_replacement
+        lam_replacement_product[OF lam_replacement_fst]
+        lam_replacement_hcomp[OF lam_replacement_snd assms(1)] fst_closed snd_closed
+        cartprod_closed transM[of _ "g(_)"]
+       by(rule_tac RepFun_closed,simp_all)
+    with \<open>M(A)\<close>
+    have "M({<x,?B``{x}> . x\<in>A})"
+      using singleton_closed transM[of _ A] lam_replacement_imp_strong_replacement
+        lam_replacement_product[OF lam_replacement_identity]
+        lam_replacement_hcomp[OF lam_replacement_snd assms(1)] fst_closed snd_closed singleton_closed
+        cartprod_closed lam_replacement_Image[THEN [5] lam_replacement_hcomp2,OF lam_replacement_constant[of ?B] lam_replacement_sing]
+       by(rule_tac RepFun_closed,simp_all)
+     moreover
+     have "?B``{z} = {f(z,u) . u \<in> g(z)}" if "z\<in>A" for z
+       using that
+       by(intro equalityI subsetI,auto,rule_tac imageI,simp_all,rule_tac x=xa in bexI,auto) 
+     moreover from this
+     have "{<x,?B``{x}> . x\<in>A} = {<z,{f(z,u) . u \<in> g(z)}> . z\<in>A}" 
+       by auto
+     ultimately
+     show ?thesis
+       unfolding lam_def by auto
+   qed
+   ultimately
+   show ?thesis 
+     by(rule_tac lam_replacement_iff_lam_closed[THEN iffD2],simp_all)
+ qed
+
+lemma (in M_replacement) lam_replacement_RepFun_cons :
+  shows "lam_replacement(M, \<lambda>x . RepFun_cons(fst(x),snd(x)))"
+  unfolding RepFun_cons_def
+  using lam_replacement_fst fst_closed snd_closed
+lam_replacement_Pair[THEN [5] lam_replacement_hcomp2] 
+lam_replacement_snd lam_replacement_hcomp lam_replacement_sing_fun
+  lam_replacement_RepFun[of "\<lambda> x z . {<snd(x),z>}" "fst"]
+  by(simp_all)
 
 lemma RepFun_cons_replacement: "lam_replacement(##M, \<lambda>p. RepFun(fst(p), \<lambda>x. {\<langle>snd(p),x\<rangle>}))"
-  using lam_replacement_RepFun_cons' separation_RepFun_cons
+  using lam_replacement_RepFun_cons unfolding RepFun_cons_def
   by simp
 
 end
