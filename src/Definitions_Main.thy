@@ -15,10 +15,12 @@ preserving the ordinals.
 
 The main theorem of this session and all of its relevant definitions
 appear in Section~\ref{sec:def-main-forcing}. The reader trusting
-all the libraries in which our development is based, might jump
-directly there. But in case one wants to dive deeper, the following
-sections treat some basic concepts in the ZF logic
-(Section~\ref{sec:def-main-ZF})  and in the
+all the libraries on which our development is based, might jump
+directly to Section~\ref{sec:relative-arith}, which treats relative
+cardinal arithmetic as implemented in our session
+\<^session>\<open>Transitive_Models\<close>. But in case one wants to dive deeper, the
+following sections treat some basic concepts in the ZF logic
+(Section~\ref{sec:def-main-ZF}) and in the
 ZF-Constructible library (Section~\ref{sec:def-main-relative})
 on which our definitions are built.
 \<close>
@@ -406,7 +408,7 @@ text\<open>@{thm [display] ZF_fin_def ZF_schemes_def Zermelo_fms_def ZC_def ZF_d
   ZFC \<equiv> ZF \<union> {\<cdot>AC\<cdot>}
 *)
 
-subsection\<open>Relativization of infinitary arithmetic\<close>
+subsection\<open>Relativization of infinitary arithmetic\label{sec:relative-arith}\<close>
 
 text\<open>In order to state the defining property of the relative
     equipotence relation, we work under the assumptions of the
@@ -523,16 +525,16 @@ text\<open>@{thm [display] ctm_ZFC_imp_ctm_CH}\<close>
 text\<open>These results can be strengthened by enumerating four finite sets of
 replacement instances which are sufficient to develop forcing and for
 the construction of the aforementioned models: \<^term>\<open>instances1_fms\<close>
-through \<^term>\<open>instances4_fms\<close>, which are then collected into
-\<^term>\<open>overhead\<close>. For example, we have:\<close>
+through \<^term>\<open>instances4_fms\<close>, and \<^term>\<open>instances_ground_fms\<close> which are
+then collected into \<^term>\<open>overhead\<close>. For example, we have:\<close>
 
 thm instances1_fms_def
 text\<open>@{thm [display] instances1_fms_def}\<close>
 (*
 instances1_fms \<equiv>
 { list_repl1_intf_fm, list_repl2_intf_fm, formula_repl1_intf_fm, formula_repl2_intf_fm,
- eclose_repl1_intf_fm, eclose_repl2_intf_fm, powapply_repl_fm, phrank_repl_fm,
- wfrec_rank_fm, trans_repl_HVFrom_fm, tl_repl_intf_fm}
+ eclose_repl1_intf_fm, eclose_repl2_intf_fm, wfrec_rank_fm, trans_repl_HVFrom_fm,
+ tl_repl_intf_fm }
 *)
 
 thm overhead_def
@@ -540,6 +542,14 @@ text\<open>@{thm [display] overhead_def}\<close>
 (*
 overhead \<equiv> instances1_fms \<union> instances2_fms \<union> instances3_fms \<union>
   instances4_fms \<union> instances_ground_fms
+*)
+
+text\<open>One further instance is needed to force $\CH$:\<close>
+
+thm overhead_CH_def
+text\<open>@{thm [display] overhead_CH_def}\<close>
+(*
+overhead_CH \<equiv> overhead \<union> {replacement_dcwit_repl_body_fm}
 *)
 
 thm extensions_of_ctms
@@ -571,14 +581,15 @@ M \<Turnstile> {\<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in>
     N \<approx> \<omega> \<and>
     Transset(N) \<and>
     N \<Turnstile> ZC \<union> {\<cdot>\<not>\<cdot>CH\<cdot>\<cdot>} \<union> {\<cdot>Replacement(\<phi>)\<cdot> . \<phi> \<in> \<Phi>} \<and>
-    (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)*)
+    (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)
+*)
 
 thm ctm_of_CH
 text\<open>@{thm [display] ctm_of_CH}\<close>
 (*
 M \<approx> \<omega> \<Longrightarrow>
 Transset(M) \<Longrightarrow>
-M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead} \<Longrightarrow>
+M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead_CH} \<Longrightarrow>
 \<Phi> \<subseteq> formula \<Longrightarrow>
 M \<Turnstile> {\<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in> \<Phi>} \<Longrightarrow>
 \<exists>N. M \<subseteq> N \<and>
@@ -589,7 +600,7 @@ M \<Turnstile> {\<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in>
 *)
 
 text\<open>In the above three statements, the function \<^term>\<open>ground_repl_fm\<close>
-takes an element \<^term>\<open>\<phi>\<close>of \<^term>\<open>formula\<close> and returns the
+takes an element \<^term>\<open>\<phi>\<close> of \<^term>\<open>formula\<close> and returns the
 replacement instance in the ground model that produces the
 \<^term>\<open>\<phi>\<close>-replacement instance in the generic extension. The next
 result is stated in the context \<^locale>\<open>G_generic1\<close>, which assumes

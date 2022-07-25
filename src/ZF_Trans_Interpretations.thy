@@ -356,7 +356,7 @@ definition overhead where
 definition overhead_CH where
   "overhead_CH \<equiv> overhead \<union> { replacement_dcwit_repl_body_fm }"
 
-text\<open>Hence, the “overhead” to force $\neg\CH$ and its negation consists
+text\<open>Hence, the “overhead” to force $\neg\CH$ consists
 of 37 replacement instances, and one further instance is needed to
 force $\CH$.\<close>
 
