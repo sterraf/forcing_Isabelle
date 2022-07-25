@@ -486,15 +486,6 @@ lemma (in M_ZF1_trans) separation_is_dcwit_body:
     nonempty arity_is_dcwit_body_fm is_dcwit_body_fm_type
   by (simp add:ord_simp_union)
 
-lemma (in M_trivial) RepFun_body_abs:
-  assumes "M(u)" "M(v)" "M(res)"
-  shows "is_RepFun_body(M, u, v, res) \<longleftrightarrow> res = RepFun_body(u,v)"
-  unfolding is_RepFun_body_def RepFun_body_def
-  using fst_rel_abs[symmetric] snd_rel_abs[symmetric] fst_abs snd_abs assms
-    Replace_abs[where P="\<lambda>xa a. a = {\<langle>v, xa\<rangle>}" and A="u"]
-    univalent_triv transM[of _ u]
-  by auto
-
 end
 
 sublocale M_ZF2_trans \<subseteq> M_replacement "##M"
@@ -516,6 +507,10 @@ lemma strong_replacement_Powapply_rel:
   by simp
 
 end
+
+sublocale M_ZF2_trans \<subseteq> M_Vfrom "##M"
+  using power_ax strong_replacement_Powapply_rel phrank_repl trans_repl_HVFrom wfrec_rank
+  by unfold_locales auto
 
 sublocale M_ZF2_trans \<subseteq> M_Perm "##M"
   using separation_PiP_rel separation_injP_rel separation_surjP_rel
@@ -596,10 +591,6 @@ lemma (in M_basic) rel2_trans_apply:
   by auto
 
 lemma (in M_basic) apply_image_closed:
-  shows "M(f) \<Longrightarrow> \<forall>x[M]. \<forall>g[M]. function(g) \<longrightarrow> M(trans_apply_image(f, x, g))"
-  unfolding trans_apply_image_def by simp
-
-lemma (in M_basic) apply_image_closed':
   shows "M(f) \<Longrightarrow> \<forall>x[M]. \<forall>g[M]. M(trans_apply_image(f, x, g))"
   unfolding trans_apply_image_def by simp
 
@@ -647,7 +638,7 @@ lemma trans_apply_abs:
     (\<exists>y[##M]. pair(##M,x,y,z) \<and> x\<in>\<beta> \<and> (is_transrec(##M,is_trans_apply_image(##M, f),x,y)))"
   using rec_trans_apply_image_abs Ord_in_Ord
     transrec_closed[OF transrec_replacement_apply_image rel2_trans_apply,of f,simplified]
-    apply_image_closed'[of f]
+    apply_image_closed
   unfolding trans_apply_image_def
   by auto
 
@@ -1365,9 +1356,5 @@ lemma separation_cdeqgamma:
   by (simp add:ord_simp_union)
 
 end \<comment> \<open>\<^locale>\<open>M_ZF2_trans\<close>\<close>
-
-sublocale M_ZF2_trans \<subseteq> M_Vfrom "##M"
-  using power_ax strong_replacement_Powapply_rel phrank_repl trans_repl_HVFrom wfrec_rank
-  by unfold_locales auto
 
 end
