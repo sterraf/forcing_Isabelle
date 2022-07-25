@@ -87,6 +87,9 @@ Assorted To-Dos
 - Have instances of valcheck in forcing_data, G_generic (discharging
   assumptions). Add it to the simpset?
 
+- (?) Split M_ZF_ground: The last two instances are not needed for
+  "extensions_of_ctms".
+
 
 ;; Local Variables:
 ;; ispell-dictionary: american
