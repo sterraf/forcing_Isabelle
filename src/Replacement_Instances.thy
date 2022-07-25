@@ -125,25 +125,6 @@ relationalize "sndfst_fst2_snd2_rel" "is_sndfst_fst2_snd2"
 synthesize "is_sndfst_fst2_snd2" from_definition assuming "nonempty"
 arity_theorem for "is_sndfst_fst2_snd2_fm"
 
-definition RepFun_body :: "i \<Rightarrow> i \<Rightarrow> i"where
-  "RepFun_body(u,v) \<equiv> {{\<langle>v, x\<rangle>} . x \<in> u}"
-
-relativize functional "RepFun_body" "RepFun_body_rel"
-relationalize "RepFun_body_rel" "is_RepFun_body"
-synthesize "is_RepFun_body" from_definition assuming "nonempty"
-arity_theorem for "is_RepFun_body_fm"
-
-lemma arity_body_repfun:
-  "arity((\<cdot>\<exists>\<cdot>cons_fm(0, 3, 2) \<and> pair_fm(5, 1, 0) \<cdot>\<cdot>)) = 5"
-  using arity_cons_fm arity_pair_fm pred_Un_distrib union_abs1 FOL_arities
-  by auto
-
-lemma arity_RepFun: "arity(is_RepFun_body_fm(0, 1, 2)) = 3"
-  unfolding is_RepFun_body_fm_def
-  using arity_Replace_fm[OF _ _ _ _ arity_body_repfun] arity_fst_fm arity_snd_fm arity_empty_fm
-    pred_Un_distrib union_abs2 union_abs1 FOL_arities
-  by simp
-
 definition order_eq_map where
   "order_eq_map(M,A,r,a,z) \<equiv> \<exists>x[M]. \<exists>g[M]. \<exists>mx[M]. \<exists>par[M].
              ordinal(M,x) & pair(M,a,x,z) & membership(M,x,mx) &
