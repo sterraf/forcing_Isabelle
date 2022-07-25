@@ -305,13 +305,11 @@ locale M_ZF2 = M_ZF1 +
     replacement_ax2:
     "replacement_assm(M,env,replacement_HAleph_wfrec_repl_body_fm)"
     "replacement_assm(M,env,replacement_is_order_eq_map_fm)"
-    "replacement_assm(M,env,banach_replacement_iterates_fm)"
     "replacement_assm(M,env,banach_iterates_fm)"
 
 definition instances2_fms where "instances2_fms \<equiv>
   { replacement_HAleph_wfrec_repl_body_fm,
     replacement_is_order_eq_map_fm,
-    banach_replacement_iterates_fm,
     banach_iterates_fm }"
 
 text\<open>This set has 12 internalized formulas.\<close>
@@ -319,7 +317,6 @@ text\<open>This set has 12 internalized formulas.\<close>
 lemmas replacement_instances2_defs =
   replacement_HAleph_wfrec_repl_body_fm_def
   replacement_is_order_eq_map_fm_def
-  banach_replacement_iterates_fm_def
   banach_iterates_fm_def
 
 declare (in M_ZF2) replacement_instances2_defs [simp]
@@ -503,6 +500,10 @@ sublocale M_ZF2_trans \<subseteq> M_Perm "##M"
 sublocale M_ZF2_trans \<subseteq> M_pre_seqspace "##M"
   by unfold_locales
 
+definition sep_pred where
+  "sep_pred(M,X,Y,f,g,n,b) \<equiv>  n \<in> \<omega> \<and> is_iterates(M,is_banach_functor(M,X, Y, f, g),0,n,b)"
+
+
 context M_ZF2_trans
 begin
 
@@ -531,7 +532,7 @@ proof -
   have "strong_replacement(##M, \<lambda> x z . banach_body_iterates(##M,X,Y,f,g,W,n,x,z))" if "n\<in>\<omega>" for n
     using assms that arity_banach_body_iterates_fm ord_simp_union nat_into_M
       strong_replacement_rel_in_ctm[where \<phi>="banach_body_iterates_fm(7,6,5,4,3,2,0,1)"
-        and env="[n,W,g,f,Y,X]"] replacement_ax2(4)
+        and env="[n,W,g,f,Y,X]"] replacement_ax2(3)
     by simp
   then
   show ?thesis
@@ -541,29 +542,43 @@ proof -
     by simp
 qed
 
-lemma banach_replacement_iterates:
-  assumes "X\<in>M" "Y\<in>M" "f\<in>M" "g\<in>M" "W\<in>M"
-  shows "strong_replacement(##M, \<lambda>n y. n\<in>\<omega> \<and> is_iterates(##M,is_banach_functor(##M,X, Y, f, g),W,n,y))"
+lemma separation_banach_functor_iterates:
+  assumes "X\<in>M" "Y\<in>M" "f\<in>M" "g\<in>M" "A\<in>M"
+  shows "separation(##M, \<lambda>b. \<exists>x\<in>A. x \<in> \<omega> \<and> b = banach_functor(X, Y, f, g)^x (0))"
 proof -
-  have "strong_replacement(##M, \<lambda> n z . banach_is_iterates_body(##M,X,Y,f,g,W,n,z))"
-    using assms arity_banach_is_iterates_body_fm ord_simp_union nat_into_M
-      strong_replacement_rel_in_ctm[where \<phi>="banach_is_iterates_body_fm(6,5,4,3,2,0,1)"
-        and env="[W,g,f,Y,X]"] replacement_ax2(3)
-    by simp
+  have " (\<exists>xa\<in>M. xa \<in> A \<and> xa \<in> \<omega> \<and> banach_is_iterates_body(##M, X, Y, f, g, 0, xa, x)) \<longleftrightarrow>
+         (\<exists>n\<in>A. n \<in> \<omega> \<and> banach_is_iterates_body(##M, X, Y, f, g, 0, n, x))" if "x\<in>M" for x
+    using assms nat_into_M nat_in_M transM[of _ A] transM[of _ \<omega>] that
+    by auto
   then
-  show ?thesis
-    using assms nat_in_M
+  have "separation(##M, \<lambda> z . \<exists>n\<in>A . n\<in>\<omega> \<and> banach_is_iterates_body(##M,X,Y,f,g,0,n,z))"
+    using assms nat_into_M nat_in_M
+      arity_banach_is_iterates_body_fm[of 6 5 4 3 2 0 1] ord_simp_union
+      separation_in_ctm[where \<phi>="(\<cdot>\<exists> \<cdot>\<cdot>0\<in>7\<cdot> \<and> \<cdot>\<cdot>0\<in>8\<cdot> \<and> banach_is_iterates_body_fm(6,5,4,3,2,0,1) \<cdot>\<cdot>\<cdot>)"
+        and env="[0,g,f,Y,X,A,\<omega>]"]
+    by (simp add:arity_Exists arity_And)
+  moreover from assms
+  have "(\<exists>x\<in>A. x \<in> \<omega> \<and> is_iterates(##M,is_banach_functor(##M,X, Y, f, g),0,x,z)) \<longleftrightarrow>
+          (\<exists>n\<in>A . n\<in>\<omega> \<and> banach_is_iterates_body(##M,X,Y,f,g,0,n,z))" if "z\<in>M" for z
+    using nat_in_M nat_into_M transM[of _ A] transM[of _ \<omega>]
     unfolding is_iterates_def wfrec_replacement_def is_wfrec_def M_is_recfun_def
-      is_nat_case_def iterates_MH_def banach_is_iterates_body_def
+      is_nat_case_def iterates_MH_def banach_body_iterates_def banach_is_iterates_body_def
     by simp
+  moreover from assms
+  have "(\<exists>x\<in>A. x \<in> \<omega> \<and> is_iterates(##M,is_banach_functor(##M,X, Y, f, g),0,x,z)) \<longleftrightarrow>
+          (\<exists>x\<in>A. x \<in> \<omega> \<and> z = banach_functor(X, Y, f, g)^x (0))" if "z\<in>M" for z
+    using transM[of _ A] nat_in_M nat_into_M that
+      iterates_abs[OF banach_iterates banach_functor_abs] banach_functor_closed
+    by auto
+  ultimately
+  show ?thesis
+    by(rule_tac separation_cong[THEN iffD2],auto)
 qed
 
 lemma banach_replacement:
-  assumes "(##M)(X)" "(##M)(Y)" "(##M)(f)" "(##M)(g)"
+  assumes "X\<in>M" "Y\<in>M" "f\<in>M" "g\<in>M"
   shows "strong_replacement(##M, \<lambda>n y. n\<in>nat \<and> y = banach_functor(X, Y, f, g)^n (0))"
-  using iterates_abs[OF banach_iterates banach_functor_abs,of X Y f g]
-    assms banach_functor_closed zero_in_M
-    strong_replacement_cong[THEN iffD1,OF _ banach_replacement_iterates[of X Y f g 0]]
+  using assms banach_repl_iter' separation_banach_functor_iterates
   by simp
 
 lemma (in M_basic) rel2_trans_apply:
@@ -579,7 +594,7 @@ end \<comment> \<open>\<^locale>\<open>M_ZF2_trans\<close>\<close>
 
 context M_ZF_ground_trans
 begin
-
+find_theorems is_recfun
 lemma replacement_transrec_apply_image_body :
   "(##M)(f) \<Longrightarrow> (##M)(mesa) \<Longrightarrow> strong_replacement(##M,transrec_apply_image_body(##M,f,mesa))"
   using strong_replacement_rel_in_ctm[where \<phi>="transrec_apply_image_body_fm(3,2,0,1)" and env="[mesa,f]"]
