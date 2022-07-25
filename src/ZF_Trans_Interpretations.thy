@@ -290,7 +290,9 @@ sublocale M_ZF2_trans \<subseteq> M_FiniteFun "##M"
 sublocale M_ZFC1_trans \<subseteq> M_AC "##M"
   using choice_ax by (unfold_locales, simp_all)
 
-sublocale M_ZFC3_trans \<subseteq> M_cardinal_AC "##M" ..
+sublocale M_ZFC3_trans \<subseteq> M_cardinal_AC "##M"
+  using lam_replacement_minimum
+  by unfold_locales simp
 
 (* TopLevel *)
 
@@ -302,7 +304,7 @@ lemma (in M_ZF2_trans) separation_cardinal_rel_lesspoll_rel:
   by (simp add:FOL_arities)
 
 sublocale M_ZFC3_trans \<subseteq> M_library "##M"
-  using separation_cardinal_rel_lesspoll_rel
+  using separation_cardinal_rel_lesspoll_rel lam_replacement_minimum
   by unfold_locales simp_all
 
 locale M_ZF4 = M_ZF3 +

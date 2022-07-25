@@ -171,7 +171,7 @@ lemma (in M_trans) mem_F_bound5:
 
 sublocale M_ctm3_AC \<subseteq> M_replacement_lepoll "##M" "(`)"
   using UN_lepoll_assumptions lam_replacement_apply lam_replacement_inj_rel
-    mem_F_bound4 apply_0
+    mem_F_bound4 apply_0 lam_replacement_minimum
   unfolding lepoll_assumptions_defs
 proof (unfold_locales,
     rule_tac [3] lam_Least_assumption_general[where U=domain, OF _ mem_F_bound4], simp_all)
@@ -236,7 +236,7 @@ proof (rule ccontr)
   with \<open>\<alpha> \<in> M\<close> \<open>F:\<alpha>\<rightarrow>Pow\<^bsup>M\<^esup>(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)\<close> \<open>F\<in>M\<close>
   interpret M_cardinal_UN_lepoll "##M" "\<lambda>\<beta>. F`\<beta>" \<alpha>
     using UN_lepoll_assumptions lepoll_assumptions
-      lam_replacement_apply lam_replacement_inj_rel
+      lam_replacement_apply lam_replacement_inj_rel lam_replacement_minimum
   proof (unfold_locales, auto dest:transM simp del:if_range_F_else_F_def)
     fix f b
     assume "b\<in>M" "f\<in>M"

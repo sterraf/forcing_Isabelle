@@ -293,7 +293,7 @@ proof -
     have "uncountable_rel(M,{domain(p) . p \<in> A})"
     proof
       interpret M_replacement_lepoll M dC_F
-        using lam_replacement_dC_F domain_eq_separation lam_replacement_inj_rel
+        using lam_replacement_dC_F domain_eq_separation lam_replacement_inj_rel lam_replacement_minimum
         unfolding dC_F_def
       proof(unfold_locales,simp_all)
         fix X b f
@@ -312,7 +312,7 @@ proof -
       ultimately
       interpret M_cardinal_UN_lepoll _ "dC_F(A)" "{domain(p). p\<in>A}"
         using lam_replacement_dC_F lam_replacement_inj_rel \<open>M(A)\<close>
-          lepoll_assumptions domain_eq_separation
+          lepoll_assumptions domain_eq_separation lam_replacement_minimum
           countable_lepoll_assms2 repFun_dom_closed
           lepoll_assumptions1[OF \<open>M(A)\<close> repFun_dom_closed[OF \<open>M(A)\<close>]]
         apply(unfold_locales)
@@ -472,7 +472,7 @@ proof -
       moreover from calculation
       interpret M_replacement_lepoll M "drSR_Y(r,D)"
         using countable_lepoll_assms3 lam_replacement_inj_rel lam_replacement_drSR_Y
-          drSR_Y_closed lam_Least_assumption_drSR_Y
+          drSR_Y_closed lam_Least_assumption_drSR_Y lam_replacement_minimum
         by (unfold_locales,simp_all add:drSR_Y_def,rule_tac 1,simp_all)
       from calculation
       have "x \<in> Pow\<^bsup>M\<^esup>(r \<times> 2) \<Longrightarrow> M(drSR_Y(r, D, A, x))" for x
@@ -481,10 +481,10 @@ proof -
       interpret M_cardinal_UN_lepoll _ "?Y(A)" "Pow_rel(M,r\<times>2)"
         using countable_lepoll_assms3 lam_replacement_drSR_Y
           lepoll_assumptions[where S="Pow_rel(M,r\<times>2)", unfolded lepoll_assumptions_defs]
-          lam_Least_assumption_drSR_Y[unfolded drSR_Y_def]
+          lam_Least_assumption_drSR_Y[unfolded drSR_Y_def] lam_replacement_minimum
         unfolding drSR_Y_def
         apply unfold_locales
-                        apply (simp_all add:lam_replacement_inj_rel del: if_range_F_else_F_def,rule_tac 1,simp_all)
+             apply (simp_all add:lam_replacement_inj_rel del: if_range_F_else_F_def,rule_tac 1,simp_all)
         by ((fastforce dest:transM[OF _ \<open>M(A)\<close>])+)
       {
         from \<open>Finite(r)\<close> \<open>M(r)\<close>

@@ -447,13 +447,13 @@ proof -
     unfolding wfrec_replacement_def by simp
 qed
 
-lemma Hcheck_closed' : "A\<in>M \<Longrightarrow> f\<in>M \<Longrightarrow> (f``(A \<inter> domain(f)) \<union> (if A-domain(f) = 0 then 0 else {0}))\<in>M"
-  using image_closed zero_in_M domain_closed Int_closed Un_closed
-    singleton_closed  Diff_closed
-  by auto
+lemma Hcheck_closed' : "f\<in>M \<Longrightarrow> z\<in>M \<Longrightarrow> {f ` x . x \<in> z} \<in> M"
+  using RepFun_closed[OF lam_replacement_imp_strong_replacement]
+          lam_replacement_apply apply_closed transM[of _ z]
+  by simp
 
 lemma repl_PHcheck :
-  assumes "f\<in>M" "function(f)"
+  assumes "f\<in>M"
   shows "lam_replacement(##M,\<lambda>x. Hcheck(x,f))"
 proof -
   have "Hcheck(x,f) = {f`y . y\<in>x}\<times>{\<one>}" for x
@@ -463,17 +463,12 @@ proof -
   moreover from this
   have 1:"lam_replacement(##M, \<lambda>x . {f`y . y\<in>x}\<times>{\<one>})"
     using lam_replacement_RepFun_apply
-          lam_replacement_CartProd[THEN [5] lam_replacement_hcomp2]
-       lam_replacement_constant
-       lam_replacement_fst lam_replacement_snd
-       image_closed zero_in_M domain_closed Int_closed Un_closed
-      singleton_closed separation_eq Diff_closed RepFun_apply_eq
-       cartprod_closed fst_snd_closed
-    by (rule_tac lam_replacement_CartProd[THEN [5] lam_replacement_hcomp2],auto)
+      lam_replacement_constant lam_replacement_fst lam_replacement_snd
+      singleton_closed cartprod_closed fst_snd_closed Hcheck_closed'
+    by (rule_tac lam_replacement_CartProd[THEN [5] lam_replacement_hcomp2],simp_all)
   ultimately
   show ?thesis
-    using Diff_closed Int_closed domain_closed image_closed zero_in_M Un_closed singleton_closed
-     RepFun_apply_eq cartprod_closed
+    using singleton_closed cartprod_closed Hcheck_closed'
     by(rule_tac lam_replacement_cong[OF 1],auto)
 qed
 
@@ -496,14 +491,14 @@ proof -
     by simp
 qed
 
-lemma Hcheck_closed : "\<forall>y\<in>M. \<forall>g\<in>M. function(g) \<longrightarrow> Hcheck(y,g)\<in>M"
+lemma Hcheck_closed : "\<forall>y\<in>M. \<forall>g\<in>M.  Hcheck(y,g)\<in>M"
 proof -
   have eq:"Hcheck(x,f) = {f`y . y\<in>x}\<times>{\<one>}" for f x
     unfolding Hcheck_def by auto
   then
-  have "Hcheck(y,g)\<in>M" if "y\<in>M" "g\<in>M" "function(g)" for y g
-    using that Hcheck_closed' cartprod_closed singleton_closed
-    by(subst eq,subst RepFun_apply_eq,simp_all)
+  have "Hcheck(y,g)\<in>M" if "y\<in>M" "g\<in>M" for y g
+    using eq that Hcheck_closed' cartprod_closed singleton_closed
+    by simp
   then
   show ?thesis
     by auto

@@ -376,6 +376,7 @@ proof -
   interpret M_replacement_lepoll M "\<lambda>_ x. if M(x) then x else 0"
     using  lam_replacement_if[OF lam_replacement_identity
         lam_replacement_constant[OF nonempty], where b=M] lam_replacement_inj_rel
+      lam_replacement_minimum
   proof(unfold_locales,auto simp add: separation_def)
     fix b f
     assume "M(b)" "M(f)"
@@ -390,7 +391,7 @@ proof -
       case False
       with \<open>M(f)\<close> \<open>M(b)\<close>
       show ?thesis
-        using cardinal_lib_assms1 separation_Ord
+        using cardinal_lib_assms1 separation_Ord lam_replacement_minimum
         by (rule_tac lam_Least_assumption_ifM_bnot0) auto
     qed
   qed
@@ -400,8 +401,8 @@ proof -
     by (cases "M(x)") auto
   ultimately
   interpret M_cardinal_UN_lepoll _ "\<lambda>c. if M(c) then c else 0" C
-    using lepoll_assumptions
-    by unfold_locales simp_all
+    using lepoll_assumptions lam_replacement_minimum
+    by unfold_locales auto
   have "(if M(i) then i else 0) = i" if "i\<in>C" for i
     using transM[OF _ \<open>M(C)\<close>] that by simp
   then
@@ -530,7 +531,7 @@ proof -
   ultimately
   interpret M_replacement_lepoll M "\<lambda>_ x. if M(x) then G`x else 0"
     using lam_replacement_inj_rel cardinal_lib_assms2 mem_F_bound1[of _ _ G]
-      lam_if_then_replacement_apply
+      lam_if_then_replacement_apply lam_replacement_minimum
     by (unfold_locales, simp_all)
       (rule lam_Least_assumption_general[where U="\<lambda>_. domain(G)"], auto)
   note \<open>M(G)\<close>
@@ -1027,7 +1028,7 @@ proof -
   moreover from calculation
   interpret M_replacement_lepoll M "\<lambda>_ x. if M(x) then F-``{x} else 0"
     using lam_replacement_inj_rel mem_F_bound2 cardinal_lib_assms3
-      lam_replacement_vimage_sing_fun
+      lam_replacement_vimage_sing_fun lam_replacement_minimum
       lam_replacement_if[OF _
         lam_replacement_constant[OF nonempty],where b=M] sep_true
     by (unfold_locales, simp_all)

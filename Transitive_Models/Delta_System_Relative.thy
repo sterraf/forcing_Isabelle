@@ -232,6 +232,7 @@ proof -
         interpret M_replacement_lepoll M "\<lambda>_ x. Collect(G, (\<in>)(x))"
           using countable_lepoll_assms lam_replacement_inj_rel separation_in_rev
             lam_replacement_Collect[OF _ _ insnd_ball] mem_F_bound6[of _ G]
+            lam_replacement_minimum
           by unfold_locales
             (auto dest:transM intro:lam_Least_assumption_general[of _  _ _ _ Union])
         fix S

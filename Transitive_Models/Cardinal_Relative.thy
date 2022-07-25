@@ -82,7 +82,7 @@ qed
 
 end \<comment> \<open>\<^locale>\<open>M_trancl\<close>\<close>
 
-locale M_cardinals = M_ordertype + M_trancl + M_Perm + M_replacement_extra +
+locale M_cardinals = M_ordertype + M_trancl + M_Perm + M_replacement +
   assumes
     radd_separation: "M(R) \<Longrightarrow> M(S) \<Longrightarrow>
     separation(M, \<lambda>z.
