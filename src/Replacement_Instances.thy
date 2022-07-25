@@ -500,10 +500,6 @@ sublocale M_ZF2_trans \<subseteq> M_Perm "##M"
 sublocale M_ZF2_trans \<subseteq> M_pre_seqspace "##M"
   by unfold_locales
 
-definition sep_pred where
-  "sep_pred(M,X,Y,f,g,n,b) \<equiv>  n \<in> \<omega> \<and> is_iterates(M,is_banach_functor(M,X, Y, f, g),0,n,b)"
-
-
 context M_ZF2_trans
 begin
 
@@ -594,7 +590,7 @@ end \<comment> \<open>\<^locale>\<open>M_ZF2_trans\<close>\<close>
 
 context M_ZF_ground_trans
 begin
-find_theorems is_recfun
+
 lemma replacement_transrec_apply_image_body :
   "(##M)(f) \<Longrightarrow> (##M)(mesa) \<Longrightarrow> strong_replacement(##M,transrec_apply_image_body(##M,f,mesa))"
   using strong_replacement_rel_in_ctm[where \<phi>="transrec_apply_image_body_fm(3,2,0,1)" and env="[mesa,f]"]
