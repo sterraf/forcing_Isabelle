@@ -32,8 +32,7 @@ proof -
   show ?thesis
     using domain_closed pair_in_M_iff fst_closed snd_closed separation_closed
       lam_replacement_constant lam_replacement_hcomp
-      lam_replacement_fst lam_replacement_snd
-      lam_replacement_Pair[THEN [5] lam_replacement_hcomp2]
+      lam_replacement_fst lam_replacement_snd lam_replacement_product
       separation_bex separation_conj separation_in lr_fst2 lr_fst3
       lam_replacement_hcomp[OF lr_fst3(1) lam_replacement_snd]
     unfolding Union_name_body_def Union_name_def

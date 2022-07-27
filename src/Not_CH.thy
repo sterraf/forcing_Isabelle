@@ -390,7 +390,7 @@ lemma f_G_funtype:
 lemma inj_dense_closed[intro,simp]:
   "w \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> inj_dense(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>,2,w,x) \<in> M"
   using transM[OF _ Aleph_rel2_closed] separation_conj separation_bex
-    lam_replacement_Pair[THEN [5] lam_replacement_hcomp2]
+    lam_replacement_product
     separation_in lam_replacement_fst lam_replacement_snd lam_replacement_constant
     lam_replacement_hcomp[OF lam_replacement_snd lam_replacement_restrict']
     separation_bex separation_conj

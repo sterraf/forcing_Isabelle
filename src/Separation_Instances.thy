@@ -35,7 +35,7 @@ lemma (in M_replacement) separation_well_ord:
   "(M)(f) \<Longrightarrow> (M)(r) \<Longrightarrow> (M)(A) \<Longrightarrow> separation
         (M, \<lambda>x. x \<in> A \<longrightarrow> (\<exists>y[M]. \<exists>p[M]. is_apply(M, f, x, y) \<and> pair(M, y, x, p) \<and> p \<in> r))"
   using separation_imp separation_in lam_replacement_identity lam_replacement_constant
-    lam_replacement_apply[of f] lam_replacement_Pair[THEN [5] lam_replacement_hcomp2]
+    lam_replacement_apply[of f] lam_replacement_product
   by simp
 
 definition is_obase_body :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where

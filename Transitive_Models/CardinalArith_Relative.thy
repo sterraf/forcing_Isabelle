@@ -26,6 +26,12 @@ definition jump_cardinal_body :: "[i,i] \<Rightarrow> i" where
   "jump_cardinal_body(U,X) \<equiv>
     {z . r \<in> U, well_ord(X, r) \<and> z = ordertype(X, r)}"
 
+lemma jump_cardinal_body_char :
+  "jump_cardinal_body(U,X) = {ordertype(X, r) . r \<in> {r\<in>U . well_ord(X, r)}}"
+  unfolding jump_cardinal_body_def
+  by auto
+
+\<comment> \<open>We internalize the relativized version of this particular instance.\<close>
 definition jump_cardinal_body'  where
   "jump_cardinal_body'(x) \<equiv> jump_cardinal_body(Pow(x\<times>x),x)"
 
@@ -106,8 +112,8 @@ lemma csquare_rel_closed[intro,simp]: "M(K) \<Longrightarrow> M(csquare_rel(K))"
 (* Ugly proof ahead, please enhance *)
 lemma csquare_rel_abs[absolut]: "\<lbrakk> M(K); M(cs)\<rbrakk> \<Longrightarrow>
      is_csquare_rel(M,K,cs) \<longleftrightarrow> cs = csquare_rel(K)"
-  unfolding is_csquare_rel_def csquare_rel_def
   using csquare_lam_closed[unfolded csquare_lam_eq_lam]
+  unfolding is_csquare_rel_def csquare_rel_def
   by (simp add:absolut csquare_lam_eq_lam[unfolded csquare_lam_def])
 
 end \<comment> \<open>\<^locale>\<open>M_pre_cardinal_arith\<close>\<close>
@@ -1053,7 +1059,7 @@ end \<comment> \<open>\<^locale>\<open>M_pre_cardinal_arith\<close>\<close>
 locale M_cardinal_arith = M_pre_cardinal_arith +
   assumes
     ordertype_replacement_ax :
-    "M(X) \<Longrightarrow> strong_replacement(M,\<lambda> x z . is_well_ord(M,X, x) \<and> is_ordertype(M,X,x,z))"
+    "M(X) \<Longrightarrow> strong_replacement(M,\<lambda> x z . is_well_ord(M,X,x) \<and> is_ordertype(M,X,x,z))"
     and
     strong_replacement_jc_body :
     "strong_replacement(M,\<lambda> x z . z = jump_cardinal_body_rel(M,Pow\<^bsup>M\<^esup>(x\<times>x),x))"
