@@ -966,7 +966,6 @@ lemma lam_replacement_hcomp2:
   assumes "lam_replacement(M,f)" "lam_replacement(M,g)"
     "\<forall>x[M]. M(f(x))" "\<forall>x[M]. M(g(x))"
     "lam_replacement(M, \<lambda>p. h(fst(p),snd(p)))"
-    "\<forall>x[M]. \<forall>y[M]. M(h(x,y))"
   shows "lam_replacement(M, \<lambda>x. h(f(x),g(x)))"
   using assms lam_replacement_product[of f g]
     lam_replacement_hcomp[of "\<lambda>x. \<langle>f(x), g(x)\<rangle>" "\<lambda>\<langle>x,y\<rangle>. h(x,y)"]
@@ -1187,7 +1186,7 @@ proof -
       by simp
     moreover from this
     have "M({\<langle>fst(fst(t)),snd(t)\<rangle> . t\<in>?Q})" (is "M(?R)")
-      using rep_closed lam_replacement_Pair[THEN [5] lam_replacement_hcomp2]
+      using rep_closed lam_replacement_product
         lam_replacement_hcomp[OF lam_replacement_fst lam_replacement_fst] lam_replacement_snd
         transM[of _ ?Q]
       by simp
@@ -1210,7 +1209,7 @@ qed
 
 lemma lam_replacement_RepFun :
   assumes "lam_replacement(M,\<lambda>x . f(fst(x),snd(x)))" "lam_replacement(M,g)"
-    "\<forall>x[M].\<forall>y[M].M(f(x,y))" "\<forall>x[M].M(g(x))"
+    "\<forall>x[M].\<forall>y\<in>g(x).M(f(x,y))" "\<forall>x[M].M(g(x))"
   shows "lam_replacement(M,\<lambda>x .  {f(x,z) . z\<in>g(x)})"
 proof -
   note rep_closed = lam_replacement_imp_strong_replacement[THEN RepFun_closed]
@@ -1615,7 +1614,7 @@ lemma lam_replacement_Lambda:
     "\<forall>w[M]. \<forall>y[M]. M(b(w, y))" "M(W)"
   shows "lam_replacement(M, \<lambda>x. \<lambda>w\<in>W. b(x, w))"
   using assms lam_replacement_constant lam_replacement_product lam_replacement_snd
-    lam_replacement_RepFun
+    lam_replacement_RepFun transM[of _ W]
   unfolding lam_def
   by simp
 
@@ -1637,7 +1636,7 @@ lemma lam_replacement_RepFun_apply :
   shows "lam_replacement(M, \<lambda>x . {f`y . y \<in> x})"
   using assms  lam_replacement_identity lam_replacement_RepFun
     lam_replacement_hcomp lam_replacement_snd lam_replacement_apply
-  by simp
+  by(rule_tac lam_replacement_RepFun,auto dest:transM)
 
 lemma separation_snd_in_fst: "separation(M, \<lambda>x. snd(x) \<in> fst(x))"
   using separation_in lam_replacement_fst lam_replacement_snd
@@ -2019,11 +2018,11 @@ begin
 lemma lam_replacement_RepFun_cons'':
   shows "lam_replacement(M, \<lambda>x . RepFun_cons(fst(x),snd(x)))"
   unfolding RepFun_cons_def
-  using lam_replacement_fst fst_closed snd_closed
-lam_replacement_Pair[THEN [5] lam_replacement_hcomp2]
+  using lam_replacement_fst fst_closed snd_closed lam_replacement_product
 lam_replacement_snd lam_replacement_hcomp lam_replacement_sing_fun
-  lam_replacement_RepFun[of "\<lambda> x z . {<snd(x),z>}" "fst"]
-  by(simp_all)
+   transM[OF _ fst_closed]
+lam_replacement_RepFun[of "\<lambda> x z . {<snd(x),z>}" "fst"]
+  by simp
 
 lemma RepFun_cons_replacement: "lam_replacement(M, \<lambda>p. RepFun(fst(p), \<lambda>x. {\<langle>snd(p),x\<rangle>}))"
   using lam_replacement_RepFun_cons''
@@ -2034,7 +2033,8 @@ lemma lam_replacement_Sigfun:
   assumes "lam_replacement(M,f)" "\<forall>y[M]. M(f(y))"
   shows "lam_replacement(M, \<lambda>x. Sigfun(x,f))"
   using assms lam_replacement_Union lam_replacement_sing_fun lam_replacement_Pair
-      lam_replacement_hcomp[of _ Union] tag_singleton_closed lam_replacement_RepFun
+       tag_singleton_closed transM[of _ "f(_)"] lam_replacement_hcomp[of _ Union]
+       lam_replacement_RepFun
   unfolding Sigfun_def
   by simp
 
