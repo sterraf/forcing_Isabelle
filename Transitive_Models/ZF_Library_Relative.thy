@@ -91,7 +91,7 @@ lemma (in M_cardinal_AC) cardinal_rel_succ_not_0:   "|A|\<^bsup>M\<^esup> = succ
 (* "Finite_to_one(X,Y) \<equiv> {f:X\<rightarrow>Y. \<forall>y\<in>Y. Finite({x\<in>X . f`x = y})}" *)
 reldb_add functional "Finite" "Finite" \<comment> \<open>wrongly done? Finite is absolute\<close>
 relativize functional "Finite_to_one" "Finite_to_one_rel" external
-(* reldb_add relational "Finite" "is_Finite" *) \<comment> \<open>don't have is_Finite yet\<close>
+(* reldb_add relational "Finite" "is_Finite" *) \<comment> \<open>don't have \<^term>\<open>is_Finite\<close> yet\<close>
 (* relationalize "Finite_to_one_rel" "is_Finite_to_one" *)
 
 notation Finite_to_one_rel (\<open>Finite'_to'_one\<^bsup>_\<^esup>'(_,_')\<close>)
