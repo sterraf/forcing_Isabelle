@@ -1940,7 +1940,7 @@ proof(clarify)
     by (rule_tac x="?L" in rexI,simp_all)
 qed
 
-(* Gives the orthogonal of x with respect Q *)
+\<comment> \<open>Gives the orthogonal of \<^term>\<open>x\<close> with respect to the relation \<^term>\<open>Q\<close>.\<close>
 lemma separation_orthogonal: "M(x) \<Longrightarrow> M(Q) \<Longrightarrow> separation(M, \<lambda>a .  \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q)"
   using separation_in[OF _
       lam_replacement_hcomp2[OF _ _ _ _ lam_replacement_Pair] _

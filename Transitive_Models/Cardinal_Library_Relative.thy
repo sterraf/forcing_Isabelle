@@ -24,8 +24,7 @@ proof -
     using image_eq_UN RepFun_def UN_iff by force
   moreover from calculation
   have "M(\<lambda>x\<in>A. S ` x)" "M({S ` a . a \<in> A})"
-    using lam_closed[of "\<lambda> x. S`x"] apply_type[OF \<open>S\<in>_\<close>]
-      transM[OF _ \<open>M(B)\<close>] image_closed
+    using lam_closed[of "\<lambda> x. S`x"] apply_type[OF \<open>S\<in>_\<close>] transM[OF _ \<open>M(B)\<close>]
     by auto
   moreover from assms this
   have "(\<lambda>x\<in>A. S`x) \<in> surj_rel(M,A, {S`a . a\<in>A})"
@@ -353,17 +352,9 @@ locale M_cardinal_library = M_library + M_replacement +
 
 begin
 
-lemma cdlt_assms: "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> separation(M, \<lambda>p. \<forall>x\<in>G. x \<in> snd(p) \<longleftrightarrow> (\<forall>s\<in>fst(p). \<langle>s, x\<rangle> \<in> Q))"
-  using lam_replacement_snd lam_replacement_fst lam_replacement_hcomp separation_in
-    lam_replacement_Pair[THEN [5] lam_replacement_hcomp2]
-  by (rule_tac separation_ball,simp_all,rule_tac separation_iff',auto)
-    (rule_tac separation_all,auto simp:lam_replacement_constant)
-
-lemma cdlt_assms': "M(x) \<Longrightarrow> M(Q) \<Longrightarrow> separation(M, \<lambda>a .  \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q)"
-  using separation_in[OF _
-      lam_replacement_hcomp2[OF _ _ _ _ lam_replacement_Pair] _
-      lam_replacement_constant]
-    separation_ball lam_replacement_hcomp lam_replacement_fst lam_replacement_snd
+lemma cdlt_assms: "M(x) \<Longrightarrow> M(Q) \<Longrightarrow> separation(M, \<lambda>a .  \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q)"
+  using separation_in[OF _ lam_replacement_product] separation_ball
+    lam_replacement_fst lam_replacement_snd lam_replacement_constant
   by simp_all
 
 lemma countable_rel_union_countable_rel:
@@ -828,14 +819,12 @@ proof -
       by (auto dest:transM)
     with\<open>M(G)\<close> \<open>\<And>x. M(x) \<Longrightarrow> M({a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q})\<close> \<open>M(Q)\<close> \<open>M(?cdlt\<gamma>)\<close>
     interpret M_Pi_assumptions_choice M ?cdlt\<gamma> ?inQ
-      using cdlt_assms[where Q=Q] lam_replacement_Collect_ball_Pair[THEN
-          lam_replacement_imp_strong_replacement] surj_imp_inj_replacement3
-        lam_replacement_hcomp2[OF lam_replacement_constant
-          lam_replacement_Collect_ball_Pair _ _ lam_replacement_minimum,
-          unfolded lam_replacement_def]
-        lam_replacement_hcomp lam_replacement_Sigfun[OF
-          lam_replacement_Collect_ball_Pair, of G Q, THEN
-          lam_replacement_imp_strong_replacement] separation_orthogonal
+      using cdlt_assms[where Q=Q] surj_imp_inj_replacement3
+        lam_replacement_Collect_ball_Pair[THEN lam_replacement_imp_strong_replacement]
+        lam_replacement_minimum[THEN [5] lam_replacement_hcomp2,OF
+          lam_replacement_constant lam_replacement_Collect_ball_Pair,unfolded lam_replacement_def]
+        lam_replacement_Sigfun[OF lam_replacement_Collect_ball_Pair,THEN
+          lam_replacement_imp_strong_replacement]
       by unfold_locales (blast dest: transM, auto dest:transM)
     show ?thesis using AC_Pi_rel Pi_rel_char H by auto
   qed
@@ -846,8 +835,7 @@ proof -
   define Cb where "Cb \<equiv> \<lambda>_\<in>Pow_rel(M,G)-?cdlt\<gamma>. b"
   moreover from \<open>b\<in>G\<close> \<open>M(?cdlt\<gamma>)\<close> \<open>M(G)\<close>
   have "Cb \<in> Pow_rel(M,G)-?cdlt\<gamma> \<rightarrow> G" "M(Cb)"
-    using lam_closed[of "\<lambda>_.b" "Pow_rel(M,G)-?cdlt\<gamma>"]
-      tag_replacement transM[OF \<open>b\<in>G\<close>]
+    using lam_closed[of "\<lambda>_.b" "Pow_rel(M,G)-?cdlt\<gamma>"] tag_replacement transM[OF \<open>b\<in>G\<close>]
     unfolding Cb_def by auto
   moreover
   note \<open>Card_rel(M,\<gamma>)\<close>

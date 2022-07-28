@@ -284,7 +284,9 @@ lemma (in M_basic_no_repl) succ_fun_eq2:
   apply (blast dest: transM)
   done
 
-(* lemma (in M_basic_no_repl) funspace_succ:
+(* FIXME: why do we have this?
+
+ lemma (in M_basic_no_repl) funspace_succ:
      "[|M(n); M(B); M(n->B) |] ==> M(succ(n) -> B)"
 apply (insert funspace_succ_replacement [of n], simp)
 apply (force simp add: succ_fun_eq2 univalent_def)

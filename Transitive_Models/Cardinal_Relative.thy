@@ -99,12 +99,10 @@ begin
 
 lemma rvimage_separation: "M(f) \<Longrightarrow> M(r) \<Longrightarrow>
     separation(M, \<lambda>z. \<exists>x y. z = \<langle>x, y\<rangle> \<and> \<langle>f ` x, f ` y\<rangle> \<in> r)"
-  using separation_Pair separation_in
-    lam_replacement_Pair[THEN[5] lam_replacement_hcomp2]
-    lam_replacement_constant lam_replacement_apply2[THEN[5] lam_replacement_hcomp2,OF lam_replacement_constant[of f]]
-    lam_replacement_fst lam_replacement_snd
-    lam_replacement_identity lam_replacement_hcomp
-  by(simp_all)
+  using separation_Pair separation_in lam_replacement_product
+    lam_replacement_fst lam_replacement_snd lam_replacement_constant
+    lam_replacement_apply2[THEN [5] lam_replacement_hcomp2]
+  by simp
 
 lemma radd_closed[intro,simp]: "M(a) \<Longrightarrow> M(b) \<Longrightarrow> M(c) \<Longrightarrow> M(d) \<Longrightarrow> M(radd(a,b,c,d))"
   using radd_separation by (auto simp add: radd_def)
@@ -126,7 +124,7 @@ text\<open>See Davey and Priestly, page 106\<close>
 context M_cardinals
 begin
 
-(** Lemma: Banach's Decomposition Theorem **)
+subsection\<open>Banach's Decomposition Theorem\<close>
 
 lemma bnd_mono_banach_functor: "bnd_mono(X, banach_functor(X,Y,f,g))"
   unfolding bnd_mono_def banach_functor_def
@@ -254,7 +252,7 @@ lemma schroeder_bernstein_closed:
    apply (auto intro!: restrict_bij bij_disjoint_Un intro: bij_converse_bij)
   done
 
-(** Equipollence is an equivalence relation **)
+text\<open>Equipollence is an equivalence relation\<close>
 
 lemma mem_Pow_rel: "M(r) \<Longrightarrow> a \<in> Pow_rel(M,r) \<Longrightarrow> a \<in> Pow(r) \<and> M(a)"
   using Pow_rel_char by simp
@@ -284,7 +282,7 @@ lemma eqpoll_rel_trans [trans]:
   "[|X \<approx>\<^bsup>M\<^esup> Y;  Y \<approx>\<^bsup>M\<^esup> Z;  M(X); M(Y) ; M(Z) |] ==> X \<approx>\<^bsup>M\<^esup> Z"
   unfolding def_eqpoll_rel by (auto intro: comp_bij)
 
-(** Le-pollence is a partial ordering **)
+text\<open>Le-pollence is a partial ordering\<close>
 
 lemma subset_imp_lepoll_rel: "X \<subseteq> Y \<Longrightarrow> M(X) \<Longrightarrow> M(Y) \<Longrightarrow> X \<lesssim>\<^bsup>M\<^esup> Y"
   unfolding def_lepoll_rel using id_subset_inj id_closed
@@ -336,7 +334,7 @@ lemma lepoll_rel_0_is_0: "A \<lesssim>\<^bsup>M\<^esup> 0 \<Longrightarrow> M(A)
   using def_lepoll_rel
   by (cases "A=0") (auto simp add: inj_def)
 
-(* \<^term>\<open>M(Y) \<Longrightarrow> 0 \<lesssim>\<^bsup>M\<^esup> Y\<close> *)
+\<comment> \<open>\<^term>\<open>M(Y) \<Longrightarrow> 0 \<lesssim>\<^bsup>M\<^esup> Y\<close>\<close>
 lemmas empty_lepoll_relI = empty_subsetI [THEN subset_imp_lepoll_rel, OF nonempty]
 
 lemma lepoll_rel_0_iff: "M(A) \<Longrightarrow> A \<lesssim>\<^bsup>M\<^esup> 0 \<longleftrightarrow> A=0"
@@ -425,7 +423,7 @@ proof -
   qed
 qed
 
-(** Variations on transitivity **)
+paragraph\<open>Variations on transitivity\<close>
 
 lemma lesspoll_rel_trans [trans]:
   "[| X \<prec>\<^bsup>M\<^esup> Y; Y \<prec>\<^bsup>M\<^esup> Z; M(X); M(Y) ; M(Z) |] ==> X \<prec>\<^bsup>M\<^esup> Z"
@@ -496,11 +494,6 @@ proof (subst is_cardinal_iff_Least[THEN iffD1, of A \<kappa>])
 qed
 
 lemmas Ord_is_cardinal_eqpoll_rel = well_ord_Memrel[THEN well_ord_is_cardinal_eqpoll_rel]
-
-
-(**********************************************************************)
-(****************** Results imported from Cardinal.thy ****************)
-(**********************************************************************)
 
 section\<open>Porting from \<^theory>\<open>ZF.Cardinal\<close>\<close>
 
@@ -758,11 +751,11 @@ lemma cons_lepoll_rel_consD:
   apply (simp add: def_lepoll_rel, unfold inj_def, safe)
   apply (rule_tac x = "\<lambda>x\<in>A. if f`x=v then f`u else f`x" in rexI)
    apply (rule CollectI)
-    (*Proving it's in the function space A->B*)
+    \<comment> \<open>Proving it's in the function space \<^term>\<open>A\<rightarrow>B\<close>\<close>
     apply (rule if_type [THEN lam_type])
      apply (blast dest: apply_funtype)
     apply (blast elim!: mem_irrefl dest: apply_funtype)
-    (*Proving it's injective*)
+    \<comment> \<open>Proving it's injective\<close>
    apply (auto simp add:transM[of _ A])
   using lam_replacement_iff_lam_closed  lam_if_then_apply_replacement
   by simp
@@ -887,7 +880,6 @@ lemma lesspoll_rel_cardinal_rel_lt: "[| A \<prec>\<^bsup>M\<^esup> i; Ord(i); M(
       dest: lepoll_rel_well_ord  elim!: leE)
   done
 
-
 lemma lt_not_lepoll_rel:
   assumes n: "n<i" "n \<in> nat"
     and types:"M(n)" "M(i)" shows "~ i \<lesssim>\<^bsup>M\<^esup> n"
@@ -990,7 +982,6 @@ proof -
   show "x \<in> A \<Longrightarrow> {0} \<lesssim>\<^bsup>M\<^esup> cons(x, A - {x})"
     by (auto intro: cons_lepoll_rel_cong transM[OF _ \<open>M(A)\<close>] subset_imp_lepoll_rel)
 qed
-
 
 lemma succ_eqpoll_rel_cong: "A \<approx>\<^bsup>M\<^esup> B \<Longrightarrow> M(A) \<Longrightarrow> M(B) ==> succ(A) \<approx>\<^bsup>M\<^esup> succ(B)"
   apply (unfold succ_def)
@@ -1194,7 +1185,9 @@ and deduce the rest of the results from this.
 Perhaps modularize that proof to have absoluteness of injections and
 bijections of finite sets (cf. @{thm lesspoll_rel_succ_imp_lepoll_rel}.\<close>
 
-lemma Finite_abs[simp]: assumes "M(A)" shows "Finite_rel(M,A) \<longleftrightarrow> Finite(A)"
+lemma Finite_abs[simp]:
+  assumes "M(A)"
+  shows "Finite_rel(M,A) \<longleftrightarrow> Finite(A)"
   unfolding Finite_rel_def Finite_def
 proof (simp, intro iffI)
   assume "\<exists>n\<in>nat. A \<approx>\<^bsup>M\<^esup> n"
@@ -1225,9 +1218,10 @@ next
     by (force dest:nat_into_M simp add:def_eqpoll_rel)
 qed
 
-(*
+
 \<comment> \<open>From the next result, the relative versions of
 @{thm Finite_Fin_lemma} and @{thm Fin_lemma} should follow\<close>
+(* FIXME: why do we have this?
 lemma nat_eqpoll_imp_eqpoll_rel:
   assumes "n \<in> nat" "A \<approx> n" and types:"M(n)" "M(A)"
   shows "A \<approx>\<^bsup>M\<^esup> n"

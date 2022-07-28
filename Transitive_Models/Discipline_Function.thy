@@ -3,11 +3,8 @@ theory Discipline_Function
     Arities
 begin
 
-(**********************************************************)
-paragraph\<open>Discipline for \<^term>\<open>fst\<close>\<close>
+paragraph\<open>Discipline for \<^term>\<open>fst\<close> and \<^term>\<open>snd\<close>\<close>
 
-
-(* ftype(p) \<equiv> THE a. \<exists>b. p = \<langle>a, b\<rangle> *)
 arity_theorem for "empty_fm"
 arity_theorem for "upair_fm"
 arity_theorem for "pair_fm"
@@ -36,7 +33,6 @@ arity_theorem for "snd_fm"
 
 definition snd_rel ::  "[i\<Rightarrow>o,i] \<Rightarrow> i"  where
   "snd_rel(M,p) \<equiv> THE d. M(d) \<and> is_snd(M,p,d)"
-
 
 reldb_add relational "snd" "is_snd"
 reldb_add functional "snd" "snd_rel"
@@ -87,6 +83,8 @@ lemma snd_rel_abs:
 
 end \<comment> \<open>\<^locale>\<open>M_trans\<close>\<close>
 
+paragraph\<open>Discipline for \<^term>\<open>minimum\<close>\<close>
+
 relativize functional "first" "first_rel" external
 relativize functional "minimum" "minimum_rel" external
 context M_trans
@@ -128,7 +126,7 @@ qed
 
 end \<comment> \<open>\<^locale>\<open>M_trans\<close>\<close>
 
-subsection\<open>Discipline for \<^term>\<open>function_space\<close>\<close>
+paragraph\<open>Discipline for \<^term>\<open>function_space\<close>\<close>
 
 definition
   is_function_space :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o"  where
@@ -223,7 +221,6 @@ next
     by (blast del:the_equality intro:the_equality[symmetric])
 qed
 
-
 lemma def_function_space_rel:
   assumes "M(A)" "M(y)"
   shows "function_space_rel(M,A,y) = Pi_rel(M,A,\<lambda>_. y)"
@@ -276,8 +273,6 @@ lemma function_space_rel_transfer: "M(A) \<Longrightarrow> M(B) \<Longrightarrow
 
 end \<comment> \<open>\<^locale>\<open>M_N_Pi\<close>\<close>
 
-(*****************  end Discipline  ***********************)
-
 abbreviation
   "is_apply \<equiv> fun_apply"
   \<comment> \<open>It is not necessary to perform the Discipline for \<^term>\<open>is_apply\<close>
@@ -288,10 +283,7 @@ subsection\<open>Discipline for \<^term>\<open>Collect\<close> terms.\<close>
 text\<open>We have to isolate the predicate involved and apply the
 Discipline to it.\<close>
 
-(*************** Discipline for injP ******************)
-
-
-definition (* completely relational *)
+definition \<comment> \<open>completely relational\<close>
   injP_rel:: "[i\<Rightarrow>o,i,i]\<Rightarrow>o" where
   "injP_rel(M,A,f) \<equiv> \<forall>w[M]. \<forall>x[M]. \<forall>fw[M]. \<forall>fx[M]. w\<in>A \<and> x\<in>A \<and>
             is_apply(M,f,w,fw) \<and> is_apply(M,f,x,fx) \<and> fw=fx\<longrightarrow> w=x"
@@ -318,12 +310,9 @@ lemma def_injP_rel:
 
 end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
 
-(******************  end Discipline  **********************)
+paragraph\<open>Discipline for \<^term>\<open>inj\<close>\<close>
 
-(**********************************************************)
-subsection\<open>Discipline for \<^term>\<open>inj\<close>\<close>
-
-definition (* completely relational *)
+definition \<comment> \<open>completely relational\<close>
   is_inj   :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o"  where
   "is_inj(M,A,B,I) \<equiv> M(I) \<and> (\<exists>F[M]. is_function_space(M,A,B,F) \<and>
        is_Collect(M,F,injP_rel(M,A),I))"
@@ -475,9 +464,7 @@ lemma inj_rel_transfer: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> inj_rel(M
 end \<comment> \<open>\<^locale>\<open>M_N_inj\<close>\<close>
 
 
-(***************  end Discipline  *********************)
-
-(*************** Discipline for surjP ******************)
+paragraph\<open>Discipline for \<^term>\<open>surj\<close>\<close>
 
 definition
   surjP_rel:: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o" where
@@ -498,12 +485,9 @@ lemma def_surjP_rel:
 
 end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
 
-(******************  end Discipline  **********************)
+paragraph\<open>Discipline for \<^term>\<open>surj\<close>\<close>
 
-(**********************************************************)
-subsection\<open>Discipline for \<^term>\<open>surj\<close>\<close>
-
-definition (* completely relational *)
+definition \<comment> \<open>completely relational\<close>
   is_surj   :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o"  where
   "is_surj(M,A,B,I) \<equiv> M(I) \<and> (\<exists>F[M]. is_function_space(M,A,B,F) \<and>
        is_Collect(M,F,surjP_rel(M,A,B),I))"
@@ -635,7 +619,7 @@ lemma surj_rel_transfer: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> surj_rel
 
 end \<comment> \<open>\<^locale>\<open>M_N_surj\<close>\<close>
 
-(***************  end Discipline  *********************)
+paragraph\<open>Discipline for \<^term>\<open>\<Inter>\<close>\<close>
 
 definition
   is_Int :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o"  where
@@ -679,8 +663,7 @@ text\<open>Note: @{thm Int_closed} already in \<^theory>\<open>ZF-Constructible.
 
 end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
 
-(**********************************************************)
-subsection\<open>Discipline for \<^term>\<open>bij\<close>\<close>
+paragraph\<open>Discipline for \<^term>\<open>bij\<close>\<close>
 
 reldb_add functional "inj" "inj_rel"
 reldb_add functional relational "inj_rel" "is_inj"
@@ -688,14 +671,6 @@ reldb_add functional "surj" "surj_rel"
 reldb_add functional relational "surj_rel" "is_surj"
 relativize functional "bij" "bij_rel" external
 relationalize "bij_rel" "is_bij"
-
-(* definition (* completely relational *)
-  is_bij   :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o"  where
-  "is_bij(M,A,B,bj) \<equiv> M(bj) \<and> is_hcomp2_2(M,is_Int,is_inj,is_surj,A,B,bj)"
-
-definition
-  bij_rel :: "[i\<Rightarrow>o,i,i] \<Rightarrow> i" (\<open>bij\<^bsup>_\<^esup>'(_,_')\<close>) where
-  "bij_rel(M,A,B) \<equiv> THE d. is_bij(M,A,B,d)" *)
 
 synthesize "is_bij" from_definition assuming "nonempty"
 notation is_bij_fm (\<open>\<cdot>bij'(_,_') is _\<cdot>\<close>)
@@ -757,8 +732,6 @@ lemma bij_rel_transfer: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> bij_rel(M
 
 end \<comment> \<open>\<^locale>\<open>M_N_Perm\<close>\<close>
 
-(***************  end Discipline  *********************)
-
 context M_Perm
 begin
 
@@ -773,7 +746,6 @@ lemma mem_surj_rel: "\<lbrakk>f \<in> surj\<^bsup>M\<^esup>(A,B); M(A); M(B)\<rb
 
 end \<comment> \<open>\<^locale>\<open>M_Perm\<close>\<close>
 
-(******************************************************)
 subsection\<open>Discipline for \<^term>\<open>eqpoll\<close>\<close>
 
 relativize functional "eqpoll" "eqpoll_rel" external
@@ -814,7 +786,7 @@ end \<comment> \<open>\<^locale>\<open>M_Perm\<close>\<close>
 context M_N_Perm
 begin
 
-(* the next lemma is not part of the discipline *)
+text\<open>The next lemma is not part of the discipline\<close>
 lemma eqpoll_rel_transfer: assumes "A \<approx>\<^bsup>M\<^esup> B" "M(A)" "M(B)"
   shows "A \<approx>\<^bsup>N\<^esup> B"
 proof -
@@ -832,9 +804,6 @@ qed
 
 end \<comment> \<open>\<^locale>\<open>M_N_Perm\<close>\<close>
 
-(******************  end Discipline  ******************)
-
-(******************************************************)
 subsection\<open>Discipline for \<^term>\<open>lepoll\<close>\<close>
 
 relativize functional "lepoll" "lepoll_rel" external
@@ -875,7 +844,7 @@ end \<comment> \<open>\<^locale>\<open>M_Perm\<close>\<close>
 context M_N_Perm
 begin
 
-(* the next lemma is not part of the discipline *)
+\<comment> \<open>This lemma is not part of the discipline.\<close>
 lemma lepoll_rel_transfer: assumes "A \<lesssim>\<^bsup>M\<^esup> B" "M(A)" "M(B)"
   shows "A \<lesssim>\<^bsup>N\<^esup> B"
 proof -
@@ -893,9 +862,6 @@ qed
 
 end \<comment> \<open>\<^locale>\<open>M_N_Perm\<close>\<close>
 
-(******************  end Discipline  ******************)
-
-(******************************************************)
 subsection\<open>Discipline for \<^term>\<open>lesspoll\<close>\<close>
 
 relativize functional "lesspoll" "lesspoll_rel" external
