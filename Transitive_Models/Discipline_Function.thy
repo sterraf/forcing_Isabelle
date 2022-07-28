@@ -619,7 +619,7 @@ lemma surj_rel_transfer: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> surj_rel
 
 end \<comment> \<open>\<^locale>\<open>M_N_surj\<close>\<close>
 
-paragraph\<open>Discipline for \<^term>\<open>\<Inter>\<close>\<close>
+paragraph\<open>Discipline for \<^term>\<open>Inter\<close>\<close>
 
 definition
   is_Int :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o"  where
