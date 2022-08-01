@@ -20,10 +20,9 @@ relationalize "radd_body_rel" "is_radd_body"
 synthesize "is_radd_body" from_definition
 arity_theorem for "is_radd_body_fm"
 
-
 definition rmult_body :: "[i,i,i] \<Rightarrow> o" where
-  "rmult_body(b,d) \<equiv> \<lambda>z. \<exists>x' y' x y. z = \<langle>\<langle>x', y'\<rangle>, x, y\<rangle> \<and> (\<langle>x', x\<rangle> \<in>
-b \<or> x' = x \<and> \<langle>y', y\<rangle> \<in> d)"
+  "rmult_body(b,d) \<equiv> \<lambda>z. \<exists>x' y' x y. z = \<langle>\<langle>x', y'\<rangle>, x, y\<rangle> \<and> (\<langle>x', x\<rangle> \<in> b \<or>
+                              x' = x \<and> \<langle>y', y\<rangle> \<in> d)"
 
 relativize functional "rmult_body" "rmult_body_rel"
 relationalize "rmult_body_rel" "is_rmult_body"
@@ -31,7 +30,7 @@ relationalize "rmult_body_rel" "is_rmult_body"
 synthesize "is_rmult_body" from_definition
 arity_theorem for "is_rmult_body_fm"
 
-lemma (in M_replacement) separation_well_ord:
+lemma (in M_replacement) separation_well_ord_iso:
   "(M)(f) \<Longrightarrow> (M)(r) \<Longrightarrow> (M)(A) \<Longrightarrow> separation
         (M, \<lambda>x. x \<in> A \<longrightarrow> (\<exists>y[M]. \<exists>p[M]. is_apply(M, f, x, y) \<and> pair(M, y, x, p) \<and> p \<in> r))"
   using separation_imp separation_in lam_replacement_identity lam_replacement_constant

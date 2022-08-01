@@ -12,16 +12,13 @@ locale M_ZF3 = M_ZF2 +
     replacement_ax3:
     "replacement_assm(M,env,replacement_is_order_body_fm)"
     "replacement_assm(M,env,wfrec_replacement_order_pred_fm)"
-    "replacement_assm(M,env,replacement_is_jump_cardinal_body_fm)"
 
 definition instances3_fms where "instances3_fms \<equiv>
   { replacement_is_order_body_fm,
-    wfrec_replacement_order_pred_fm,
-    replacement_is_jump_cardinal_body_fm }"
+    wfrec_replacement_order_pred_fm }"
 
 lemmas replacement_instances3_defs =
   replacement_is_order_body_fm_def wfrec_replacement_order_pred_fm_def
-  replacement_is_jump_cardinal_body_fm_def
   replacement_is_aleph_fm_def
 
 declare (in M_ZF3) replacement_instances3_defs [simp]
@@ -49,7 +46,7 @@ locale M_ctm3_AC = M_ctm3 + M_ctm1_AC + M_ZFC3_ground_trans
 locale M_ctm3_AC_CH = M_ctm3_AC + M_ZFC3_ground_CH_trans
 
 lemmas (in M_ZF2_trans) separation_instances =
-  separation_well_ord
+  separation_well_ord_iso
   separation_obase_equals separation_is_obase
   separation_PiP_rel separation_surjP_rel
   separation_radd_body separation_rmult_body
@@ -95,20 +92,19 @@ lemma arity_is_ordertype: "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarro
   using arity_isordermap arity_image_fm pred_Un_distrib FOL_arities
   by auto
 
-arity_theorem for "is_order_body_fm"
+lemma arity_is_order_body: "arity(is_order_body_fm(1,0)) = 2"
+   using arity_is_order_body_fm arity_is_ordertype ord_simp_union
+   by (simp add:FOL_arities)
 
-lemma arity_is_order_body: "arity(is_order_body_fm(2,0,1)) = 3"
-  using arity_is_order_body_fm arity_is_ordertype ord_simp_union
-  by (simp add:FOL_arities)
 
 lemma (in M_ZF3_trans) replacement_is_order_body:
-  "X\<in>M \<Longrightarrow> strong_replacement(##M, is_order_body(##M,X))"
+  "strong_replacement(##M, \<lambda>x z . \<exists>y[##M]. is_order_body(##M,x,y) \<and> z = \<langle>x,y\<rangle>)"
   apply(rule_tac strong_replacement_cong[
-        where P="\<lambda> x f. M,[x,f,X] \<Turnstile> is_order_body_fm(2,0,1)",THEN iffD1])
-   apply(rule_tac is_order_body_iff_sats[where env="[_,_,X]",symmetric])
-          apply(simp_all add:zero_in_M)
-  apply(rule_tac replacement_ax3(1)[unfolded replacement_assm_def, rule_format, where env="[X]",simplified])
-    apply(simp_all add: arity_is_order_body )
+        where P="\<lambda> x f. M,[x,f] \<Turnstile> (\<cdot>\<exists> \<cdot>is_order_body_fm(1,0) \<and> pair_fm(1,0,2) \<cdot>\<cdot>)",THEN iffD1])
+   apply(simp add: is_order_body_iff_sats[where env="[_,_]",symmetric])
+   apply(simp_all add:zero_in_M )
+  apply(rule_tac replacement_ax3(1)[unfolded replacement_assm_def, rule_format, where env="[]",simplified])
+    apply(simp_all add:arity_is_order_body arity pred_Un_distrib ord_simp_union)
   done
 
 definition H_order_pred where
@@ -147,57 +143,29 @@ sublocale M_ZF3_trans \<subseteq> M_pre_cardinal_arith "##M"
     replacement_is_order_eq_map[unfolded order_eq_map_def] banach_replacement
   by unfold_locales simp_all
 
-lemma arity_is_jump_cardinal_body: "arity(is_jump_cardinal_body_rel_fm(0,2,3)) = 4"
-  unfolding is_jump_cardinal_body_rel_fm_def
-  using arity_is_ordertype arity_is_well_ord_fm arity_is_Pow_fm arity_cartprod_fm
-    arity_Replace_fm[where i=5] ord_simp_union FOL_arities
-  by simp
 
-lemma arity_is_jump_cardinal_body': "arity(is_jump_cardinal_body'_rel_fm(0,1)) = 2"
-  unfolding is_jump_cardinal_body'_rel_fm_def
-  using arity_is_jump_cardinal_body arity_is_Pow_fm arity_cartprod_fm
-     ord_simp_union FOL_arities
-  by simp
+definition is_well_ord_fst_snd where
+  "is_well_ord_fst_snd(A,x) \<equiv> (\<exists>a[A]. \<exists>b[A]. is_well_ord(A,a,b) \<and> is_snd(A, x, b) \<and> is_fst(A, x, a))"
 
-lemma (in M_ZF3_trans) replacement_is_jump_cardinal_body:
-  "strong_replacement(##M, is_jump_cardinal_body'_rel(##M))"
-  apply(rule_tac strong_replacement_cong[
-        where P="\<lambda> x f. M,[x,f] \<Turnstile> is_jump_cardinal_body'_rel_fm(0,1)",THEN iffD1])
-   apply(rule_tac is_jump_cardinal_body'_rel_iff_sats[where env="[_,_]",symmetric])
-        apply(simp_all add:zero_in_M)
-  apply(rule_tac replacement_ax3(3)[unfolded replacement_assm_def, rule_format, where env="[]",simplified])
-   apply(simp_all add: arity_is_jump_cardinal_body' )
-  done
+synthesize "is_well_ord_fst_snd" from_definition assuming "nonempty"
+arity_theorem for "is_well_ord_fst_snd_fm"
 
-lemma (in M_pre_cardinal_arith) univalent_aux2: "M(X) \<Longrightarrow> univalent(M,Pow_rel(M,X\<times>X),
-  \<lambda>r z. M(z) \<and> M(r) \<and> is_well_ord(M, X, r) \<and> is_ordertype(M, X, r, z))"
-  using is_well_ord_iff_wellordered
-    is_ordertype_iff[of _ X]
-    trans_on_subset[OF well_ord_is_trans_on]
-    well_ord_is_wf[THEN wf_on_subset_A] mem_Pow_rel_abs
-  unfolding univalent_def
-  by (simp)
+lemma (in M_ZF3_trans) separation_well_ord: "separation(##M, \<lambda>x. is_well_ord(##M,fst(x), snd(x)))"
+  using arity_is_well_ord_fst_snd_fm is_well_ord_iff_sats[symmetric] nonempty
+    fst_closed snd_closed fst_abs snd_abs
+    separation_in_ctm[where env="[]" and \<phi>="is_well_ord_fst_snd_fm(0)"]
+  by(simp_all add: is_well_ord_fst_snd_def)
 
-lemma (in M_pre_cardinal_arith) is_jump_cardinal_body_abs :
-  "M(X) \<Longrightarrow> M(c) \<Longrightarrow> is_jump_cardinal_body'_rel(M, X, c) \<longleftrightarrow> c = jump_cardinal_body'_rel(M,X)"
-  using well_ord_abs is_well_ord_iff_wellordered is_ordertype_iff' ordertype_rel_abs
-    well_ord_is_linear subset_abs Pow_rel_iff
-    Replace_abs[of "Pow_rel(M,X\<times>X)",OF _ _univalent_aux2,simplified]
-  unfolding is_jump_cardinal_body'_rel_def jump_cardinal_body'_rel_def
-    is_jump_cardinal_body_rel_def  jump_cardinal_body_rel_def
-  by simp
-
-lemma (in M_ZF3_trans) replacement_jump_cardinal_body:
-  "strong_replacement(##M, \<lambda>x z.  z = jump_cardinal_body'_rel(##M,x))"
-  using strong_replacement_cong[THEN iffD1,OF _ replacement_is_jump_cardinal_body,simplified]
-     is_jump_cardinal_body_abs
-  by simp
 
 sublocale M_ZF3_trans \<subseteq> M_pre_aleph "##M"
-  using  replacement_jump_cardinal_body[unfolded jump_cardinal_body'_rel_def]
+  using
     HAleph_wfrec_repl replacement_is_order_body[unfolded is_order_body_def]
-  by unfold_locales (simp_all add: transrec_replacement_def
+    separation_well_ord separation_Pow_rel well_ord_abs is_well_ord_iff_wellordered
+fst_abs snd_abs fst_closed snd_closed
+  apply unfold_locales
+     apply(simp_all add: transrec_replacement_def CardinalArith_Relative.is_order_body_def
       wfrec_replacement_def is_wfrec_def M_is_recfun_def flip:setclass_iff)
+  done
 
 arity_theorem intermediate for "is_HAleph_fm"
 lemma arity_is_HAleph_fm: "arity(is_HAleph_fm(2, 1, 0)) = 3"
@@ -312,7 +280,6 @@ locale M_ZF4 = M_ZF3 +
     ground_replacements4:
     "ground_replacement_assm(M,env,replacement_is_order_body_fm)"
     "ground_replacement_assm(M,env,wfrec_replacement_order_pred_fm)"
-    "ground_replacement_assm(M,env,replacement_is_jump_cardinal_body_fm)"
     "ground_replacement_assm(M,env,list_repl1_intf_fm)"
     "ground_replacement_assm(M,env,list_repl2_intf_fm)"
     "ground_replacement_assm(M,env,formula_repl2_intf_fm)"
@@ -329,7 +296,6 @@ locale M_ZF4 = M_ZF3 +
 definition instances4_fms where "instances4_fms \<equiv>
   { ground_repl_fm(replacement_is_order_body_fm),
     ground_repl_fm(wfrec_replacement_order_pred_fm),
-    ground_repl_fm(replacement_is_jump_cardinal_body_fm),
     ground_repl_fm(list_repl1_intf_fm),
     ground_repl_fm(list_repl2_intf_fm),
     ground_repl_fm(formula_repl2_intf_fm),
@@ -360,7 +326,7 @@ force $\CH$.\<close>
 
 lemma instances3_fms_type[TC] : "instances3_fms \<subseteq> formula"
   unfolding instances3_fms_def replacement_is_order_body_fm_def
-    wfrec_replacement_order_pred_fm_def replacement_is_jump_cardinal_body_fm_def
+    wfrec_replacement_order_pred_fm_def
     replacement_is_aleph_fm_def
   by (auto simp del: Lambda_in_M_fm_def)
 
