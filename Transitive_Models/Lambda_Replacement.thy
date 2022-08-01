@@ -1401,7 +1401,7 @@ lemma lam_replacement_const_id: "M(b) \<Longrightarrow> lam_replacement(M, \<lam
 lemmas prepend_replacement = lam_replacement_const_id[unfolded lam_replacement_def]
 
 lemma lam_replacement_apply_const_id: "M(f) \<Longrightarrow> M(z) \<Longrightarrow>
-      lam_replacement(M, \<lambda>x. f ` \<langle>z, x\<rangle>)"comp'
+      lam_replacement(M, \<lambda>x. f ` \<langle>z, x\<rangle>)"
   using lam_replacement_const_id[of z] lam_replacement_apply
     lam_replacement_hcomp[of "\<lambda>x. \<langle>z, x\<rangle>"] by simp
 
@@ -1935,56 +1935,13 @@ proof(clarify)
   show " \<exists>y[M]. \<forall>z[M]. z \<in> y \<longleftrightarrow> z \<in> A \<and> (\<exists>x\<in>f(z) . P(g(z),x))"
     by (rule_tac x="?N" in rexI,simp_all)
 qed
-(*
 
-lemma lam_replacement_comp:
-  "lam_replacement(M, \<lambda>x . fst(x) O snd(x))"
-proof -
-  note lr_fst2=lam_replacement_hcomp[OF lam_replacement_fst lam_replacement_fst ]
-  note lr_fst4=lam_replacement_hcomp[OF lr_fst2 lr_fst2]
-  note lr_fst6=lam_replacement_hcomp[OF lr_fst2 lr_fst4]
-  have "(\<exists>xa y z. snd(x) = \<langle>xa, z\<rangle> \<and> \<langle>xa, y\<rangle> \<in> snd(fst(x)) \<and> \<langle>y, z\<rangle> \<in> fst(fst(x))) \<longleftrightarrow>
-   (\<exists>xa\<in>\<Union>snd(x). \<exists>z\<in>\<Union>snd(x) . snd(x) = \<langle>xa, z\<rangle> \<and> (\<exists> y \<in>range(snd(fst(x))). \<langle>xa, y\<rangle> \<in> snd(fst(x)) \<and> \<langle>y, z\<rangle> \<in> fst(fst(x))))" for x
-    apply (auto) apply(auto simp:Pair_def)[1] apply(auto simp:Pair_def)[1]
-    by(rule_tac x=y in bexI,simp_all,rule_tac rangeI,auto)
-  have "separation(M,\<lambda>x . (\<exists>xa\<in>\<Union>snd(x). \<exists>z\<in>\<Union>snd(x) . snd(x) = \<langle>xa, z\<rangle> \<and> (\<exists> y \<in>range(snd(fst(x))). \<langle>xa, y\<rangle> \<in> snd(fst(x)) \<and> \<langle>y, z\<rangle> \<in> fst(fst(x)))))"
-    using lam_replacement_identity lam_replacement_snd lr_fst2 lam_replacement_hcomp
-    apply(rule_tac separation_ex,simp_all)
-     apply(rule_tac separation_ex,simp_all)
-      apply(rule_tac separation_ex,rule_tac separation_conj)
-           apply(rule_tac separation_eq)
-              apply(simp_all)
-         prefer 3
-         apply(rule_tac separation_ex,rule_tac separation_conj,simp_all,rule_tac separation_in)
-              prefer 5
-    apply(rule_tac separation_in,simp_all)
-    using lam_replacement_identity lam_replacement_snd lam_replacement_fst
-      lam_replacement_product lam_replacement_snd lam_replacement_range lam_replacement_Union lr_fst2 lr_fst4
-lam_replacement_hcomp[OF lr_fst2 lr_fst4] lam_replacement_hcomp[OF  lr_fst2] lam_replacement_hcomp[OF  lr_fst4]
-lam_replacement_hcomp[OF  _ lr_fst4] lam_replacement_hcomp
-lam_replacement_hcomp[OF  lam_replacement_fst lr_fst4]
-lam_replacement_hcomp[OF lam_replacement_hcomp[OF lam_replacement_fst lr_fst6] lam_replacement_snd]
-lam_replacement_hcomp[OF lam_replacement_hcomp[OF lam_replacement_hcomp[OF  lam_replacement_fst lr_fst4] lam_replacement_snd]
-lam_replacement_range] separation_in separation_ex separation_conj separation_eq
-                 apply auto
-    sorry
-  then
-  have "separation(M,\<lambda>x . \<exists>xa y z. snd(x) = \<langle>xa, z\<rangle> \<and> \<langle>xa, y\<rangle> \<in> snd(fst(x)) \<and> \<langle>y, z\<rangle> \<in> fst(fst(x)))"
-    using separation_cong
-    sorry
-  then
-  show ?thesis
-    sorry
-qed
-*)
 lemma lam_replacement_comp':
   "M(f) \<Longrightarrow> M(g) \<Longrightarrow> lam_replacement(M, \<lambda>x . f O x O g)"
-  unfolding comp_def
   using lam_replacement_comp[THEN [5] lam_replacement_hcomp2,
       OF lam_replacement_constant lam_replacement_comp,
       THEN [5] lam_replacement_hcomp2] lam_replacement_constant
     lam_replacement_identity by simp
-
 
 lemma RepFun_SigFun_closed: "M(x)\<Longrightarrow> M(z) \<Longrightarrow> M({{\<langle>z, u\<rangle>} . u \<in> x})"
   using lam_replacement_sing_const_id lam_replacement_imp_strong_replacement RepFun_closed

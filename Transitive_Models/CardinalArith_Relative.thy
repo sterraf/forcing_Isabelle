@@ -351,7 +351,7 @@ lemma sum_succ_eqpoll_rel: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> succ(A
   apply(rule_tac lam_closed, auto dest:transM intro:if_then_range_replacement2)
   done
 
-\<comment> \<open>Pulling the  succ(...)  outside the |...| requires m, n \<in> nat\<close>
+\<comment> \<open>Pulling the  succ(...)  outside the |...| requires $m, n \in nat$.\<close>
 \<comment> \<open>Unconditional version requires AC\<close>
 lemma cadd_succ_lemma:
   assumes "Ord(m)" "Ord(n)" and
