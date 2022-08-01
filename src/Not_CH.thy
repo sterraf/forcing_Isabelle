@@ -128,7 +128,7 @@ lemmas (in M_ZF3_trans) sep_instances =
 
 lemmas (in M_ZF3_trans) repl_instances = lam_replacement_inj_rel
 
-sublocale M_ZFC3_ground_trans \<subseteq> M_master "##M"
+sublocale M_ZFC3_ground_notCH_trans \<subseteq> M_master "##M"
   using replacement_trans_apply_image
   by unfold_locales (simp_all add:repl_instances sep_instances del:setclass_iff
       add: transrec_replacement_def wfrec_replacement_def)
@@ -501,24 +501,20 @@ notation is_ContHyp_fm (\<open>\<cdot>CH\<cdot>\<close>)
 
 theorem ctm_of_not_CH:
   assumes
-    "M \<approx> \<omega>" "Transset(M)" "M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead}"
+    "M \<approx> \<omega>" "Transset(M)" "M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead_notCH}"
     "\<Phi> \<subseteq> formula" "M \<Turnstile> { \<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in> \<Phi>}"
   shows
     "\<exists>N.
       M \<subseteq> N \<and> N \<approx> \<omega> \<and> Transset(N) \<and> N \<Turnstile> ZC \<union> {\<cdot>\<not>\<cdot>CH\<cdot>\<cdot>} \<union> { \<cdot>Replacement(\<phi>)\<cdot> . \<phi> \<in> \<Phi>} \<and>
       (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> (\<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N))"
 proof -
-  from \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead}\<close>
+  from \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead_notCH}\<close>
   interpret M_ZFC4 M
-    using M_satT_overhead_imp_M_ZF4 by simp
-  from \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead}\<close>
-  have "M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms \<union> instances_ground_fms }"
-    unfolding overhead_def ZC_def
-    by auto
-  with \<open>Transset(M)\<close>
-  interpret M_ZF_ground_trans M
-    using M_satT_imp_M_ZF_ground_trans
-    by simp
+    using M_satT_overhead_imp_M_ZF4 unfolding overhead_notCH_def by force
+  from \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead_notCH}\<close> \<open>Transset(M)\<close>
+  interpret M_ZF_ground_notCH_trans M
+    using M_satT_imp_M_ZF_ground_notCH_trans
+    unfolding ZC_def by auto
   from \<open>M \<approx> \<omega>\<close>
   obtain enum where "enum \<in> bij(\<omega>,M)"
     using eqpoll_sym unfolding eqpoll_def by blast
@@ -560,6 +556,9 @@ qed
 lemma ZF_replacement_overhead_sub_ZFC: "{\<cdot>Replacement(p)\<cdot> . p \<in> overhead} \<subseteq> ZFC"
   using overhead_type unfolding ZFC_def ZF_def ZF_schemes_def by auto
 
+lemma ZF_replacement_overhead_notCH_sub_ZFC: "{\<cdot>Replacement(p)\<cdot> . p \<in> overhead_notCH} \<subseteq> ZFC"
+  using overhead_notCH_type unfolding ZFC_def ZF_def ZF_schemes_def by auto
+
 lemma ZF_replacement_overhead_CH_sub_ZFC: "{\<cdot>Replacement(p)\<cdot> . p \<in> overhead_CH} \<subseteq> ZFC"
   using overhead_CH_type unfolding ZFC_def ZF_def ZF_schemes_def by auto
 
@@ -579,7 +578,7 @@ proof-
         N \<Turnstile> ZC \<and> N \<Turnstile> {\<cdot>\<not>\<cdot>CH\<cdot>\<cdot>} \<and> N \<Turnstile> {\<cdot>Replacement(x)\<cdot> . x \<in> formula} \<and> (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)"
     using ctm_of_not_CH[of M formula] satT_ZFC_imp_satT_ZC[of M]
       satT_mono[OF _ ground_repl_fm_sub_ZFC, of M]
-      satT_mono[OF _ ZF_replacement_overhead_sub_ZFC, of M]
+      satT_mono[OF _ ZF_replacement_overhead_notCH_sub_ZFC, of M]
       satT_mono[OF _ ZF_replacement_fms_sub_ZFC, of M]
     by (simp add: satT_Un_iff)
   then
