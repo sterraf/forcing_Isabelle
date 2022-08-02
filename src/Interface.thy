@@ -1602,16 +1602,6 @@ lemma separation_snd: "A\<in>M \<Longrightarrow>
 lemma lam_replacement_snd: "lam_replacement(##M, snd)"
   using lam_replacement_snd' separation_snd transM by simp
 
-lemma separation_converse: "A\<in>M \<Longrightarrow>
-    separation(##M, \<lambda>y. \<exists>x \<in> M . x\<in>A \<and> y = \<langle>x, converse(x)\<rangle>)"
-  using separation_assm_sats[of "is_converse_fm(0,1)"] arity_is_converse_fm ord_simp_union
-    converse_closed[simplified] nonempty
-  by simp
-
-lemma lam_replacement_converse: "lam_replacement(##M, converse)"
-  using lam_replacement_converse' separation_converse transM by simp
-
-
 text\<open>Binary lambda-replacements\<close>
 
 lemma separation_Upair: "A\<in>M \<Longrightarrow>

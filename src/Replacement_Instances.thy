@@ -463,7 +463,7 @@ lemma (in M_ZF_ground_CH_trans) dcwit_repl:
 lemmas M_replacement_ZF_instances = lam_replacement_domain
   lam_replacement_fst lam_replacement_snd lam_replacement_Union
   lam_replacement_Upair lam_replacement_Image
-  lam_replacement_Diff lam_replacement_converse
+  lam_replacement_Diff
   lam_replacement_middle_del lam_replacement_prodRepl
 
 lemmas M_separation_ZF_instances = separation_fstsnd_in_sndsnd separation_sndfst_eq_fstsnd
