@@ -252,7 +252,7 @@ lemma schroeder_bernstein_closed:
    apply (auto intro!: restrict_bij bij_disjoint_Un intro: bij_converse_bij)
   done
 
-text\<open>Equipollence is an equivalence relation\<close>
+text\<open>Relative equipollence is an equivalence relation\<close>
 
 lemma mem_Pow_rel: "M(r) \<Longrightarrow> a \<in> Pow_rel(M,r) \<Longrightarrow> a \<in> Pow(r) \<and> M(a)"
   using Pow_rel_char by simp
@@ -282,7 +282,7 @@ lemma eqpoll_rel_trans [trans]:
   "[|X \<approx>\<^bsup>M\<^esup> Y;  Y \<approx>\<^bsup>M\<^esup> Z;  M(X); M(Y) ; M(Z) |] ==> X \<approx>\<^bsup>M\<^esup> Z"
   unfolding def_eqpoll_rel by (auto intro: comp_bij)
 
-text\<open>Le-pollence is a partial ordering\<close>
+text\<open>Relative le-pollence is a preorder\<close>
 
 lemma subset_imp_lepoll_rel: "X \<subseteq> Y \<Longrightarrow> M(X) \<Longrightarrow> M(Y) \<Longrightarrow> X \<lesssim>\<^bsup>M\<^esup> Y"
   unfolding def_lepoll_rel using id_subset_inj id_closed

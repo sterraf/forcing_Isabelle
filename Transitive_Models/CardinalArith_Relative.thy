@@ -109,7 +109,6 @@ lemma csquare_rel_closed[intro,simp]: "M(K) \<Longrightarrow> M(csquare_rel(K))"
   using csquare_lam_replacement unfolding csquare_rel_def
   by (intro rvimage_closed lam_closed) (auto dest:transM)
 
-(* FIXME: Ugly proof ahead, please enhance *)
 lemma csquare_rel_abs[absolut]: "\<lbrakk> M(K); M(cs)\<rbrakk> \<Longrightarrow>
      is_csquare_rel(M,K,cs) \<longleftrightarrow> cs = csquare_rel(K)"
   using csquare_lam_closed[unfolded csquare_lam_eq_lam]
@@ -302,7 +301,6 @@ proof (simp add: def_lepoll_rel, rule rexI)
     by (rule_tac lam_closed) (auto simp add: Inl_def)
 qed
 
-\<comment> \<open>Could probably weaken the premises to \<^term>\<open>well_ord(K,r)\<close> or removing using AC\<close>
 lemma cadd_rel_le_self:
   assumes K: "Card\<^bsup>M\<^esup>(K)" and L: "Ord(L)" and
     types:"M(K)" "M(L)"
@@ -351,8 +349,6 @@ lemma sum_succ_eqpoll_rel: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> succ(A
   apply(rule_tac lam_closed, auto dest:transM intro:if_then_range_replacement2)
   done
 
-\<comment> \<open>Pulling the  succ(...)  outside the |...| requires $m, n \in nat$.\<close>
-\<comment> \<open>Unconditional version requires AC\<close>
 lemma cadd_succ_lemma:
   assumes "Ord(m)" "Ord(n)" and
     types: "M(m)" "M(n)"
@@ -490,7 +486,6 @@ lemma prod_square_lepoll_rel: "M(A) \<Longrightarrow> A \<lesssim>\<^bsup>M\<^es
   apply(rule_tac lam_closed, auto intro:id_replacement dest:transM)
   done
 
-\<comment> \<open>Could probably weaken the premises to \<^term>\<open>well_ord(K,r)\<close> or removing using AC\<close>
 lemma cmult_rel_square_le: "Card\<^bsup>M\<^esup>(K) \<Longrightarrow> M(K) \<Longrightarrow> K \<le> K \<otimes>\<^bsup>M\<^esup> K"
   apply (unfold cmult_rel_def)
   apply (rule le_trans)
@@ -509,7 +504,6 @@ lemma prod_lepoll_rel_self: "b \<in> B \<Longrightarrow> M(b) \<Longrightarrow> 
   apply(rule_tac lam_closed, auto intro:pospend_replacement dest:transM)
   done
 
-\<comment> \<open>Could probably weaken the premises to \<^term>\<open>well_ord(K,r)\<close> or removing using AC\<close>
 lemma cmult_rel_le_self:
   "[| Card\<^bsup>M\<^esup>(K);  Ord(L);  0<L; M(K);M(L) |] ==> K \<le> (K \<otimes>\<^bsup>M\<^esup> L)"
   apply (unfold cmult_rel_def)
@@ -553,7 +547,6 @@ lemma prod_succ_eqpoll_rel: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> succ(
   apply(rule_tac lam_closed, auto intro:Inl_replacement2 dest:transM)
   done
 
-\<comment> \<open>Unconditional version requires AC\<close>
 lemma cmult_rel_succ_lemma:
   "[| Ord(m);  Ord(n) ; M(m); M(n) |] ==> succ(m) \<otimes>\<^bsup>M\<^esup> n = n \<oplus>\<^bsup>M\<^esup> (m \<otimes>\<^bsup>M\<^esup> n)"
   apply (simp add: cmult_rel_def cadd_rel_def)
@@ -591,12 +584,6 @@ lemma lepoll_imp_sum_lepoll_prod: "[| A \<lesssim>\<^bsup>M\<^esup> B; 2 \<lesss
 end \<comment> \<open>\<^locale>\<open>M_cardinals\<close>\<close>
 
 subsection\<open>Infinite Cardinals are Limit Ordinals\<close>
-
-text\<open>This proof is modelled upon one assuming \<^term>\<open>nat\<le>A\<close>, with injection
-  \<^term>\<open>\<lambda>z\<in>cons(u,A). if z=u then 0 else if z \<in> nat then succ(z) else z\<close>
-  and inverse \<^term>\<open>\<lambda>y. if y \<in> nat then nat_case(u, \<lambda>z. z, y) else y\<close>.
-  If \<^term>\<open>f \<in> inj(nat,A)\<close> then \<^term>\<open>range(f)\<close> behaves like the natural numbers.
-\<close>
 
 context M_pre_cardinal_arith
 begin
@@ -667,8 +654,6 @@ lemma InfCard_rel_is_Limit: "InfCard\<^bsup>M\<^esup>(K) ==> M(K) \<Longrightarr
   done
 
 end \<comment> \<open>\<^locale>\<open>M_pre_cardinal_arith\<close>\<close>
-
-\<comment> \<open>An infinite cardinal equals its square (Kunen, Thm 10.12, page 29)\<close>
 
 lemma (in M_ordertype) ordertype_abs[absolut]:
   assumes "wellordered(M,A,r)" "M(A)" "M(r)" "M(i)"

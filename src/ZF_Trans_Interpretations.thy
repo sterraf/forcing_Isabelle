@@ -51,18 +51,8 @@ lemmas (in M_ZF2_trans) separation_instances =
   separation_PiP_rel separation_surjP_rel
   separation_radd_body separation_rmult_body
 
-arity_theorem for "is_transitive_fm"
-arity_theorem for "is_linear_fm"
-arity_theorem for "is_wellfounded_on_fm"
-arity_theorem for "is_well_ord_fm"
-
-arity_theorem for "pred_set_fm"
-arity_theorem for "image_fm"
 definition omap_wfrec_body where
-  "omap_wfrec_body(A,r) \<equiv> (\<cdot>\<exists>\<cdot>image_fm(2, 0, 1) \<and>
-               pred_set_fm
-                (succ(succ(succ(succ(succ(succ(succ(succ(succ(A))))))))), 3,
-                 succ(succ(succ(succ(succ(succ(succ(succ(succ(r))))))))), 0) \<cdot>\<cdot>)"
+  "omap_wfrec_body(A,r) \<equiv> (\<cdot>\<exists>\<cdot>image_fm(2, 0, 1) \<and> pred_set_fm(A #+ 9, 3, r #+ 9, 0) \<cdot>\<cdot>)"
 
 lemma type_omap_wfrec_body_fm :"A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow> omap_wfrec_body(A,r)\<in>formula"
   unfolding omap_wfrec_body_def by simp
@@ -307,7 +297,8 @@ definition instances4_fms where "instances4_fms \<equiv>
 
 text\<open>This set has $14$ internalized formulas, corresponding to the total
 count of previous replacement instances (apart from those $5$ in
-\<^term>\<open>instances_ground_notCH_fms\<close>, and \<^term>\<open>replacement_dcwit_repl_body_fm\<close>).\<close>
+\<^term>\<open>instances_ground_fms\<close> and \<^term>\<open>instances_ground_notCH_fms\<close>,
+and \<^term>\<open>replacement_dcwit_repl_body_fm\<close>).\<close>
 
 definition overhead where
   "overhead \<equiv> instances1_fms \<union> instances2_fms \<union> instances_ground_fms"
