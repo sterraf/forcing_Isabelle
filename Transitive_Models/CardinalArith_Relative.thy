@@ -15,7 +15,7 @@ definition
 
 \<comment> \<open>Can't do the next thing because split is a missing HOC\<close>
 (* relativize functional "csquare_lam" "csquare_lam_rel" *)
-relativize_tm "<fst(x) \<union> snd(x), fst(x), snd(x)>" "is_csquare_lam_body"
+relativize_tm "\<langle>fst(x) \<union> snd(x), fst(x), snd(x)\<rangle>" "is_csquare_lam_body"
 
 definition
   is_csquare_lam :: "[i\<Rightarrow>o,i,i]\<Rightarrow>o" where
@@ -730,11 +730,6 @@ qed
 lemma (in M_ordertype) ordertype_closed[intro,simp]: "\<lbrakk> wellordered(M,A,r);M(A);M(r)\<rbrakk> \<Longrightarrow> M(ordertype(A,r))"
   using ordertype_exists ordertypes_are_absolute by blast
 
-lemma (in M_ordertype) ordertype_closed'[intro,simp]: "\<lbrakk> well_ord(A,r);M(A);M(r)\<rbrakk> \<Longrightarrow> M(ordertype(A,r))"
-  using ordertype_closed well_ord_abs
-  by auto
-
-
 \<comment> \<open>This apparent duplication of definitions is needed because in \<^session>\<open>ZF-Constructible\<close>
 pairs are in their absolute version and this breaks the synthesis of formulas.\<close>
 
@@ -889,18 +884,18 @@ proof -
     unfolding wf_on_def
     using trans_on_iff_trans relation_def by auto
   with \<open>M(A)\<close> \<open>M(r)\<close>
-  have 1:"\<And> x z . M(x) \<Longrightarrow> M(z) \<Longrightarrow>
+  have 1:"
     (\<exists>y[M]. pair(M, x, y, z) \<and> is_wfrec(M, \<lambda>x f z. z = f `` Order.pred(A, x, r), r, x, y))
       \<longleftrightarrow>
-    z = <x,wfrec(r,x,\<lambda>x f. f `` Order.pred(A, x, r))>"
-    using trans_wfrec_abs[of r,where
+    z = \<langle>x,wfrec(r,x,\<lambda>x f. f `` Order.pred(A, x, r))\<rangle>" if "M(x)" "M(z)" for x z
+    using that trans_wfrec_abs[of r,where
         H="\<lambda>x f. f `` Order.pred(A, x, r)" and
         MH="\<lambda>x f z . z= f `` Order.pred(A, x, r)",simplified]
       wfrec_pred_replacement
     unfolding relation2_def
     by auto
   with \<open>M(A)\<close> \<open>M(r)\<close>
-  have "strong_replacement(M,\<lambda>x z. z = <x,wfrec(r,x,\<lambda>x f. f `` Order.pred(A, x, r))>)"
+  have "strong_replacement(M,\<lambda>x z. z = \<langle>x,wfrec(r,x,\<lambda>x f. f `` Order.pred(A, x, r))\<rangle>)"
     using strong_replacement_cong[of M,OF 1,THEN iffD1,OF _ _
         wfrec_pred_replacement[unfolded wfrec_replacement_def]]
     by simp
@@ -917,16 +912,16 @@ lemma is_ordermap_iff:
   shows "is_ordermap(M, A, r, res) \<longleftrightarrow> res = ordermap_rel(M, A, r)"
 proof -
   from \<open>r \<in> _\<close> \<open>M(A)\<close>
-  have "r \<inter> A\<times>A = r" "M(r)" "r \<in> Pow(A\<times>A)" "\<And> x y . <x,y>\<in>r \<Longrightarrow> x\<in>A"
+  have "r \<inter> A\<times>A = r" "M(r)" "r \<in> Pow(A\<times>A)" "\<And> x y . \<langle>x,y\<rangle>\<in>r \<Longrightarrow> x\<in>A"
     using Pow_rel_char
     by auto
   with assms
-  have 1:"wf(r)" "trans(r)" "relation(r)"
+  have "wf(r)" "trans(r)" "relation(r)"
     unfolding wf_on_def
     using trans_on_iff_trans relation_def by auto
   with \<open>r\<in>Pow(A\<times>A)\<close>
   show ?thesis
-    using ordermap_rel_closed[of r A] assms wfrec_on_pred_closed wfrec_pred_replacement 1
+    using ordermap_rel_closed[of r A] assms wfrec_on_pred_closed wfrec_pred_replacement
     unfolding is_ordermap_def ordermap_rel_def
     apply (rule_tac lambda_abs2,simp_all add:Relation1_def,clarify)
      apply (rule trans_wfrec_on_abs)
@@ -941,24 +936,19 @@ relativize functional "ordertype" "ordertype_rel" external
 relationalize "ordertype_rel" "is_ordertype"
 
 definition is_order_body
-  where "is_order_body(M,X,r,z) \<equiv> \<exists>A[M].  cartprod(M,X,X,A) \<and> subset(M,r,A) \<and> M(z) \<and> M(r) \<and>
-           wellordered(M,X,r) \<and> is_ordertype(M,X,r,z)"
+  where "is_order_body(M,p,z) \<equiv> \<exists>X[M].\<exists>r[M].\<exists>A[M]. is_fst(M,p,X) \<and> is_snd(M,p,r) \<and>
+      cartprod(M,X,X,A) \<and> subset(M,r,A) \<and> M(z) \<and> M(r) \<and> is_well_ord(M,X,r) \<and> is_ordertype(M,X,r,z)"
 
 context M_pre_cardinal_arith
 begin
 
 lemma is_ordertype_iff:
-  assumes "r \<in> Pow\<^bsup>M\<^esup>(A\<times>A)" "wf[A](r)" "trans[A](r)"
+  assumes "r \<in> Pow\<^bsup>M\<^esup>(A\<times>A)" "well_ord(A,r)"
   shows "M(A) \<Longrightarrow> M(res) \<Longrightarrow> is_ordertype(M, A, r, res) \<longleftrightarrow> res = ordertype_rel(M, A, r)"
   using assms is_ordermap_iff[of r A] trans_on_iff_trans
     ordermap_rel_closed[of A r]
-  unfolding is_ordertype_def ordertype_rel_def wf_on_def by simp
-
-lemma is_ordertype_iff':
-  assumes "r \<in> Pow\<^bsup>M\<^esup>(A\<times>A)" "well_ord(A,r)"
-  shows "M(A) \<Longrightarrow> M(res) \<Longrightarrow> is_ordertype(M, A, r, res) \<longleftrightarrow> res = ordertype_rel(M, A, r)"
-  using assms is_ordertype_iff Pow_rel_char
-  unfolding well_ord_def part_ord_def tot_ord_def by simp
+  unfolding is_ordertype_def ordertype_rel_def wf_on_def well_ord_def part_ord_def tot_ord_def
+  by simp
 
 lemma ordertype_rel_abs:
   assumes "wellordered(M,X,r)" "M(X)" "M(r)"
@@ -968,9 +958,10 @@ lemma ordertype_rel_abs:
   by simp
 
 lemma (in M_pre_cardinal_arith) is_order_body_abs :
-  "M(X) \<Longrightarrow> M(x) \<Longrightarrow> M(z) \<Longrightarrow> M(z) \<Longrightarrow> is_order_body(M, X, x, z) \<longleftrightarrow>
-    x\<in>Pow\<^bsup>M\<^esup>(X\<times>X) \<and> well_ord(X, x) \<and> z = ordertype(X, x)"
-  using is_ordertype_iff' ordertype_rel_abs well_ord_is_linear Pow_rel_char
+  "M(Xr) \<Longrightarrow> M(z) \<Longrightarrow> is_order_body(M, Xr, z) \<longleftrightarrow>
+    snd(Xr)\<in>Pow\<^bsup>M\<^esup>(fst(Xr)\<times>fst(Xr)) \<and> well_ord(fst(Xr), snd(Xr)) \<and> z = ordertype(fst(Xr), snd(Xr))"
+  using is_ordertype_iff ordertype_rel_abs well_ord_is_linear Pow_rel_char
+    is_well_ord_iff_wellordered snd_abs fst_abs
   unfolding is_order_body_def
   by simp
 
@@ -1058,7 +1049,7 @@ end \<comment> \<open>\<^locale>\<open>M_pre_cardinal_arith\<close>\<close>
 locale M_cardinal_arith = M_pre_cardinal_arith +
   assumes
     is_ordertype_replacement :
-    "strong_replacement(M,\<lambda> x z . \<exists>y[M]. is_order_body(M,fst(x),snd(x),y) \<and> z=\<langle>x,y\<rangle>)"
+    "strong_replacement(M,\<lambda> x z . \<exists>y[M]. is_order_body(M,x,y) \<and> z=\<langle>x,y\<rangle>)"
     and
     pow_rel_separation : "\<forall>A[M]. separation(M, \<lambda>y. \<exists>x[M]. x \<in> A \<and> y = \<langle>x, Pow\<^bsup>M\<^esup>(x)\<rangle>)"
     and
@@ -1071,93 +1062,11 @@ lemma ordtype_replacement :
   "strong_replacement(M , \<lambda>x z . (snd(x) \<in> Pow\<^bsup>M\<^esup>(fst(x)\<times>fst(x)) \<and> well_ord(fst(x),snd(x))) \<and>
       z =\<langle>x, ordertype(fst(x),snd(x))\<rangle>)"
   using strong_replacement_cong[THEN iffD1,OF _ is_ordertype_replacement] is_order_body_abs
-  by auto
+  by simp
 
 lemma separation_well_ord : "separation(M, \<lambda>x . well_ord(fst(x),snd(x)))"
   using separation_cong[THEN iffD1] separation_is_well_ord is_well_ord_iff_wellordered well_ord_abs
-  by auto
-
-lemma tag_lam_replacement : "M(X) \<Longrightarrow> lam_replacement(M,\<lambda>x. <X,x>)"
-  using lam_replacement_product[OF lam_replacement_constant lam_replacement_identity]
   by simp
-
-lemma strong_lam_replacement_imp_lam_replacement_RepFun :
-  assumes  "strong_replacement(M,\<lambda> x z . P(fst(x),snd(x)) \<and> z=\<langle>x,f(fst(x),snd(x))\<rangle>)"
-  "lam_replacement(M,g)"
-  "\<And>A y . M(y) \<Longrightarrow> M(A) \<Longrightarrow> \<forall>x\<in>A. P(y,x) \<longrightarrow> M(f(y,x))"
-  "\<forall>x[M]. M(g(x))"
-  "separation(M, \<lambda>x. P(fst(x),snd(x)))"
-  shows "lam_replacement(M, \<lambda>x. {y . r\<in> g(x) , P(x,r) \<and> y=f(x,r)}) "
-proof -
-  note rep_closed = lam_replacement_imp_strong_replacement[THEN RepFun_closed]
-  moreover
-  have "{f(x, xa) . xa \<in> {xa \<in> g(x) . P(x, xa)}} = {y . z \<in> g(x), P(x, z) \<and> y = f(x, z)}" for x
-    by(intro equalityI subsetI,auto)
-  moreover from assms
-  have 0:"M({xa \<in> g(x) . P(x, xa)})" if "M(x)" for x
-    using that separation_closed assms(5)[THEN separation_comp,OF tag_lam_replacement]
-    by simp
-  moreover from assms
-  have 1:"lam_replacement(M,\<lambda>x.{x}\<times>{u\<in>g(x) . P(x,u)})" (is "lam_replacement(M,\<lambda>x.?R(x))")
-    using separation_closed assms(5)[THEN separation_comp,OF tag_lam_replacement]
-    by(rule_tac lam_replacement_CartProd[OF lam_replacement_sing lam_replacement_Collect],simp_all)
-  moreover from assms
-  have "M({y . z\<in>g(x) , P(x,z) \<and> y=f(x,z)})" (is "M(?Q(x))") if "M(x)" for x
-    using that transM[of _ "g(_)"]
-      separation_closed assms(5)[THEN separation_comp,OF tag_lam_replacement]
-      assms(3)[of "x" "g(x)"] strong_lam_replacement_imp_strong_replacement
-    by simp
-  moreover
-  have "M(\<lambda>z\<in>A.{f(z,r) . r \<in> {u\<in> g(z) . P(z,u)}})" if "M(A)" for A
-  proof -
-    from that assms calculation
-    have "M(\<Union>{?R(x) . x\<in>A})" (is "M(?C)")
-      using transM[of _ A] rep_closed
-      by simp
-    moreover from assms \<open>M(A)\<close>
-    have "x \<in> {y} \<times> {x \<in> g(y) . P(y, x)} \<Longrightarrow> M(x) \<and> M(f(fst(x),snd(x)))" if "y\<in>A" for y x
-      using assms(3)[of "y" "g(y)"] transM[of _ A] transM[of _ "g(y)"] that
-      by force
-    moreover from this
-    have "\<exists>y\<in>A . x \<in> {y} \<times> {x \<in> g(y) . P(y, x)} \<Longrightarrow> M(x) \<and> M(f(fst(x),snd(x)))" for x
-      by auto
-    moreover note assms \<open>M(A)\<close>
-    ultimately
-    have "M({z . x\<in>?C , P(fst(x),snd(x)) \<and> z = \<langle>x,f(fst(x),snd(x))\<rangle>})" (is "M(?B)")
-      using singleton_closed transM[of _ A] transM[of _ "g(_)"] rep_closed
-        lam_replacement_product[OF lam_replacement_fst]
-        lam_replacement_hcomp[OF lam_replacement_snd] transM[OF _ 0]
-      by(rule_tac strong_replacement_closed,simp_all)
-    then
-    have "M({\<langle>fst(fst(x)),snd(x)\<rangle> . x\<in>?B})" (is "M(?D)")
-      using rep_closed transM[of _ ?B]
-        lam_replacement_product[OF
-          lam_replacement_hcomp[OF lam_replacement_fst lam_replacement_fst]
-          lam_replacement_snd]
-      by simp
-    with \<open>M(A)\<close>
-    have "M({\<langle>x,?D``{x}\<rangle> . x\<in>A})"
-      using transM[of _ A] rep_closed
-        lam_replacement_product[OF lam_replacement_identity]
-        lam_replacement_Image[THEN [5] lam_replacement_hcomp2]
-        lam_replacement_constant lam_replacement_sing
-      by simp
-    moreover from calculation
-    have "?D``{z} = {f(z,r) . r \<in> {u\<in> g(z) . P(z,u)}}" if "z\<in>A" for z
-      using that
-      by (intro equalityI subsetI,auto,intro imageI,force,auto)
-    moreover from this
-    have "{\<langle>x,?D``{x}\<rangle> . x\<in>A} = {\<langle>z,{f(z,r) . r \<in> {u\<in> g(z) . P(z,u)}}\<rangle> . z\<in>A}"
-      by auto
-    ultimately
-    show ?thesis
-      unfolding lam_def by auto
-  qed
-  ultimately
-  show ?thesis
-    using lam_replacement_iff_lam_closed[THEN iffD2]
-    by simp
-qed
 
 lemma jump_cardinal_body_lam_replacement :
   shows "lam_replacement(M, \<lambda>X .jump_cardinal_body(Pow\<^bsup>M\<^esup>(X \<times> X),X))" and
@@ -1181,21 +1090,20 @@ proof -
       fst_closed[OF transM] snd_closed[OF transM]
       separation_well_ord separation_in separation_conj transM[of _ "Pow\<^bsup>M\<^esup>(_\<times>_)"]
       strong_lam_replacement_imp_lam_replacement_RepFun[OF ordtype_replacement, where g="\<lambda>X. Pow\<^bsup>M\<^esup>(X \<times> X)"]
-  by(rule_tac strong_lam_replacement_imp_lam_replacement_RepFun[OF ordtype_replacement, where g="\<lambda>X. Pow\<^bsup>M\<^esup>(X \<times> X)"],simp,clarsimp,auto)
+  by force
   moreover
   have "M(?q(x))" if "M(x)" for x
     using that Pow_rel_replacement[THEN [2] lam_replacement_hcomp]
       lam_replacement_CartProd lam_replacement_identity
       ordertype_closed transM[of _ "Pow\<^bsup>M\<^esup>(_\<times>_)"]
-      strong_lam_replacement_imp_strong_replacement[OF ordtype_replacement,THEN strong_replacement_closed]
       fst_closed[OF transM] snd_closed[OF transM]
-    by(rule_tac strong_lam_replacement_imp_strong_replacement[OF ordtype_replacement,THEN strong_replacement_closed],simp_all,force)
-      (rule_tac ordertype_closed,auto)
+    by(rule_tac strong_lam_replacement_imp_strong_replacement[OF ordtype_replacement,THEN strong_replacement_closed],
+        auto)
   moreover
   have "?q(x)={snd(p) . p \<in> (\<lambda>r\<in>WO(x). ordertype(x, r))}" if "M(x)" for x
     using that
     unfolding lam_def WO_def
-    by(intro equalityI subsetI, auto)
+    by force
   moreover from calculation
   have "?q(X) = jump_cardinal_body(Pow\<^bsup>M\<^esup>(X \<times> X), X)" if "M(X)" for X
     using that
@@ -1222,8 +1130,8 @@ lemma jump_cardinal_closed:
   assumes "M(K)"
   shows "M({jump_cardinal_body(Pow\<^bsup>M\<^esup>(X \<times> X),X) . X \<in> Pow\<^bsup>M\<^esup>(K)})"
   using assms jump_cardinal_body_lam_replacement lam_replacement_imp_strong_replacement
-    transM[of _ "Pow\<^bsup>M\<^esup>(K)"]
-  by(rule_tac RepFun_closed,auto)
+    transM[of _ "Pow\<^bsup>M\<^esup>(K)"] RepFun_closed
+  by auto
 
 end \<comment> \<open>\<^locale>\<open>M_cardinal_arith\<close>\<close>
 

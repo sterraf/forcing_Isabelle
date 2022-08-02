@@ -158,14 +158,10 @@ lemma (in M_ZF3_trans) separation_well_ord: "separation(##M, \<lambda>x. is_well
 
 
 sublocale M_ZF3_trans \<subseteq> M_pre_aleph "##M"
-  using
-    HAleph_wfrec_repl replacement_is_order_body[unfolded is_order_body_def]
-    separation_well_ord separation_Pow_rel well_ord_abs is_well_ord_iff_wellordered
-    fst_abs snd_abs
-  apply unfold_locales
-     apply(simp_all add: transrec_replacement_def CardinalArith_Relative.is_order_body_def
+  using HAleph_wfrec_repl replacement_is_order_body
+    separation_well_ord separation_Pow_rel
+  by unfold_locales (simp_all add: transrec_replacement_def
       wfrec_replacement_def is_wfrec_def M_is_recfun_def flip:setclass_iff)
-  done
 
 arity_theorem intermediate for "is_HAleph_fm"
 lemma arity_is_HAleph_fm: "arity(is_HAleph_fm(2, 1, 0)) = 3"

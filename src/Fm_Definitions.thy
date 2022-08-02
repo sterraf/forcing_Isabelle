@@ -900,11 +900,6 @@ synthesize "is_ordermap" from_definition assuming "nonempty"
 
 synthesize "is_ordertype" from_definition assuming "nonempty"
 
-
-definition is_order_body
-  where "is_order_body(M,p,z) \<equiv> \<exists>X[M].\<exists>r[M].\<exists>A[M]. is_fst(M,p,X) \<and> is_snd(M,p,r) \<and> cartprod(M,X,X,A) \<and> subset(M,r,A) \<and> M(z) \<and> M(r) \<and>
-           is_well_ord(M,X,r) \<and> is_ordertype(M,X,r,z)"
-
 synthesize "is_order_body" from_definition assuming "nonempty"
 arity_theorem for "is_order_body_fm"
 
