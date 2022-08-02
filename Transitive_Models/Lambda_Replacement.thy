@@ -533,20 +533,6 @@ lemma lam_replacement_Upair':
   using assms Upair_in_Pow_rel
   by (rule_tac bounded_lam_replacement_binary[of _ "\<lambda>X. Pow\<^bsup>M\<^esup>(X)"]) auto
 
-lemma Diff_in_Pow_rel_Union:
-  assumes "x\<in>X" "y\<in>X" "M(X)"
-  shows "Diff(x,y) \<in> Pow\<^bsup>M\<^esup>(\<Union>X)"
-  using assms transM[of _  X] mem_Pow_rel_abs
-  by auto
-
-lemma lam_replacement_Diff'':
-  assumes
-    "\<forall>A[M]. separation(M,\<lambda>y. \<exists>x[M]. x\<in>A \<and> y = \<langle>x, Diff(fst(x),snd(x))\<rangle>)"
-  shows
-    "lam_replacement(M, \<lambda>r . Diff(fst(r),snd(r)))"
-  using assms Diff_in_Pow_rel_Union
-  by (rule_tac bounded_lam_replacement_binary[of _ "\<lambda>X. Pow\<^bsup>M\<^esup>(\<Union>X)"]) auto
-
 lemma Image_in_Pow_rel_Union3:
   assumes "x\<in>X" "y\<in>X" "M(X)"
   shows "Image(x,y) \<in> Pow\<^bsup>M\<^esup>(\<Union>\<Union>\<Union>X)"
@@ -699,8 +685,6 @@ locale M_replacement = M_basic +
     lam_replacement_prodRepl: "lam_replacement(M, \<lambda>r. prodRepl(fst(r),snd(r)))"
     and
     lam_replacement_Upair:"lam_replacement(M, \<lambda>p. Upair(fst(p),snd(p)))"
-    and
-    lam_replacement_Diff:"lam_replacement(M, \<lambda>p. fst(p) - snd(p))"
     and
     lam_replacement_Image:"lam_replacement(M, \<lambda>p. fst(p) `` snd(p))"
     and
@@ -1467,16 +1451,16 @@ proof-
     by(intro equalityI subsetI,auto,rename_tac a b,rule_tac x="<a,b>" in bexI,simp_all)
      (auto simp : Pair_def)
   have "M(x) \<Longrightarrow> M({z \<in> x. \<exists> u \<in>\<Union>\<Union>x . \<exists>v\<in>\<Union>\<Union>x . z=<u,v>})" for x
-    using lam_replacement_identity lr_Un[OF lr_Un] lr_Un lr_Un[OF lam_replacement_Union] 
-      lam_replacement_snd lr_ff lam_replacement_fst lam_replacement_hcomp lr_fff 
+    using lam_replacement_identity lr_Un[OF lr_Un] lr_Un lr_Un[OF lam_replacement_Union]
+      lam_replacement_snd lr_ff lam_replacement_fst lam_replacement_hcomp lr_fff
       lam_replacement_product[OF lr_sf lam_replacement_snd] lr_f4
       lam_replacement_hcomp[OF lr_f4 lam_replacement_snd] separation_eq
       lam_replacement_constant
     by(rule_tac separation_closed,rule_tac separation_ex,rule_tac separation_ex,simp_all)
   moreover
   have sep:"separation(M, \<lambda>x. \<exists>u\<in>\<Union>\<Union>fst(x). \<exists>v\<in>\<Union>\<Union>fst(x). snd(x) = \<langle>u, v\<rangle>)"
-    using lam_replacement_identity lr_Un[OF lr_Un] lr_Un 
-      lam_replacement_snd lr_ff lam_replacement_fst lam_replacement_hcomp lr_fff 
+    using lam_replacement_identity lr_Un[OF lr_Un] lr_Un
+      lam_replacement_snd lr_ff lam_replacement_fst lam_replacement_hcomp lr_fff
       lam_replacement_product[OF lr_sf lam_replacement_snd]
       lam_replacement_hcomp[OF lr_f4 lam_replacement_snd] separation_eq
     by(rule_tac separation_ex,rule_tac separation_ex,simp_all)
@@ -1493,6 +1477,20 @@ proof-
   with eq[symmetric]
   show ?thesis
     by(rule_tac lam_replacement_cong[OF 1],simp_all)
+qed
+
+lemma lam_replacement_Diff: "lam_replacement(M, \<lambda>x . fst(x) - snd(x))"
+proof -
+  have eq:"X - Y = {x\<in>X . x\<notin>Y}" for X Y
+    by auto
+  moreover
+  have "lam_replacement(M, \<lambda>x . {y \<in> fst(x) . y\<notin>snd(x)})"
+    using  lam_replacement_fst lam_replacement_hcomp
+      lam_replacement_snd lam_replacement_identity separation_in separation_neg
+    by(rule_tac lam_replacement_Collect,simp_all)
+  then
+  show ?thesis
+    by(rule_tac lam_replacement_cong,auto,subst eq[symmetric],simp)
 qed
 
 lemma lam_replacement_range : "lam_replacement(M,range)"
