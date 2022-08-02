@@ -465,7 +465,6 @@ lemmas M_replacement_ZF_instances = lam_replacement_domain
   lam_replacement_Upair lam_replacement_Image
   lam_replacement_Diff lam_replacement_converse
   lam_replacement_middle_del lam_replacement_prodRepl
-  lam_replacement_comp
 
 lemmas M_separation_ZF_instances = separation_fstsnd_in_sndsnd separation_sndfst_eq_fstsnd
 

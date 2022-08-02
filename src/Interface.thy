@@ -1644,16 +1644,6 @@ lemma lam_replacement_Image: "lam_replacement(##M, \<lambda>x . fst(x) `` snd(x)
   using lam_replacement_Image' separation_Image
   by simp
 
-lemma separation_comp: "A\<in>M \<Longrightarrow>
-     separation(##M, \<lambda>y. \<exists>x\<in>M. x \<in> A \<and> y = \<langle>x, comp(fst(x), snd(x))\<rangle>)"
-  using  arity_composition_fm ord_simp_union
-    nonempty comp_closed composition_abs
-  by (rule_tac separation_assm_bin_sats[of "composition_fm(0,1,2)"],auto)
-
-lemma lam_replacement_comp: "lam_replacement(##M, \<lambda>x . comp(fst(x),snd(x)))"
-  using lam_replacement_comp'' separation_comp
-  by simp
-
 lemma separation_middle_del: "A\<in>M \<Longrightarrow>
      separation(##M, \<lambda>y. \<exists>x\<in>M. x \<in> A \<and> y = \<langle>x, middle_del(fst(x), snd(x))\<rangle>)"
  using  arity_is_middle_del_fm ord_simp_union nonempty

@@ -598,34 +598,8 @@ lemma lam_replacement_Image':
   using assms Image_in_Pow_rel_Union3
   by (rule_tac bounded_lam_replacement_binary[of _ "\<lambda>X. Pow\<^bsup>M\<^esup>(\<Union>\<Union>\<Union>X)"]) auto
 
-lemma comp_in_Pow_rel:
-  assumes "x\<in>X" "y\<in>X" "M(X)"
-  shows "comp(x,y) \<in> Pow\<^bsup>M\<^esup>((\<Union>\<Union>\<Union>X \<times> \<Union>\<Union>\<Union>X))"
-proof -
-  have "comp(x,y) \<subseteq> domain(y) \<times> range(x)"
-    using M_comp_iff by auto
-  moreover
-  note assms
-  moreover from this
-  have "comp(x,y) \<in> Pow(\<Union>\<Union>\<Union>X \<times> \<Union>\<Union>\<Union>X)"
-    using domain_sub_Union3 range_sub_Union3
-      subset_trans[OF \<open>comp(_,_)\<subseteq>_\<close>] Sigma_mono
-    by auto
-  ultimately
-  show "comp(x,y) \<in> Pow\<^bsup>M\<^esup>((\<Union>\<Union>\<Union>X \<times> \<Union>\<Union>\<Union>X))"
-    using Pow_rel_char transM[of _ X] by auto
-qed
-
-lemma lam_replacement_comp'':
-  assumes
-    "\<forall>A[M]. separation(M,\<lambda>y. \<exists>x[M]. x\<in>A \<and> y = \<langle>x, comp(fst(x),snd(x))\<rangle>)"
-  shows
-    "lam_replacement(M, \<lambda>r . comp(fst(r),snd(r)))"
-  using assms comp_in_Pow_rel
-  by (rule_tac bounded_lam_replacement_binary[of _ "\<lambda>X. Pow\<^bsup>M\<^esup>((\<Union>\<Union>\<Union>X \<times> \<Union>\<Union>\<Union>X))"]) auto
-
 lemma minimum_in_Union:
-  assumes "x\<in>X" "y\<in>X" "M(X)"
+  assumes "x\<in>X" "y\<in>X"
   shows "minimum(x,y) \<in> {0} \<union> \<Union>X"
   using assms minimum_in'
   by auto
@@ -761,8 +735,6 @@ locale M_replacement = M_basic +
     separation_fst_in_snd: "separation(M, \<lambda>y. fst(snd(y)) \<in> snd(snd(y)))"
     and
     lam_replacement_converse : "lam_replacement(M,converse)"
-    and
-    lam_replacement_comp: "lam_replacement(M, \<lambda>x. fst(x) O snd(x))"
 begin
 
 \<comment> \<open>This lemma is similar to @{thm strong_lam_replacement_imp_strong_replacement}
@@ -2050,6 +2022,41 @@ proof(clarify)
   ultimately
   show " \<exists>y[M]. \<forall>z[M]. z \<in> y \<longleftrightarrow> z \<in> A \<and> (\<exists>x\<in>f(z) . P(g(z),x))"
     by (rule_tac x="?N" in rexI,simp_all)
+qed
+
+\<comment> \<open>We need a tactic to deal with composition of replacements!\<close>
+lemma lam_replacement_comp :
+  "lam_replacement(M, \<lambda>x . fst(x) O snd(x))"
+proof -
+  note lr_fs = lam_replacement_hcomp[OF lam_replacement_fst lam_replacement_snd]
+  note lr_ff = lam_replacement_hcomp[OF lam_replacement_fst lam_replacement_fst]
+  note lr_ss = lam_replacement_hcomp[OF lam_replacement_snd lam_replacement_snd]
+  note lr_sf = lam_replacement_hcomp[OF lam_replacement_snd lam_replacement_fst]
+  note lr_fff = lam_replacement_hcomp[OF lam_replacement_fst lr_ff]
+  have eq:"R O S =
+      {xz \<in> domain(S) \<times> range(R) .
+        \<exists>y\<in>range(S)\<inter>domain(R) . \<langle>fst(xz),y\<rangle>\<in>S \<and> \<langle>y,snd(xz)\<rangle>\<in>R}" for R S
+    unfolding comp_def
+    by(intro equalityI subsetI,auto)
+  moreover
+  have "lam_replacement(M, \<lambda>x . {xz \<in> domain(snd(x)) \<times> range(fst(x)) .
+        \<exists>y\<in>range(snd(x))\<inter>domain(fst(x)) . \<langle>fst(xz),y\<rangle>\<in>snd(x) \<and> \<langle>y,snd(xz)\<rangle>\<in>fst(x)})"
+    using lam_replacement_CartProd lam_replacement_hcomp
+      lam_replacement_range lam_replacement_domain lam_replacement_fst lam_replacement_snd
+      lam_replacement_identity lr_fs lr_ff lr_ss lam_replacement_product
+      lam_replacement_Int[THEN [5] lam_replacement_hcomp2]
+      lam_replacement_hcomp[OF lr_ff lam_replacement_domain]
+      lam_replacement_hcomp[OF lr_fs lam_replacement_range]
+      lam_replacement_hcomp[OF lr_ff lr_ff]
+      lam_replacement_hcomp[OF lr_ff lr_ss]
+      lam_replacement_hcomp[OF lr_ff lr_sf]
+      lr_fff
+      lam_replacement_hcomp[OF lr_fff lam_replacement_snd ]
+      separation_ex separation_conj separation_in
+    by(rule_tac lam_replacement_Collect,simp_all,rule_tac separation_ex,rule_tac separation_conj,auto)
+  ultimately
+  show ?thesis
+    by(rule_tac lam_replacement_cong,auto,subst eq[symmetric],rule_tac comp_closed,auto)
 qed
 
 lemma lam_replacement_comp':
