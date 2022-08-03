@@ -2,7 +2,7 @@
 \section{Set models and forcing}
 \label{sec:forcing}
 
-\subsection{The $\ZFC$ axioms as locales}
+\subsection{The $\ZFC$ axioms as locales}\label{sec:zfc-axioms-as-locales}
 The description of set models of fragments of $\ZFC$ was performed
 using Isabelle contexts (\emph{locales}) that fix a variable $M::\tyi$
 and pack assumptions stating that $\lb M, \in\rb$ satisfy some
@@ -59,17 +59,21 @@ list concatenation):
 %% {\isasymphi}\;{\isasymin}\;formula\ {\isasymlongrightarrow}\ env\;{\isasymin}\;list{\isacharparenleft}{\kern0pt}M{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow} arity{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}\;{\isasymle}\;{\isadigit{2}}\ {\isacharplus}{\kern0pt}\isactrlsub {\isasymomega}\ length{\isacharparenleft}{\kern0pt}env{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\isanewline
 %% \ \ \ \ strong{\isacharunderscore}{\kern0pt}replacement{\isacharparenleft}{\kern0pt}{\isacharhash}{\kern0pt}{\isacharhash}{\kern0pt}M{\isacharcomma}{\kern0pt}{\isasymlambda}x\ y{\isachardot}{\kern0pt}\ {\isacharparenleft}{\kern0pt}M\ {\isacharcomma}{\kern0pt}\ {\isacharbrackleft}{\kern0pt}x{\isacharcomma}{\kern0pt}y{\isacharbrackright}{\kern0pt}{\isacharat}{\kern0pt}env\ {\isasymTurnstile}\ {\isasymphi}{\isacharparenright}{\kern0pt}{\isacharparenright}
 %% \end{isabelle}
-Some of those instances, which we included for simplicity of design,
-are actually “fake” instances in that they can be obtained from
-Powerset, or from other replacement instances already available in the
-respective context. An example of this is the sole instance of the
-\isatt{M{\uscore}basic} locale, originally from
-\session{ZF-Constructible}; we managed to eliminate it but in
-doing so we had to reprove many lemmas from
-that session in the weakened context. Our locales
-\isatt{M{\uscore}ZF1} through \isatt{M{\uscore}ZF4} list a total of 86
-replacement instances, from which there are at least 53 fake ones (see
-Section~\ref{sec:repl-instances}).
+%
+%% Some of those instances, which we included for simplicity of design,
+%% are actually “fake” instances in that they can be obtained from
+%% Powerset, or from other replacement instances already available in the
+%% respective context. An example of this is the sole instance of the
+%% \isatt{M{\uscore}basic} locale, originally from
+%% \session{ZF-Constructible}; we managed to eliminate it but in
+%% doing so we had to reprove many lemmas from
+%% that session in the weakened context. 
+The locales gathering all 32 replacement instances necessary are named
+\isatt{M{\uscore}ZF1} through \isatt{M{\uscore}ZF4},
+\isatt{M{\uscore}ZF{\uscore}ground},
+\isatt{M{\uscore}ZF{\uscore}ground{\uscore}notCH}, and
+\isatt{M{\uscore}ZF{\uscore}ground{\uscore}CH} (see
+Section~\ref{sec:repl-instances} for details).
 
 %% Missing: Locales have to be interpreted (part of "big picture"?)
 

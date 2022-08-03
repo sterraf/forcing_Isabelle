@@ -109,8 +109,6 @@ locale M_cardinals = M_ordertype + M_trancl + M_Perm + M_replacement +
     and
     rmult_separation: "M(b) \<Longrightarrow> M(d) \<Longrightarrow> separation(M,
     \<lambda>z. \<exists>x' y' x y. z = \<langle>\<langle>x', y'\<rangle>, x, y\<rangle> \<and> (\<langle>x', x\<rangle> \<in> b \<or> x' = x \<and> \<langle>y', y\<rangle> \<in> d))"
-    and
-    zermelo_separation: "M(Q) \<Longrightarrow> M(f) \<Longrightarrow> separation(M, \<lambda>X. Q \<union> f `` X \<subseteq> X)"
 
 begin
 

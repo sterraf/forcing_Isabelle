@@ -1,10 +1,10 @@
 \section{Details of the formalization}
 
-\subsection{34 replacement instances to rule them all}
+\subsection{32 replacement instances to rule them all}
 \label{sec:repl-instances}
 
-We isolated 34 instances of Replacement that are sufficient to force
-$\CH$ or $\neg\CH$. The first 14 instances are needed to set up
+We isolated 32 instances of Replacement that are sufficient to force
+$\CH$ or $\neg\CH$. The first 13 instances are needed to set up
 cardinal arithmetic in $M$. Many of these were already present in
 relational form in the \session{ZF-Constructible} library.
 
@@ -26,28 +26,28 @@ relational form in the \session{ZF-Constructible} library.
     \isatt{eclose{\uscore}repl1{\uscore}intf{\uscore}fm},
     \isatt{eclose{\uscore}repl2{\uscore}intf{\uscore}fm}.
   \end{itemize}
-  These instances together with \isatt{tl{\uscore}repl{\uscore}intf{\uscore}fm}
-  are needed to instantiate the locales \isatt{M{\uscore}datatypes} and
-  \isatt{M{\uscore}eclose}. The former is used in the relative definition of
-  \isatt{Vset}.
-\item 2 instances for absoluteness of iterative constructions.
-  \begin{itemize}
-  \item
-    $n$th element of a list (iteration of the tail operation)
-    \isatt{tl{\uscore}repl{\uscore}intf{\uscore}fm}. By transitivity,
-    we do not need an instance for closure.
-  \item Absoluteness of the recursive construction in the proof of the
-    Schröder-Bernstein Theorem \isatt{banach{\uscore}iterates{\uscore}fm}.
-  \end{itemize}
+\item 1 instance for absoluteness of the definition of the
+  $n$th element of a list (iteration of the tail operation)
+  \isatt{tl{\uscore}repl{\uscore}intf{\uscore}fm}. By transitivity,
+  we do not need an instance for closure.
+\end{itemize}
+The instances so far
+are needed to interpret locales \isatt{M{\uscore}datatypes} and
+\isatt{M{\uscore}eclose}. The former is used in the relative definition of
+\isatt{Vset}.
+\begin{itemize}
 \item
   2 instances for ordertypes.
   \begin{itemize}
   \item Auxiliary for the definition of ordertypes
     \isatt{replacement{\uscore}is{\uscore}order{\uscore}eq{\uscore}map{\uscore}fm}.
+    
+    This one is needed for the interpretation of
+    \isatt{M{\uscore}ordertype}.
+    
   \item Replacement through $x\mapsto \otype(x)$, for Hartogs' Theorem
     \isatt{replacement{\uscore}is{\uscore}order{\uscore}body{\uscore}fm}.
   \end{itemize}
-  The first one is needed for the interpretation of \isatt{M{\uscore}ordertype}.
 \item
   4 instances for definitions by well-founded recursion.
   \begin{itemize}
@@ -74,7 +74,7 @@ the \isatt{ground{\uscore}replacement{\uscore}assm(M,\isasymphi)} predicate
 obtained by replacing $\phi$ by
 $\isatt{ground{\uscore}repl{\uscore}fm}(\phi)$ in Eq.~(\ref{eq:replacement_assm_def}).
 
-That makes 28 instances up to now. For the setup of forcing, we
+That makes 26 instances up to now. For the setup of forcing, we
 require the following 5 instances (the last two are needed for the $\Delta$-System Lemma):
 
 \begin{itemize}
@@ -101,11 +101,25 @@ This is enough to force $\neg\CH$. To force $\CH$, one further instance is neede
   Dependent Choices \isatt{replacement{\uscore}dcwit{\uscore}repl{\uscore}body{\uscore}fm}.
 \end{itemize}
 
-The need for some of the instances above arose from the particular
-engineering of the some of the proofs. For instance, the first
-instance required for the definition of relative ordertypes arises
-from Paulson's \session{ZF-Constructible}.
+The particular choice of some of the instances above arose from
+Paulson's architecture on which we based our development.
+This applies every time
+a locale from \session{ZF-Constructible} has to be
+interpreted (namely \isatt{M{\uscore}datatypes}
+\isatt{M{\uscore}eclose}, and \isatt{M{\uscore}ordertype}).
+%% For instance, the first
+%% instance required for the definition of relative ordertypes arises
+%% from Paulson's \session{ZF-Constructible}.
 % https://isabelle.in.tum.de/dist/library/ZF/ZF-Constructible/Rank.html#offset_1123..1139
+
+On the other hand, as explained in
+Section~\ref{sec:zfc-axioms-as-locales}, we managed to eliminate the
+instance arising from the \isatt{M{\uscore}basic} locale. Similarly,
+we replaced the original proof of the Schröder-Bernstein Theorem by
+Zermelo's one \cite[Exr. x4.27]{moschovakis1994notes}, because the
+former required at least one extra instance
+% (\isatt{banach{\uscore}iterates{\uscore}fm})
+arising from an iteration.
 
 It is to be noted that application of the Forcing Theorems do not
 require any extra replacement instances on $M$ (independently of the

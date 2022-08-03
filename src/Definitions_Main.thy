@@ -554,7 +554,8 @@ text\<open>@{thm [display] overhead_def overhead_notCH_def overhead_CH_def}\<clo
     instances3_fms \<union> instances4_fms \<union> instances_ground_notCH_fms
 *)
 
-text\<open>One further instance is needed to force $\CH$:\<close>
+text\<open>One further instance is needed to force $\CH$, with a total count
+of $32$ instances:\<close>
 thm overhead_CH_def
 text\<open>@{thm [display] overhead_CH_def}\<close>
 (*

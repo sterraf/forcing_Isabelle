@@ -309,8 +309,8 @@ definition overhead_CH where
   "overhead_CH \<equiv> overhead_notCH \<union> { replacement_dcwit_repl_body_fm }"
 
 text\<open>Hence, the “overhead” to create a proper extension of a ctm by forcing
-consists of $15$ replacement instances. To force $\neg\CH$,
-33 instances are need, and one further instance is required to
+consists of $16$ replacement instances. To force $\neg\CH$,
+31 instances are need, and one further instance is required to
 force $\CH$.\<close>
 
 lemma instances3_fms_type[TC] : "instances3_fms \<subseteq> formula"
