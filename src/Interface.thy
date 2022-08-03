@@ -1614,16 +1614,6 @@ lemma lam_replacement_Upair: "lam_replacement(##M, \<lambda>x . Upair(fst(x),snd
   using lam_replacement_Upair' separation_Upair 
   by simp
 
-lemma separation_Diff: "A\<in>M \<Longrightarrow>
-     separation(##M, \<lambda>y. \<exists>x\<in>M. x \<in> A \<and> y = \<langle>x, Diff(fst(x), snd(x))\<rangle>)"
-  using  arity_setdiff_fm ord_simp_union
-    nonempty Diff_closed setdiff_abs
-  by (rule_tac separation_assm_bin_sats[of "setdiff_fm(0,1,2)"],auto)
-
-lemma lam_replacement_Diff: "lam_replacement(##M, \<lambda>x . Diff(fst(x),snd(x)))"
-  using lam_replacement_Diff'' separation_Diff
-  by simp
-
 lemma separation_Image: "A\<in>M \<Longrightarrow>
      separation(##M, \<lambda>y. \<exists>x\<in>M. x \<in> A \<and> y = \<langle>x, fst(x) `` snd(x)\<rangle>)"
   using  arity_image_fm ord_simp_union
