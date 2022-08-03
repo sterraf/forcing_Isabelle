@@ -458,9 +458,8 @@ lemma (in M_ZF_ground_CH_trans) dcwit_repl:
                                   mesa, x, y))"
   using replacement_dcwit_repl_body unfolding dcwit_repl_body_def by simp
 
-lemmas M_replacement_ZF_instances = lam_replacement_domain
-  lam_replacement_fst lam_replacement_snd lam_replacement_Union
-  lam_replacement_Upair lam_replacement_Image
+lemmas M_replacement_ZF_instances = lam_replacement_fst lam_replacement_snd
+  lam_replacement_Union lam_replacement_Image
   lam_replacement_middle_del lam_replacement_prodRepl
 
 lemmas M_separation_ZF_instances = separation_fstsnd_in_sndsnd separation_sndfst_eq_fstsnd
@@ -531,7 +530,7 @@ lemma replacement_is_order_eq_map:
     arity_order_eq_map_fm ord_simp_union replacement_ax2(2)
   by simp
 
-(* 
+(*
 
 These lemmas were required for the original proof of Schröder-Bernstein.
 

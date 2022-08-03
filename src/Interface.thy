@@ -1566,15 +1566,6 @@ proof -
     by(rule_tac separation_cong[THEN iffD1],auto)
 qed
 
-lemma separation_domain: "A\<in>M \<Longrightarrow>
-    separation(##M, \<lambda>y. \<exists>x \<in> M . x\<in>A \<and> y = \<langle>x, domain(x)\<rangle>)"
-  using separation_assm_sats[of "domain_fm(0,1)"] arity_domain_fm ord_simp_union
-    domain_closed[simplified]
-  by simp
-
-lemma lam_replacement_domain: "lam_replacement(##M, domain)"
-  using lam_replacement_domain' separation_domain transM by simp
-
 lemma separation_Union: "A\<in>M \<Longrightarrow>
     separation(##M, \<lambda>y. \<exists>x \<in> M . x\<in>A \<and> y = \<langle>x, Union(x)\<rangle>)"
   using separation_assm_sats[of "big_union_fm(0,1)"] arity_big_union_fm ord_simp_union
@@ -1603,16 +1594,6 @@ lemma lam_replacement_snd: "lam_replacement(##M, snd)"
   using lam_replacement_snd' separation_snd transM by simp
 
 text\<open>Binary lambda-replacements\<close>
-
-lemma separation_Upair: "A\<in>M \<Longrightarrow>
-     separation(##M, \<lambda>y. \<exists>x\<in>M. x \<in> A \<and> y = \<langle>x, Upair(fst(x), snd(x))\<rangle>)"
-  using  arity_upair_fm ord_simp_union
-    nonempty Upair_closed upair_abs
-  by(rule_tac separation_assm_bin_sats[of "upair_fm(0,1,2)"],auto)
-
-lemma lam_replacement_Upair: "lam_replacement(##M, \<lambda>x . Upair(fst(x),snd(x)))"
-  using lam_replacement_Upair' separation_Upair 
-  by simp
 
 lemma separation_Image: "A\<in>M \<Longrightarrow>
      separation(##M, \<lambda>y. \<exists>x\<in>M. x \<in> A \<and> y = \<langle>x, fst(x) `` snd(x)\<rangle>)"
