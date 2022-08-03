@@ -297,7 +297,7 @@ definition replacement_is_order_eq_map_fm where "replacement_is_order_eq_map_fm 
 definition replacement_transrec_apply_image_body_fm where "replacement_transrec_apply_image_body_fm \<equiv>  transrec_apply_image_body_fm(3,2,0,1)"
 definition banach_replacement_iterates_fm where "banach_replacement_iterates_fm \<equiv> banach_is_iterates_body_fm(6,5,4,3,2,0,1)"
 definition replacement_is_trans_apply_image_fm where "replacement_is_trans_apply_image_fm \<equiv> is_trans_apply_image_body_fm(3,2,0,1)"
-definition banach_iterates_fm where "banach_iterates_fm \<equiv> banach_body_iterates_fm(7,6,5,4,3,2,0,1)"
+(* definition banach_iterates_fm where "banach_iterates_fm \<equiv> banach_body_iterates_fm(7,6,5,4,3,2,0,1)" *)
 definition replacement_dcwit_repl_body_fm where "replacement_dcwit_repl_body_fm \<equiv> dcwit_repl_body_fm(6,5,4,3,2,0,1)"
 
 locale M_ZF2 = M_ZF1 +
@@ -305,19 +305,17 @@ locale M_ZF2 = M_ZF1 +
     replacement_ax2:
     "replacement_assm(M,env,replacement_HAleph_wfrec_repl_body_fm)"
     "replacement_assm(M,env,replacement_is_order_eq_map_fm)"
-    "replacement_assm(M,env,banach_iterates_fm)"
 
 definition instances2_fms where "instances2_fms \<equiv>
   { replacement_HAleph_wfrec_repl_body_fm,
-    replacement_is_order_eq_map_fm,
-    banach_iterates_fm }"
+    replacement_is_order_eq_map_fm }"
 
 text\<open>This set has 12 internalized formulas.\<close>
 
 lemmas replacement_instances2_defs =
   replacement_HAleph_wfrec_repl_body_fm_def
   replacement_is_order_eq_map_fm_def
-  banach_iterates_fm_def
+  (* banach_iterates_fm_def *)
 
 declare (in M_ZF2) replacement_instances2_defs [simp]
 
@@ -533,6 +531,10 @@ lemma replacement_is_order_eq_map:
     arity_order_eq_map_fm ord_simp_union replacement_ax2(2)
   by simp
 
+(* 
+
+These lemmas were required for the original proof of Schröder-Bernstein.
+
 lemma banach_iterates:
   assumes "X\<in>M" "Y\<in>M" "f\<in>M" "g\<in>M" "W\<in>M"
   shows "iterates_replacement(##M, is_banach_functor(##M,X,Y,f,g), W)"
@@ -588,6 +590,8 @@ lemma banach_replacement:
   shows "strong_replacement(##M, \<lambda>n y. n\<in>nat \<and> y = banach_functor(X, Y, f, g)^n (0))"
   using assms banach_repl_iter' separation_banach_functor_iterates
   by simp
+
+*)
 
 lemma (in M_basic) rel2_trans_apply:
   "M(f) \<Longrightarrow> relation2(M,is_trans_apply_image(M,f),trans_apply_image(f))"

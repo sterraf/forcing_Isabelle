@@ -82,6 +82,23 @@ qed
 
 end \<comment> \<open>\<^locale>\<open>M_trancl\<close>\<close>
 
+context M_Perm
+begin
+
+lemma mem_Pow_rel: "M(r) \<Longrightarrow> a \<in> Pow_rel(M,r) \<Longrightarrow> a \<in> Pow(r) \<and> M(a)"
+  using Pow_rel_char by simp
+
+lemma mem_bij_abs: "\<lbrakk>M(f);M(A);M(B)\<rbrakk> \<Longrightarrow>  f \<in> bij\<^bsup>M\<^esup>(A,B) \<longleftrightarrow> f\<in>bij(A,B)"
+  using bij_rel_char by simp
+
+lemma mem_inj_abs: "\<lbrakk>M(f);M(A);M(B)\<rbrakk> \<Longrightarrow>  f \<in> inj\<^bsup>M\<^esup>(A,B) \<longleftrightarrow> f\<in>inj(A,B)"
+  using inj_rel_char by simp
+
+lemma mem_surj_abs: "\<lbrakk>M(f);M(A);M(B)\<rbrakk> \<Longrightarrow>  f \<in> surj\<^bsup>M\<^esup>(A,B) \<longleftrightarrow> f\<in>surj(A,B)"
+  using surj_rel_char by simp
+
+end \<comment> \<open>\<^locale>\<open>M_Perm\<close>\<close>
+
 locale M_cardinals = M_ordertype + M_trancl + M_Perm + M_replacement +
   assumes
     radd_separation: "M(R) \<Longrightarrow> M(S) \<Longrightarrow>
@@ -93,8 +110,8 @@ locale M_cardinals = M_ordertype + M_trancl + M_Perm + M_replacement +
     rmult_separation: "M(b) \<Longrightarrow> M(d) \<Longrightarrow> separation(M,
     \<lambda>z. \<exists>x' y' x y. z = \<langle>\<langle>x', y'\<rangle>, x, y\<rangle> \<and> (\<langle>x', x\<rangle> \<in> b \<or> x' = x \<and> \<langle>y', y\<rangle> \<in> d))"
     and
-    banach_repl_iter: "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> M(f) \<Longrightarrow> M(g) \<Longrightarrow>
-               strong_replacement(M, \<lambda>x y. x\<in>nat \<and> y = banach_functor(X, Y, f, g)^x (0))"
+    zermelo_separation: "M(Q) \<Longrightarrow> M(f) \<Longrightarrow> separation(M, \<lambda>X. Q \<union> f `` X \<subseteq> X)"
+
 begin
 
 lemma rvimage_separation: "M(f) \<Longrightarrow> M(r) \<Longrightarrow>
@@ -217,6 +234,8 @@ lemma lfp_banach_functor:
 
 lemma lfp_banach_functor_closed:
   assumes "M(g)" "M(X)" "M(Y)" "M(f)" "g\<in>inj(Y,X)"
+    and banach_repl_iter: "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> M(f) \<Longrightarrow> M(g) \<Longrightarrow>
+               strong_replacement(M, \<lambda>x y. x\<in>nat \<and> y = banach_functor(X, Y, f, g)^x (0))"
   shows "M(lfp(X, banach_functor(X,Y,f,g)))"
 proof -
   from assms
@@ -229,7 +248,11 @@ proof -
 qed
 
 lemma banach_decomposition_rel:
-  "[| M(f); M(g); M(X); M(Y); f \<in> X->Y;  g \<in> inj(Y,X) |] ==>
+  assumes
+    banach_repl_iter: "M(f) \<Longrightarrow> M(g) \<Longrightarrow> M(X) \<Longrightarrow> M(Y) \<Longrightarrow>
+               strong_replacement(M, \<lambda>x y. x\<in>nat \<and> y = banach_functor(X, Y, f, g)^x (0))"
+  shows
+    "[| M(f); M(g); M(X); M(Y); f \<in> X->Y;  g \<in> inj(Y,X) |] ==>
       \<exists>XA[M]. \<exists>XB[M]. \<exists>YA[M]. \<exists>YB[M].
          (XA \<inter> XB = 0) & (XA \<union> XB = X) &
          (YA \<inter> YB = 0) & (YA \<union> YB = Y) &
@@ -240,12 +263,162 @@ lemma banach_decomposition_rel:
           apply (assumption |
       rule inj_is_fun Diff_disjoint Diff_partition fun_is_rel
       image_subset lfp_subset)+
-  using lfp_banach_functor_closed[of g X Y f]
+  using lfp_banach_functor_closed[of g X Y f] assms
   unfolding banach_functor_def by simp_all
 
+lemma dedekind_zermelo:
+  assumes
+    "A' \<subseteq> B" "B \<subseteq> A" "A \<approx>\<^bsup>M\<^esup> A'"
+    and types: "M(A')" "M(B)" "M(A)"
+  shows
+    "A \<approx>\<^bsup>M\<^esup> B"
+proof -
+  from \<open>A \<approx>\<^bsup>M\<^esup> A'\<close> and types
+  obtain f where "f \<in> bij\<^bsup>M\<^esup>(A,A')"
+    unfolding eqpoll_rel_def by blast
+  let ?Q="B - f``A"
+  from \<open>f \<in> _\<close> \<open>A' \<subseteq> B\<close> types
+  have "f``X \<subseteq> B" for X
+    using mem_bij_rel[THEN bij_is_fun, THEN Image_sub_codomain, of f A A'] by auto
+  moreover
+  note \<open>B \<subseteq> A\<close>
+  moreover from calculation
+  have "f``X \<subseteq> A" for X by auto
+  moreover
+  define \<T> where "\<T>  \<equiv> { X \<in> Pow\<^bsup>M\<^esup>(A) . ?Q \<union> f `` X \<subseteq> X}"
+  moreover from calculation
+  have "A \<in> \<T>" using def_Pow_rel by (auto simp:types)
+  ultimately
+  have "\<T> \<noteq> 0" unfolding \<T>_def by auto
+  let ?T="\<Inter>\<T>"
+  have "?T \<subseteq> A"
+  proof
+    fix x
+    assume "x \<in> ?T"
+    with \<open>\<T> \<noteq> 0\<close>
+    obtain X where "x \<in> X" "X \<in> \<T>"
+      by blast
+    moreover from this
+    have "X \<in> Pow\<^bsup>M\<^esup>(A)"
+      unfolding \<T>_def by simp
+    moreover from calculation and \<open>M(A)\<close>
+    have "M(x)" using Pow_rel_char by (auto dest:transM)
+    ultimately
+    show "x \<in> A" using Pow_rel_char by (auto simp:types)
+  qed
+  moreover from \<open>\<T> \<noteq> 0\<close>
+  have "?Q \<union> f``?T \<subseteq> ?T"
+    using image_mono unfolding \<T>_def by blast
+  moreover from \<open>f \<in> _\<close>
+  have "M(\<T>)"
+    using zermelo_separation unfolding \<T>_def by (auto simp:types dest:transM)
+  moreover from this
+  have "M(?T)" by simp
+  moreover
+  note \<open>\<T> \<noteq> 0\<close>
+  ultimately
+  have "?T \<in> \<T>"
+    unfolding \<T>_def using def_Pow_rel
+    by (auto simp:types)
+  have "?T \<subseteq> ?Q \<union> f``?T"
+  proof (intro subsetI, rule ccontr)
+    fix x
+    from \<open>_ \<union> f ``?T \<subseteq> ?T\<close>
+    have "f `` (?T - {x}) \<subseteq> ?T" "f `` (?T - {x}) \<subseteq> f`` ?T" by auto
+    assume "x \<in> ?T" "x \<notin> ?Q \<union> f``?T"
+    then
+    have "?T - {x} \<in> \<T>"
+    proof -
+      note \<open>f `` (?T - {x}) \<subseteq> ?T\<close>
+      moreover from this and \<open>x \<notin> _ \<union> f``?T\<close>
+      have "x \<notin> f `` ?T" by simp
+      ultimately
+      have "f `` (?T - {x}) \<subseteq> ?T - {x}" by auto
+      moreover from \<open>x \<notin> ?Q \<union> _\<close> \<open>?Q \<union> _ \<subseteq> ?T\<close>
+      have "?Q \<subseteq> ?T - {x}" by auto
+      moreover
+      note \<open>?T \<in> _\<close> \<open>x \<in> ?T\<close> \<open>M(?T)\<close> \<open>?T \<subseteq> _\<close>
+      ultimately
+      show ?thesis
+        using def_Pow_rel[of "?T - {x}" A] transM[of _ ?T]
+        unfolding \<T>_def
+        by (auto simp:types)
+    qed
+    moreover
+    note \<open>f `` (?T - {x}) \<subseteq> f`` ?T\<close>
+    ultimately
+    have "?T \<subseteq> ?T - {x}" by auto
+    with \<open>x \<in> ?T\<close>
+    show False by auto
+  qed
+  with \<open>?Q \<union> f``?T \<subseteq> ?T\<close>
+  have "?T = ?Q \<union> f``?T" by auto
+  from \<open>\<And>X. f``X \<subseteq> B\<close>
+  have "(?Q \<union> f``?T) \<union> (f``A - f``?T) \<subseteq> B" by auto
+  with \<open>?T = _\<close>
+  have "?T \<union> (f``A - f``?T) \<subseteq> B" by simp
+  with \<open>\<T> \<noteq> 0\<close> \<open>?T = _\<close>
+  have "B = ?T \<union> (f``A - f``?T)"
+  proof (intro equalityI, intro subsetI)
+    fix x
+    assume "x \<in> B"
+    with \<open>\<T> \<noteq> 0\<close> \<open>?T = _\<close>
+    show "x \<in> ?T \<union> (f``A - f``?T)"
+      by (subst \<open>?T = _\<close>, clarify)
+  qed
+  moreover from \<open>?T \<subseteq> A\<close>
+  have "A = ?T \<union> (A - ?T)" by auto
+  moreover from \<open>M(?T)\<close> \<open>f \<in> _\<close>
+  have "M(id(?T) \<union> restrict(f,A-?T))"
+    using bij_rel_closed[THEN [2] transM] id_closed by (auto simp:types)
+  moreover from \<open>?T = _\<close> \<open>f \<in> _\<close>
+  have "f``A - f``?T = f``(A - ?T)"
+    using bij_rel_char bij_is_inj[THEN inj_range_Diff, of f A]
+    by (auto simp:types)
+  from \<open>f \<in> _\<close> types
+  have "id(?T) \<union> restrict(f, A-?T) \<in> bij(?T \<union> (A - ?T),?T \<union> (f``A - f``?T))"
+    using id_bij mem_bij_rel[of _ A A', THEN bij_is_inj]
+    by (rule_tac bij_disjoint_Un; clarsimp)
+      (subst \<open>f``A - f``?T =_ \<close>, auto intro:restrict_bij, subst \<open>?T = _\<close>, auto)
+  moreover
+  note types
+  ultimately
+  show ?thesis
+    using bij_rel_char unfolding eqpoll_rel_def by fastforce
+qed
+
+lemma schroeder_bernstein_closed':
+  assumes "f \<in> inj\<^bsup>M\<^esup>(A,C)" " g \<in> inj\<^bsup>M\<^esup>(C,A)"
+    and types:"M(A)" "M(C)"
+  shows "A \<approx>\<^bsup>M\<^esup> C"
+proof -
+  from assms
+  have "f \<in> inj(A,C)" " g \<in> inj(C,A)" "M(f)" "M(g)"
+    using inj_rel_char by auto
+  moreover from this
+  have "g \<in> bij(C,range(g))" "g O f \<in> bij(A,range(g O f))"
+    using inj_bij_range comp_inj by auto blast
+  moreover from calculation
+  have "range(g O f) \<subseteq> range(g)" "range(g) \<subseteq> A"
+    using inj_is_fun[THEN range_fun_subset_codomain] by auto
+  moreover from calculation
+  obtain h where "h \<in> bij\<^bsup>M\<^esup>(A, range(g))"
+    using dedekind_zermelo[of "range(g O f)" "range(g)" A]
+      bij_rel_char def_eqpoll_rel
+    by (auto simp:types)
+  ultimately
+  show ?thesis
+    using bij_rel_char def_eqpoll_rel comp_bij[of h A "range(g)" "converse(g)" C]
+      bij_converse_bij[of g C "range(g)"] by (auto simp:types)
+qed
+
 lemma schroeder_bernstein_closed:
+  assumes
+    banach_repl_iter: "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> M(f) \<Longrightarrow> M(g) \<Longrightarrow>
+               strong_replacement(M, \<lambda>x y. x\<in>nat \<and> y = banach_functor(X, Y, f, g)^x (0))"
+  shows
   "[| M(f); M(g); M(X); M(Y); f \<in> inj(X,Y);  g \<in> inj(Y,X) |] ==> \<exists>h[M]. h \<in> bij(X,Y)"
-  apply (insert banach_decomposition_rel [of f g X Y])
+  apply (insert banach_decomposition_rel [of f g X Y, OF banach_repl_iter])
   apply (simp add: inj_is_fun)
   apply (auto)
   apply (rule_tac x="restrict(f,XA) \<union> converse(restrict(g,YB))" in rexI)
@@ -254,17 +427,7 @@ lemma schroeder_bernstein_closed:
 
 text\<open>Relative equipollence is an equivalence relation\<close>
 
-lemma mem_Pow_rel: "M(r) \<Longrightarrow> a \<in> Pow_rel(M,r) \<Longrightarrow> a \<in> Pow(r) \<and> M(a)"
-  using Pow_rel_char by simp
-
-lemma mem_bij_abs[simp]: "\<lbrakk>M(f);M(A);M(B)\<rbrakk> \<Longrightarrow>  f \<in> bij\<^bsup>M\<^esup>(A,B) \<longleftrightarrow> f\<in>bij(A,B)"
-  using bij_rel_char by simp
-
-lemma mem_inj_abs[simp]: "\<lbrakk>M(f);M(A);M(B)\<rbrakk> \<Longrightarrow>  f \<in> inj\<^bsup>M\<^esup>(A,B) \<longleftrightarrow> f\<in>inj(A,B)"
-  using inj_rel_char by simp
-
-lemma mem_surj_abs: "\<lbrakk>M(f);M(A);M(B)\<rbrakk> \<Longrightarrow>  f \<in> surj\<^bsup>M\<^esup>(A,B) \<longleftrightarrow> f\<in>surj(A,B)"
-  using surj_rel_char by simp
+declare mem_bij_abs[simp] mem_inj_abs[simp]
 
 lemma bij_imp_eqpoll_rel:
   assumes "f \<in> bij(A,B)" "M(f)" "M(A)" "M(B)"
@@ -320,8 +483,8 @@ lemma lepoll_rel_eq_trans [trans]:
   by simp
 
 lemma eqpoll_relI: "\<lbrakk> X \<lesssim>\<^bsup>M\<^esup> Y; Y \<lesssim>\<^bsup>M\<^esup> X; M(X) ; M(Y) \<rbrakk> \<Longrightarrow> X \<approx>\<^bsup>M\<^esup> Y"
-  unfolding def_lepoll_rel def_eqpoll_rel using schroeder_bernstein_closed
-  by auto
+  unfolding def_lepoll_rel using schroeder_bernstein_closed'
+  by (auto simp del:mem_inj_abs)
 
 lemma eqpoll_relE:
   "[| X \<approx>\<^bsup>M\<^esup> Y; [| X \<lesssim>\<^bsup>M\<^esup> Y; Y \<lesssim>\<^bsup>M\<^esup> X |] ==> P ;  M(X) ; M(Y) |] ==> P"

@@ -130,8 +130,8 @@ lemma (in M_ZF3_trans) wfrec_replacement_order_pred':
 
 sublocale M_ZF3_trans \<subseteq> M_pre_cardinal_arith "##M"
   using separation_instances wfrec_replacement_order_pred'[unfolded H_order_pred_def]
-    replacement_is_order_eq_map[unfolded order_eq_map_def] banach_replacement
-  by unfold_locales simp_all
+    replacement_is_order_eq_map[unfolded order_eq_map_def]
+  apply unfold_locales apply simp_all sorry
 
 
 definition is_well_ord_fst_snd where
@@ -277,7 +277,6 @@ locale M_ZF4 = M_ZF3 +
     "ground_replacement_assm(M,env,eclose_repl1_intf_fm)"
     "ground_replacement_assm(M,env,replacement_HAleph_wfrec_repl_body_fm)"
     "ground_replacement_assm(M,env,replacement_is_order_eq_map_fm)"
-    "ground_replacement_assm(M,env,banach_iterates_fm)"
 
 definition instances4_fms where "instances4_fms \<equiv>
   { ground_repl_fm(replacement_is_order_body_fm),
@@ -292,10 +291,9 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(formula_repl1_intf_fm),
     ground_repl_fm(eclose_repl1_intf_fm),
     ground_repl_fm(replacement_HAleph_wfrec_repl_body_fm),
-    ground_repl_fm(replacement_is_order_eq_map_fm),
-    ground_repl_fm(banach_iterates_fm) }"
+    ground_repl_fm(replacement_is_order_eq_map_fm) }"
 
-text\<open>This set has $14$ internalized formulas, corresponding to the total
+text\<open>This set has $13$ internalized formulas, corresponding to the total
 count of previous replacement instances (apart from those $5$ in
 \<^term>\<open>instances_ground_fms\<close> and \<^term>\<open>instances_ground_notCH_fms\<close>,
 and \<^term>\<open>replacement_dcwit_repl_body_fm\<close>).\<close>
