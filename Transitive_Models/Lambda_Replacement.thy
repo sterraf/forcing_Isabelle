@@ -1279,7 +1279,6 @@ proof -
     by simp
 qed
 
-
 lemma separation_eq:
   assumes "\<forall>x[M]. M(f(x))" "lam_replacement(M,f)"
     "\<forall>x[M]. M(g(x))" "lam_replacement(M,g)"
@@ -2460,6 +2459,12 @@ lemmas replacements = Pair_diff_replacement id_replacement tag_replacement
   ifx_replacement if_then_range_replacement2 if_then_range_replacement
   Inl_replacement2
   case_replacement1 case_replacement2 case_replacement4 case_replacement5
+
+lemma zermelo_separation: "M(Q) \<Longrightarrow> M(f) \<Longrightarrow> separation(M, \<lambda>X. Q \<union> f `` X \<subseteq> X)"
+  using lam_replacement_identity lam_replacement_Un[THEN [5] lam_replacement_hcomp2]
+    lam_replacement_constant lam_replacement_Image[THEN [5] lam_replacement_hcomp2]
+    separation_subset
+  by simp
 
 end \<comment> \<open>\<^locale>\<open>M_replacement\<close>\<close>
 
