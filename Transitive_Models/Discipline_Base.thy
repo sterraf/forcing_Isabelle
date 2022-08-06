@@ -23,10 +23,7 @@ lemma (in M_trivial) singleton_abs[simp] :
 synthesize "singleton" from_definition "is_singleton"
 notation singleton_fm (\<open>\<cdot>{_} is _\<cdot>\<close>)
 
-(* TODO: check if the following lemmas should be here or not? *)
-lemma (in M_trivial) singleton_closed [simp]:
-  "M(x) \<Longrightarrow> M({x})"
-  by simp
+lemmas (in M_trivial) singleton_closed = singleton_in_MI
 
 lemma (in M_trivial) Upair_closed[simp]: "M(a) \<Longrightarrow> M(b) \<Longrightarrow> M(Upair(a,b))"
   using Upair_eq_cons by simp
