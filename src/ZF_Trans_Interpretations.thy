@@ -131,7 +131,7 @@ lemma (in M_ZF3_trans) wfrec_replacement_order_pred':
 sublocale M_ZF3_trans \<subseteq> M_pre_cardinal_arith "##M"
   using separation_instances wfrec_replacement_order_pred'[unfolded H_order_pred_def]
     replacement_is_order_eq_map[unfolded order_eq_map_def]
-  apply unfold_locales apply simp_all sorry
+  by unfold_locales simp_all
 
 
 definition is_well_ord_fst_snd where
