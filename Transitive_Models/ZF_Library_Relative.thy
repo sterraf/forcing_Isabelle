@@ -306,7 +306,7 @@ lemma fg_imp_bijective_rel:
 
 end \<comment> \<open>\<^locale>\<open>M_ZF_library\<close>\<close>
 
-paragraph\<open>Discipline for \<^term>\<open>cexp\<close>\<close>
+subsection\<open>Discipline for \<^term>\<open>cexp\<close>\<close>
 
 relativize functional "cexp" "cexp_rel" external
 relationalize "cexp_rel" "is_cexp"

@@ -1,3 +1,5 @@
+section\<open>Basic relativization of cardinality\<close>
+
 theory Discipline_Cardinal
   imports
     Discipline_Function
@@ -109,7 +111,7 @@ abbreviation
   InfCard_r_set  :: "[i,i]\<Rightarrow>o"  (\<open>InfCard\<^bsup>_\<^esup>'(_')\<close>) where
   "InfCard\<^bsup>M\<^esup>(i) \<equiv> InfCard_rel(##M,i)"
 
-paragraph\<open>Disicpline for \<^term>\<open>cadd\<close>\<close>
+subsection\<open>Disicpline for \<^term>\<open>cadd\<close>\<close>
 relativize functional "cadd" "cadd_rel" external
 
 abbreviation
@@ -144,7 +146,7 @@ is_iff_rel for "cadd"
 
 end  \<comment> \<open>\<^locale>\<open>M_Perm\<close>\<close>
 
-paragraph\<open>Disicpline for \<^term>\<open>cmult\<close>\<close>
+subsection\<open>Disicpline for \<^term>\<open>cmult\<close>\<close>
 
 relativize functional "cmult" "cmult_rel" external
 

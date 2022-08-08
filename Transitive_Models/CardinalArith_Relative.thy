@@ -117,7 +117,7 @@ lemma csquare_rel_abs[absolut]: "\<lbrakk> M(K); M(cs)\<rbrakk> \<Longrightarrow
 
 end \<comment> \<open>\<^locale>\<open>M_pre_cardinal_arith\<close>\<close>
 
-paragraph\<open>Discipline for \<^term>\<open>csucc\<close>\<close>
+subsection\<open>Discipline for \<^term>\<open>csucc\<close>\<close>
 
 relativize functional "csucc" "csucc_rel" external
 relationalize "csucc_rel" "is_csucc"
@@ -189,15 +189,9 @@ next
   } thus "\<not> j \<approx>\<^bsup>M\<^esup> \<Union>A" by blast
 qed (simp_all add:types)
 
-(*
-lemma Card_UN: "(!!x. x \<in> A ==> Card(K(x))) ==> Card(\<Union>x\<in>A. K(x))"
-  by blast
-
-
-lemma Card_OUN [simp,intro,TC]:
-     "(!!x. x \<in> A ==> Card(K(x))) ==> Card(\<Union>x<A. K(x))"
-  by (auto simp add: OUnion_def Card_0)
-*)
+text\<open>We are not relativizing directly the results involving unions of
+(ordinal) indexed families (namely, @{thm [source] Card_UN} and
+@{thm [source] Card_OUN}, respectively) because of their higher order nature.\<close>
 
 lemma in_Card_imp_lesspoll: "[| Card\<^bsup>M\<^esup>(K); b \<in> K; M(K); M(b) |] ==> b \<prec>\<^bsup>M\<^esup> K"
   apply (unfold lesspoll_rel_def)

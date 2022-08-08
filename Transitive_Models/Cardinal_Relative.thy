@@ -264,6 +264,26 @@ lemma banach_decomposition_rel:
   using lfp_banach_functor_closed[of g X Y f] assms
   unfolding banach_functor_def by simp_all
 
+lemma schroeder_bernstein_closed:
+  assumes
+    banach_repl_iter: "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> M(f) \<Longrightarrow> M(g) \<Longrightarrow>
+               strong_replacement(M, \<lambda>x y. x\<in>nat \<and> y = banach_functor(X, Y, f, g)^x (0))"
+  shows
+  "[| M(f); M(g); M(X); M(Y); f \<in> inj(X,Y);  g \<in> inj(Y,X) |] ==> \<exists>h[M]. h \<in> bij(X,Y)"
+  apply (insert banach_decomposition_rel [of f g X Y, OF banach_repl_iter])
+  apply (simp add: inj_is_fun)
+  apply (auto)
+  apply (rule_tac x="restrict(f,XA) \<union> converse(restrict(g,YB))" in rexI)
+   apply (auto intro!: restrict_bij bij_disjoint_Un intro: bij_converse_bij)
+  done
+
+text\<open>The previous lemmas finish our original, direct relativization
+of the material involving the iterative proof (as appearing in \<^theory>\<open>ZF.Cardinal\<close>)
+of the Schröder-Bernstein theorem. Next, we formalize 
+Zermelo's proof that replaces the recursive construction by a fixed point
+represented as an intersection \cite[Exr. x4.27]{moschovakis1994notes}. This allows
+to avoid at least one replacement assumption.\<close>
+
 lemma dedekind_zermelo:
   assumes
     "A' \<subseteq> B" "B \<subseteq> A" "A \<approx>\<^bsup>M\<^esup> A'"
@@ -410,19 +430,6 @@ proof -
       bij_converse_bij[of g C "range(g)"] by (auto simp:types)
 qed
 
-lemma schroeder_bernstein_closed:
-  assumes
-    banach_repl_iter: "M(X) \<Longrightarrow> M(Y) \<Longrightarrow> M(f) \<Longrightarrow> M(g) \<Longrightarrow>
-               strong_replacement(M, \<lambda>x y. x\<in>nat \<and> y = banach_functor(X, Y, f, g)^x (0))"
-  shows
-  "[| M(f); M(g); M(X); M(Y); f \<in> inj(X,Y);  g \<in> inj(Y,X) |] ==> \<exists>h[M]. h \<in> bij(X,Y)"
-  apply (insert banach_decomposition_rel [of f g X Y, OF banach_repl_iter])
-  apply (simp add: inj_is_fun)
-  apply (auto)
-  apply (rule_tac x="restrict(f,XA) \<union> converse(restrict(g,YB))" in rexI)
-   apply (auto intro!: restrict_bij bij_disjoint_Un intro: bij_converse_bij)
-  done
-
 text\<open>Relative equipollence is an equivalence relation\<close>
 
 declare mem_bij_abs[simp] mem_inj_abs[simp]
@@ -521,7 +528,7 @@ lemma eqpoll_rel_disjoint_Un:
      ==> A \<union> C \<approx>\<^bsup>M\<^esup> B \<union> D"
   by (auto intro: bij_disjoint_Un simp add:def_eqpoll_rel)
 
-subsection\<open>lesspoll\_rel: contributions by Krzysztof Grabczewski\<close>
+subsection\<open>lesspoll: contributions by Krzysztof Grabczewski\<close>
 
 lemma lesspoll_rel_not_refl: "M(i) \<Longrightarrow> ~ (i \<prec>\<^bsup>M\<^esup> i)"
   by (simp add: lesspoll_rel_def eqpoll_rel_refl)
@@ -584,7 +591,7 @@ proof -
   qed
 qed
 
-paragraph\<open>Variations on transitivity\<close>
+\<comment> \<open>Variations on transitivity\<close>
 
 lemma lesspoll_rel_trans [trans]:
   "[| X \<prec>\<^bsup>M\<^esup> Y; Y \<prec>\<^bsup>M\<^esup> Z; M(X); M(Y) ; M(Z) |] ==> X \<prec>\<^bsup>M\<^esup> Z"

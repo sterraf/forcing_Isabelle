@@ -1,9 +1,11 @@
+section\<open>Basic relativization of function spaces\<close>
+
 theory Discipline_Function
   imports
     Arities
 begin
 
-paragraph\<open>Discipline for \<^term>\<open>fst\<close> and \<^term>\<open>snd\<close>\<close>
+subsection\<open>Discipline for \<^term>\<open>fst\<close> and \<^term>\<open>snd\<close>\<close>
 
 arity_theorem for "empty_fm"
 arity_theorem for "upair_fm"
@@ -83,7 +85,7 @@ lemma snd_rel_abs:
 
 end \<comment> \<open>\<^locale>\<open>M_trans\<close>\<close>
 
-paragraph\<open>Discipline for \<^term>\<open>minimum\<close>\<close>
+subsection\<open>Discipline for \<^term>\<open>minimum\<close>\<close>
 
 relativize functional "first" "first_rel" external
 relativize functional "minimum" "minimum_rel" external
@@ -126,7 +128,7 @@ qed
 
 end \<comment> \<open>\<^locale>\<open>M_trans\<close>\<close>
 
-paragraph\<open>Discipline for \<^term>\<open>function_space\<close>\<close>
+subsection\<open>Discipline for \<^term>\<open>function_space\<close>\<close>
 
 definition
   is_function_space :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o"  where
@@ -310,7 +312,7 @@ lemma def_injP_rel:
 
 end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
 
-paragraph\<open>Discipline for \<^term>\<open>inj\<close>\<close>
+subsection\<open>Discipline for \<^term>\<open>inj\<close>\<close>
 
 definition \<comment> \<open>completely relational\<close>
   is_inj   :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o"  where
@@ -464,7 +466,7 @@ lemma inj_rel_transfer: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> inj_rel(M
 end \<comment> \<open>\<^locale>\<open>M_N_inj\<close>\<close>
 
 
-paragraph\<open>Discipline for \<^term>\<open>surj\<close>\<close>
+subsection\<open>Discipline for \<^term>\<open>surj\<close>\<close>
 
 definition
   surjP_rel:: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o" where
@@ -485,7 +487,7 @@ lemma def_surjP_rel:
 
 end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
 
-paragraph\<open>Discipline for \<^term>\<open>surj\<close>\<close>
+subsection\<open>Discipline for \<^term>\<open>surj\<close>\<close>
 
 definition \<comment> \<open>completely relational\<close>
   is_surj   :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o"  where
@@ -619,7 +621,7 @@ lemma surj_rel_transfer: "M(A) \<Longrightarrow> M(B) \<Longrightarrow> surj_rel
 
 end \<comment> \<open>\<^locale>\<open>M_N_surj\<close>\<close>
 
-paragraph\<open>Discipline for \<^term>\<open>Inter\<close>\<close>
+subsection\<open>Discipline for \<^term>\<open>Inter\<close>\<close>
 
 definition
   is_Int :: "[i\<Rightarrow>o,i,i,i]\<Rightarrow>o"  where
@@ -663,7 +665,7 @@ text\<open>Note: @{thm Int_closed} already in \<^theory>\<open>ZF-Constructible.
 
 end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
 
-paragraph\<open>Discipline for \<^term>\<open>bij\<close>\<close>
+subsection\<open>Discipline for \<^term>\<open>bij\<close>\<close>
 
 reldb_add functional "inj" "inj_rel"
 reldb_add functional relational "inj_rel" "is_inj"
