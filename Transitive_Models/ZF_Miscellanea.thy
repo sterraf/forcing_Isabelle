@@ -60,7 +60,7 @@ lemma vimage_lam: "(\<lambda>x\<in>A. f(x)) -`` B = { x\<in>A . f(x) \<in> B }"
 lemma range_fun_subset_codomain:
   assumes "h:B \<rightarrow> C"
   shows "range(h) \<subseteq> C"
-  unfolding range_def domain_def converse_def using range_type[OF _ assms]  by auto
+  unfolding range_def domain_def converse_def using range_type[OF _ assms] by auto
 
 lemma Pi_rangeD:
   assumes "f\<in>Pi(A,B)" "b \<in> range(f)"

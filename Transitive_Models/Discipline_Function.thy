@@ -103,9 +103,6 @@ lemma first_abs :
   shows "first(z,B,r) \<longleftrightarrow> first_rel(M,z,B,r)"
   unfolding first_def first_rel_def using assms by auto
 
-(* TODO: find a naming convention for absoluteness results like this.
-See notes/TODO.txt
-*)
 lemma minimum_abs:
   assumes "M(B)"
   shows "minimum(r,B) = minimum_rel(M,r,B)"

@@ -977,7 +977,9 @@ relationalize "jump_cardinal_body_rel" "is_jump_cardinal_body_rel"
 relativize functional "jump_cardinal_body'" "jump_cardinal_body'_rel"
 relationalize "jump_cardinal_body'_rel" "is_jump_cardinal_body'_rel"
 
-\<comment> \<open>NOTE: not quite the same as \<^term>\<open>jump_cardinal\<close>, note \<^term>\<open>Pow(X*X)\<close>.\<close>
+text\<open>Notice that this is not quite the same as \<^term>\<open>jump_cardinal\<close>:
+observe \<^term>\<open>Pow(X*X)\<close>.\<close>
+
 definition
   jump_cardinal' :: "i\<Rightarrow>i"  where
   "jump_cardinal'(K) \<equiv>

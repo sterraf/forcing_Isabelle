@@ -240,7 +240,7 @@ proof -
         with \<open>M(S)\<close> calculation(6) calculation(7,8)[of S]
         show "countable_rel(M,{A \<in> G . S \<inter> A \<noteq> 0})"
           using InfCard_rel_nat Card_rel_nat
-            le_Card_rel_iff[THEN iffD2, THEN [3] leqpoll_rel_imp_cardinal_rel_UN_le,
+            le_Card_rel_iff[THEN iffD2, THEN [3] lepoll_rel_imp_cardinal_rel_UN_le,
               THEN [4] le_Card_rel_iff[THEN iffD1], of \<omega>] j.UN_closed
           unfolding countable_rel_def by (auto dest: transM)
       qed

@@ -18,6 +18,7 @@ sublocale M_Pi_assumptions M A f
     using Pi_replacement Pi_separation  A_in_M f_repl f_closed
       lam_replacement_Sigfun[THEN lam_replacement_imp_strong_replacement]
     by unfold_locales (simp_all add:transM[of _ A])
+
 end \<comment> \<open>\<^locale>\<open>M_Pi_assumption_repl\<close>\<close>
 
 no_notation sum (infixr \<open>+\<close> 65)
@@ -340,7 +341,7 @@ begin
 lemma Card_rel_cexp_rel: "M(\<kappa>) \<Longrightarrow> M(\<nu>) \<Longrightarrow> Card\<^bsup>M\<^esup>(\<kappa>\<^bsup>\<up>\<nu>,M\<^esup>)"
   unfolding cexp_rel_def by simp
 
-\<comment> \<open>Restoring congruence rule, but NOTE: beware\<close>
+\<comment> \<open>Restoring congruence rule\<close>
 declare conj_cong[cong]
 
 lemma eq_csucc_rel_ord:

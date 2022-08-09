@@ -10,16 +10,6 @@ Tidying up sources for release
 - Clean up warnings (as of this commit, unavoidable in 3 theories)
 
 
-FIXMEs
-======
-
-- L. 26 of `Lambda_Replacement`:
-This can be combined with separation_ball to remove the need of the
-extra assumption in lam_replacement_Collect.
-
-Miguel, 2022-02-28: I think I've tried and I couldn't.
-
-
 Unaddressed issues in Transitive_Models
 =======================================
 
@@ -35,19 +25,13 @@ General Tasks
 * is_foo_iff: foo_rel(M,x) = y ↔ is_foo(M,x,y)
 * foo_abs : foo(x)=y ↔ is_foo(M,x,y)
 
-- Search sources for "FIXME", "FIX ME", "NOTE", "MOVE (THIS)", "TODO",
-  "TO DO", and do that.
+- Search sources for "FIXME", "NOTE", "MOVE (THIS)", "TODO", and do
+  that.
 
 - Search for code duplication. Examples:
     Forcing_Data.Transset_M
   vs
     Interface.Transset_intf
-
-- Relativization results / synthesis discipline should be rewritten
-  for a general class M in the appropriate locales (and not only for
-  ##M).
-
-- Check for duplicate names of results
 
 - Revise naming conventions of results (esp. for the next section;
   check style_guide.txt).
@@ -80,15 +64,21 @@ ZF-Constructible
   Same for separationD. Then use this for the "_witness" theorems for
   strong replacement and (separation?) instances.
 
+- (Revise) Refactorize Formula and Relative to include the following
+  three lemmas (see Least.thy):
+  lemmas basic_fm_simps = sats_subset_fm' sats_transset_fm' sats_ordinal_fm'
+
 
 Assorted To-Dos
 ===============
 
-- Have instances of valcheck in forcing_data, G_generic (discharging
+- Have instances of val_check in forcing_data, G_generic (discharging
   assumptions). Add it to the simpset?
 
-- (?) Split M_ZF_ground: The last two instances are not needed for
-  "extensions_of_ctms".
+- Port the whole AC theory.
+
+- Decide if we can put Lambda_Replacement earlier and define
+  M_Pi_assumptions depending on M_replacement.
 
 
 ;; Local Variables:

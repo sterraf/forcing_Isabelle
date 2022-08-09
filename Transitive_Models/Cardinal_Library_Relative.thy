@@ -128,8 +128,7 @@ locale M_cardinal_UN_lepoll = M_library + M_replacement_lepoll _ "\<lambda>_. X"
   j:M_cardinal_UN _ J for J
 begin
 
-(* FIXME: this "LEQpoll" should be "LEPOLL"; same correction in Delta System *)
-lemma leqpoll_rel_imp_cardinal_rel_UN_le:
+lemma lepoll_rel_imp_cardinal_rel_UN_le:
   notes [dest] = InfCard_is_Card Card_is_Ord
   assumes "InfCard\<^bsup>M\<^esup>(K)" "J \<lesssim>\<^bsup>M\<^esup> K" "\<And>i. i\<in>J \<Longrightarrow> |X(i)|\<^bsup>M\<^esup> \<le> K"
     "M(K)"
@@ -277,10 +276,6 @@ end \<comment> \<open>\<^locale>\<open>M_library\<close>\<close>
 
 subsection\<open>Countable and uncountable sets\<close>
 
-definition (* FIXME: From Cardinal_Library, on the context of AC *)
-  countable :: "i\<Rightarrow>o" where
-  "countable(X) \<equiv> X \<lesssim> \<omega>"
-
 relativize functional "countable" "countable_rel" external
 relationalize "countable_rel" "is_countable"
 
@@ -322,7 +317,7 @@ end \<comment> \<open>\<^locale>\<open>M_library\<close>\<close>
 lemma (in M_cardinal_UN_lepoll) countable_rel_imp_countable_rel_UN:
   assumes "countable_rel(M,J)" "\<And>i. i\<in>J \<Longrightarrow> countable_rel(M,X(i))"
   shows "countable_rel(M,\<Union>i\<in>J. X(i))"
-  using assms leqpoll_rel_imp_cardinal_rel_UN_le[of \<omega>] InfCard_rel_nat
+  using assms lepoll_rel_imp_cardinal_rel_UN_le[of \<omega>] InfCard_rel_nat
     InfCard_rel_is_Card_rel j.UN_closed
     countable_rel_iff_cardinal_rel_le_nat j.Pi_assumptions
     Card_rel_le_imp_lepoll_rel[of J \<omega>] Card_rel_cardinal_rel_eq[of \<omega>]
@@ -543,7 +538,7 @@ proof -
     assume "n\<in>?N"
     with Eq1 \<open>M(G)\<close>
     have "|G`n|\<^bsup>M\<^esup> \<le> \<omega>"
-      using le_Aleph_rel1_nat[of "|G ` n|\<^bsup>M\<^esup>"] leqpoll_rel_imp_cardinal_rel_UN_le
+      using le_Aleph_rel1_nat[of "|G ` n|\<^bsup>M\<^esup>"] lepoll_rel_imp_cardinal_rel_UN_le
         UN_if_zero[of "domain(G)" G]
       by (auto dest:transM)
   }
@@ -571,7 +566,7 @@ proof -
   qed
   ultimately
   show ?thesis
-    using InfCard_rel_nat leqpoll_rel_imp_cardinal_rel_UN_le[of \<omega>]
+    using InfCard_rel_nat lepoll_rel_imp_cardinal_rel_UN_le[of \<omega>]
       UN_if_zero[of "domain(G)" G]
       le_trans[of "|if M(_) then G ` _ else 0|\<^bsup>M\<^esup>" "|G ` _|\<^bsup>M\<^esup>" \<omega>]
     by auto blast
@@ -1066,7 +1061,7 @@ proof -
       by auto
     ultimately
     have "|\<Union>y\<in>Y. {x\<in>Z . F`x = y}|\<^bsup>M\<^esup> \<le> |Y|\<^bsup>M\<^esup>"
-      using leqpoll_rel_imp_cardinal_rel_UN_le
+      using lepoll_rel_imp_cardinal_rel_UN_le
         Infinite_InfCard_rel_cardinal_rel[of Y] vimage_fun_sing[OF \<open>F\<in>Z\<rightarrow>Y\<close>]
       by(auto simp add:transM[OF _ \<open>M(Y)\<close>])
     moreover from \<open>F \<in> Finite_to_one_rel(M,Z,Y) \<inter> surj_rel(M,Z,Y)\<close> \<open>M(Z)\<close> \<open>M(F)\<close> \<open>M(Y)\<close>

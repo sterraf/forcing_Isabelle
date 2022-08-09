@@ -126,7 +126,7 @@ proof(clarsimp)
 qed
 
 theorem Union_MG : "M_generic(G) \<Longrightarrow> Union_ax(##M[G])"
-  by (simp add:M_generic_def union_in_MG)
+  by (auto simp:union_in_MG)
 
 end \<comment> \<open>\<^locale>\<open>forcing_data1\<close>\<close>
 

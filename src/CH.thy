@@ -269,7 +269,7 @@ proof -
   moreover
   have "function(f\<^bsub>G\<^esub>)"
     using Un_filter_is_function generic
-    unfolding M_generic_def by fast
+    by fast
   ultimately
   show ?thesis
     using generic domain_f_G Pi_iff by auto

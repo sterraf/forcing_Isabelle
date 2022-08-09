@@ -273,8 +273,6 @@ end \<comment> \<open>\<^locale>\<open>M_DC\<close>\<close>
 locale M_library_DC = M_library + M_DC
 begin
 
-(* FIXME(?): Should port the whole AC theory, including the absolute version
-  of the following theorem *)
 lemma AC_M_func:
   assumes "\<And>x. x \<in> A \<Longrightarrow> (\<exists>y. y \<in> x)" "M(A)"
   shows "\<exists>f \<in> A \<rightarrow>\<^bsup>M\<^esup> \<Union>(A). \<forall>x \<in> A. f`x \<in> x"

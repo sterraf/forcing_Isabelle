@@ -1386,14 +1386,8 @@ next
     by (force dest:nat_into_M simp add:def_eqpoll_rel)
 qed
 
-
 \<comment> \<open>From the next result, the relative versions of
 @{thm Finite_Fin_lemma} and @{thm Fin_lemma} should follow\<close>
-(* FIXME: why do we have this?
-lemma nat_eqpoll_imp_eqpoll_rel:
-  assumes "n \<in> nat" "A \<approx> n" and types:"M(n)" "M(A)"
-  shows "A \<approx>\<^bsup>M\<^esup> n"
-*)
 
 lemma lepoll_rel_nat_imp_Finite_rel:
   assumes A: "A \<lesssim>\<^bsup>M\<^esup> n" and n: "n \<in> nat"

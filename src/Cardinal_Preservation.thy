@@ -71,8 +71,6 @@ proof -
     then
     interpret G_generic1 _ _ _ _ _ G by unfold_locales
     include G_generic1_lemmas
-      (* NOTE: might be useful to have a locale containg two \<open>M_ZF1_trans\<close>
-         instances, one for \<^term>\<open>M\<close> and one for \<^term>\<open>M[G]\<close> *)
     assume "q\<in>G"
     with assms \<open>M_generic(G)\<close>
     have "M[G], map(val(G),[f,a,b'\<^sup>v]) \<Turnstile> \<cdot>0`1 is 2\<cdot>"

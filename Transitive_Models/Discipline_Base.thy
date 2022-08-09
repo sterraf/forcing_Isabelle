@@ -339,16 +339,7 @@ lemma def_PiP_rel:
 
 end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
 
-(*
-Sigma(A,B) == \<Union>x\<in>A. \<Union>y\<in>B(x). {\<langle>x,y\<rangle>}
-           == \<Union> {  (\<Union>y\<in>B(x). {\<langle>x,y\<rangle>})  . x\<in>A}
-           == \<Union> {  (\<Union>y\<in>B(x). {\<langle>x,y\<rangle>})  . x\<in>A}
-           == \<Union> {  ( \<Union> { {\<langle>x,y\<rangle>} . y\<in>B(x)} )  . x\<in>A}
-                     ----------------------
-                           Sigfun(x,B)
-*)
-
-definition \<comment> \<open>FIX THIS: not completely relational. Can it be?\<close>
+definition
   Sigfun :: "[i,i\<Rightarrow>i]\<Rightarrow>i"  where
   "Sigfun(x,B) \<equiv> \<Union>y\<in>B(x). {\<langle>x,y\<rangle>}"
 
@@ -358,7 +349,7 @@ lemma SigFun_char : "Sigfun(x,B) = {x}\<times>B(x)"
 lemma Sigma_Sigfun: "Sigma(A,B) = \<Union> {Sigfun(x,B) . x\<in>A}"
   unfolding Sigma_def Sigfun_def ..
 
-definition \<comment> \<open>FIX THIS: not completely relational. Can it be?\<close>
+definition \<comment> \<open>Note that $B$ below is a higher order argument\<close>
   is_Sigfun :: "[i\<Rightarrow>o,i,i\<Rightarrow>i,i]\<Rightarrow>o"  where
   "is_Sigfun(M,x,B,Sd) \<equiv> M(Sd) \<and> (\<exists>RB[M]. is_Replace(M,B(x),\<lambda>y z. z={\<langle>x,y\<rangle>},RB)
                          \<and> big_union(M,RB,Sd))"
