@@ -78,12 +78,21 @@ Section~\ref{sec:repl-instances} for details).
 %% Missing: Locales have to be interpreted (part of "big picture"?)
 
 \subsection{The fundamental theorems}
-Now let $\lb \PP, {\preceq} ,\1\rb \in M$ be a forcing notion. Given $G\sbq \PP$, we have
+Let $\lb \PP, {\preceq} ,\1\rb \in M$ be a forcing notion. The
+$\val$ interpretation function takes $3$ arguments so that if $G\sbq \PP$, we have
 $M[G]\defi \{ \val(\PP,G,\punto{a}) : \punto{a}\in M \}$.
 
-The following form of the Forcing Theorems  is the one
-that we formalized.
-% Is the existential quantification here confusing?
+The version of the Forcing Theorems that we formalized follows the
+considerations on the $\forces^*$ relation as discussed in Kunen's new
+\emph{Set Theory}
+\cite[p.~257ff]{kunen2011set}. But in contrast to the point made on
+p.~260 of this book, we internalized the recursion to define the forcing relation,
+in that it involves codes for formulas, and the meta-theoretic formula
+transformer $\phi\mapsto\mathit{Forces}_\phi$ is replaced by the
+set-theoretic function $\forceisa$, which was defined by using
+Isabelle/ZF facilities for primitive recursion.
+
+Next we state the fundamental theorems in compact form.
 \begin{theorem}\label{th:forcing-thms}
   There exists a function  $\forceisa:: \tyi \fun  \tyi$
   such that for every
@@ -115,12 +124,11 @@ that we formalized.
     is dense below $p$.
   \end{enumerate}
 \end{theorem}
-% Describe differences between Kunen's and our approach.
-% We can do everything using "internal forcing" (vs. forcing with
-% formulas in the metatheory).
-
-The statements appear as three separated items in
-\theory{Forcing{\uscore}Theorems.thy} in the
+We actually have to define $\forceisa$ before we state the fundamental
+theorems, so the main existential quantifier above does not appear in the
+formalization.
+Moreover, the statements appear as three separated items in
+\theory{Forcing{\uscore}Theorems} of our
 \session{Independence\_CH} session \cite{Independence_CH-AFP},
 and benefit from the $\isatt{map}$ function that applies a function to
 each element of a list. For instance, the Truth Lemma is stated as
@@ -134,7 +142,7 @@ follows:
 \ \ \isakeyword{shows}\isanewline
 \ \ \ \ {\isachardoublequoteopen}{\isacharparenleft}{\kern0pt}{\isasymexists}p{\isasymin}G{\isachardot}{\kern0pt}\ p\ {\isasymtturnstile}\ {\isasymphi}\ env{\isacharparenright}{\kern0pt}\ \ \ {\isasymlongleftrightarrow}\ \ \ M{\isacharbrackleft}{\kern0pt}G{\isacharbrackright}{\kern0pt}{\isacharcomma}{\kern0pt}\ map{\isacharparenleft}{\kern0pt}val{\isacharparenleft}{\kern0pt}P{\isacharcomma}{\kern0pt}G{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}env{\isacharparenright}{\kern0pt}\ {\isasymTurnstile}\ {\isasymphi}{\isachardoublequoteclose}
 \end{isabelle}
-where the $\forces$ notation had already been set up in the
+where the $\forces$ notation (and its precedence) had already been set up in the
 \theory{Forces{\uscore}Definition} theory as follows:
 \begin{isabelle}
 \isacommand{abbreviation}\isamarkupfalse%
@@ -142,8 +150,7 @@ where the $\forces$ notation had already been set up in the
 \ \ {\isachardoublequoteopen}p\ {\isasymtturnstile}\ {\isasymphi}\ env\ \ \ {\isasymequiv}\ \ \ M{\isacharcomma}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isacharbrackleft}{\kern0pt}p{\isacharcomma}{\kern0pt}P{\isacharcomma}{\kern0pt}leq{\isacharcomma}{\kern0pt}{\isasymone}{\isacharbrackright}{\kern0pt}\ {\isacharat}{\kern0pt}\ env{\isacharparenright}{\kern0pt}\ {\isasymTurnstile}\ forces{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
 \end{isabelle}
 
-We followed Kunen's new \textit{Set Theory} \cite{kunen2011set} to define
-$\forceisa$.  Forcing for atomic formulas is described as a mutual
+Kunen first describes forcing for atomic formulas using a mutual
 recursion
 %% \begin{multline*}
 %%   \forceseq (p,t_1,t_2) \defi 
@@ -156,11 +163,14 @@ recursion
 %%   \pleq r \land \forceseq(q,t_1,s)
 %% \end{multline*}
 but then \cite[p.~257]{kunen2011set} it is cast as a single
-recursively defined function $\frcat$ over the wellfounded relation
-$\isatt{frecR}$ on tuples $\lb \mathit{ft},t_1,t_2,p\rb$ (where
+recursively defined function $F$ over a wellfounded  relation $R$.
+In our formalization, these are called $\frcat$ and 
+$\isatt{frecR}$, respectively, and are defined on tuples $\lb \mathit{ft},t_1,t_2,p\rb$ (where
 $\mathit{ft}\in\{0,1\}$ indicates whether the atomic formula being
-forced is an equality or a membership, respectively). Forcing for general formulas is defined by recursion on the
-datatype $\formula$. Technical details on the implementation and proofs of the
+forced is an equality or a membership, respectively).
+Forcing for general formulas is then defined by recursion on the
+datatype $\formula$ as indicated above. Technical details on the
+implementation and proofs of the
 Forcing Theorems have been spelled out in our
 \cite{2020arXiv200109715G}.
 
