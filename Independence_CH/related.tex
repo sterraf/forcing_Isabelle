@@ -75,8 +75,19 @@ doing set theory in a non set-theoretical meta-language. On the other
 hand, Isar proofs, as the one shown in
 Sec.~\ref{sec:sample-formal-proof}, are easier to write and understand
 than the language of tactics of Lean.
-%% Comment on ZFC_in_HOL and other developments using it (mostly by
-%% Paulson: Ramsey theory, (ordinal) partition theorems)
+
+A sweet spot combining the best of both worlds is to be found on
+developments in Isabelle/HOL based on the AFP entry
+\session{ZFC\_in\_HOL} by Paulson \cite{ZFC_in_HOL-AFP}. There is a
+range of results in combinatorics and other set-theoretical material
+that was swiftly formalized in this setting: Nash-Williams theorem and
+Larson's $\forall k\ \omega^{\omega}\longrightarrow(\omega^\omega,k)$
+\cite{doi:10.1080/10586458.2021.1980464}, Design Theory
+\cite{10.1007/978-3-030-81097-9_1}, and Wetzel's problem
+\cite{2022arXiv220503159P}; this last paper describes in a brief and
+clear way the conveniences of the interaction with Isabelle/HOL
+(which, in this case, is also paid in consistency-strength currency
+\cite[Sect.~3]{DBLP:conf/ictac/Obua06}).
 
 %%% Local Variables: 
 %%% mode: latex
