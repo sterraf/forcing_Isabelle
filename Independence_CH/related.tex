@@ -15,10 +15,9 @@ formalized the basic model theory of Boolean valued models and Gödel's
 Completeness Theorem. They also provided the treatment of the regular
 open algebra, and the general version of the Delta System
 Lemma. Putting this together they readily obtain a proof that
-(*) $\Con(\ZFC)$ implies 
 $\ZFC\nvdash \CH$ \cite{han_et_al:LIPIcs:2019:11074} and after
 formalizing collapse forcing they show  $\ZFC\nvdash \neg\CH$
-\cite{DBLP:conf/cpp/HanD20}.
+\cite[Sect.~5.6]{DBLP:conf/cpp/HanD20}.
 
 It should be emphasized, however, that the Flypitch project was
 carried out assuming a rather strong meta-theory. 
@@ -31,8 +30,9 @@ implementation; for instance, ordinals are “defined as equivalence
 classes of (well-ordered) types, [\dots] one
 universe level higher than the types used to construct them”
 \cite{han_et_al:LIPIcs:2019:11074}. It is not clear to us if they are
-able to avoid strength (even for the proof of the finitary implication
-(*)).
+able to avoid such strength (at least $\Con(\ZFC)$ is readily
+available in order to get either unprovability result).
+% by Gödel's Second).
 
 On a lesser note, in order to prove $\AC$ in the generic extension,
 Flypitch requires choice in the metatheory
