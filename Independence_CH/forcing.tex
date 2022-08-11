@@ -78,7 +78,8 @@ Section~\ref{sec:repl-instances} for details).
 %% Missing: Locales have to be interpreted (part of "big picture"?)
 
 \subsection{The fundamental theorems}
-Let $\lb \PP, {\preceq} ,\1\rb \in M$ be a forcing notion. The
+Let $\lb \PP, {\preceq} ,\1\rb \in M$ be a forcing notion. In order to
+fix the notation, the
 $\val$ interpretation function takes $3$ arguments so that if $G\sbq \PP$, we have
 $M[G]\defi \{ \val(\PP,G,\punto{a}) : \punto{a}\in M \}$.
 
@@ -89,12 +90,13 @@ considerations on the $\forces^*$ relation as discussed in Kunen's new
 p.~260 of this book, we internalized the recursion to define the forcing relation,
 in that it involves codes for formulas, and the meta-theoretic formula
 transformer $\phi\mapsto\mathit{Forces}_\phi$ is replaced by the
-set-theoretic function $\forceisa$, which was defined by using
+set-theoretic class function $\forceisa:: \tyi \fun \tyi$, which was defined by using
 Isabelle/ZF facilities for primitive recursion.
 
-Next we state the fundamental theorems in compact form.
+Next we state this version of the fundamental theorems in a compact
+way.
 \begin{theorem}\label{th:forcing-thms}
-  There exists a function  $\forceisa:: \tyi \fun  \tyi$
+  There exists a function  $\forceisa$
   such that for every
   $\phi\in\formula$ and $\punto{a}_0,\dots,\punto{a}_n\in M$,
   \begin{enumerate}
@@ -127,7 +129,7 @@ Next we state the fundamental theorems in compact form.
 We actually have to define $\forceisa$ before we state the fundamental
 theorems, so the main existential quantifier above does not appear in the
 formalization.
-Moreover, the statements appear as three separated items in
+Moreover, the items in Theorem~\ref{th:forcing-thms} appear as three separated lemmas in
 \theory{Forcing{\uscore}Theorems} of our
 \session{Independence\_CH} session \cite{Independence_CH-AFP},
 and benefit from the $\isatt{map}$ function that applies a function to
