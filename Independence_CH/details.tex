@@ -157,7 +157,8 @@ paragraph of \cite[Thm.~IV.2.27]{kunen2011set}:
   $\vartheta_{G}=c$.
 \end{quote}
 The assumption $a\in M[G]$ appears in the lemma statement, and the
-goal involving $b$ in the first sentence will appear below (page \pageref{goal-on-b}); formalized
+goal involving $b$ in the first sentence will appear below (signaled
+by “{\small (**)}”); formalized
 material necessarily tends to be much more linear than usual prose. In
 what follows, we
 will intersperse the relevant passages of the proof.
@@ -232,7 +233,8 @@ apply further previously proved lemmas.
 \begin{isabelle}
   \label{goal-on-b}
 \ \ \isacommand{have}\isamarkupfalse%
-\ {\isachardoublequoteopen}Pow{\isacharparenleft}{\kern0pt}a{\isacharparenright}{\kern0pt}\ {\isasyminter}\ M{\isacharbrackleft}{\kern0pt}G{\isacharbrackright}{\kern0pt}\ {\isasymsubseteq}\ {\isacharquery}{\kern0pt}b{\isachardoublequoteclose}\isanewline
+\ {\isachardoublequoteopen}Pow{\isacharparenleft}{\kern0pt}a{\isacharparenright}{\kern0pt}\ {\isasyminter}\ M{\isacharbrackleft}{\kern0pt}G{\isacharbrackright}{\kern0pt}\ {\isasymsubseteq}\ {\isacharquery}{\kern0pt}b{\isachardoublequoteclose}\hfill
+\mbox{\rm\small(**)}\isanewline
 \ \ \isacommand{proof}\isamarkupfalse%
 \isanewline
 \ \ \ \ \isacommand{fix}\isamarkupfalse%
@@ -297,6 +299,14 @@ apply further previously proved lemmas.
 \ \ \ \ \isacommand{have}\isamarkupfalse%
 \ {\isachardoublequoteopen}val{\isacharparenleft}{\kern0pt}G{\isacharcomma}{\kern0pt}{\isacharquery}{\kern0pt}{\isasymtheta}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ c{\isachardoublequoteclose}
 \end{isabelle}
+
+Undoubtedly, even for this cherry-picked example, the formalization
+looks codish. It is therefore inevitable to compare this to the
+magnificent results obtained by P.~Koepke and his team by using
+Isabelle/Naproche \cite{10.1007/978-3-030-81097-9_2} (notoriously,
+König's Theorem). The trick there consists in presenting the result
+being formalized as restricted first-order problem, and then each
+proof step can be handled by an automatic theorem prover.
 
 %%% Local Variables: 
 %%% mode: latex
