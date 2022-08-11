@@ -4,7 +4,7 @@
 
 \subsection{The $\ZFC$ axioms as locales}\label{sec:zfc-axioms-as-locales}
 The description of set models of fragments of $\ZFC$ was performed
-using Isabelle contexts (\emph{locales}) that fix a variable $M::\tyi$
+using locales that fix a variable $M::\tyi$
 and pack assumptions stating that $\lb M, \in\rb$ satisfy some
 axioms. For example, the locale \isatt{M{\uscore}Z{\uscore}basic}
 states that Zermelo set theory holds in $M$. The Union Axiom (\isatt{Union{\uscore}ax}), for
@@ -74,8 +74,11 @@ The locales gathering all 32 replacement instances necessary are named
 \isatt{M{\uscore}ZF{\uscore}ground{\uscore}notCH}, and
 \isatt{M{\uscore}ZF{\uscore}ground{\uscore}CH} (see
 Section~\ref{sec:repl-instances} for details).
+These assumptions are then invoked to interpret at the class
+$\isatt{\#\#} M$ the relevant locales appearing in
+\session{ZF-Constructible}, and further ones required for the relative
+results from Section~\ref{sec:extension-isabellezf}.
 
-%% Missing: Locales have to be interpreted (part of "big picture"?)
 
 \subsection{The fundamental theorems}
 Let $\lb \PP, {\preceq} ,\1\rb \in M$ be a forcing notion. In order to
