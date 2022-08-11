@@ -175,7 +175,7 @@ will intersperse the relevant passages of the proof.
 \ \ \isacommand{from}\isamarkupfalse%
 \ assms\isanewline
 \ \ \isacommand{obtain}\isamarkupfalse%
-\ {\isasymtau}\ \isakeyword{where}\ {\isachardoublequoteopen}{\isasymtau}\ {\isasymin}\ M{\isachardoublequoteclose}\ {\isachardoublequoteopen}val{\isacharparenleft}{\kern0pt}P{\isacharcomma}{\kern0pt}G{\isacharcomma}{\kern0pt}\ {\isasymtau}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ a{\isachardoublequoteclose}\isanewline
+\ {\isasymtau}\ \isakeyword{where}\ {\isachardoublequoteopen}{\isasymtau}\ {\isasymin}\ M{\isachardoublequoteclose}\ {\isachardoublequoteopen}val{\isacharparenleft}{\kern0pt}G{\isacharcomma}{\kern0pt}\ {\isasymtau}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ a{\isachardoublequoteclose}\isanewline
 \ \ \ \ \isacommand{using}\isamarkupfalse%
 \ GenExtD\ \isacommand{by}\isamarkupfalse%
 \ auto
@@ -196,8 +196,6 @@ apply further previously proved lemmas.
 \ {\isacartoucheopen}{\isasymtau}{\isasymin}M{\isacartoucheclose}\isanewline
 \ \ \isacommand{have}\isamarkupfalse%
 \ {\isachardoublequoteopen}domain{\isacharparenleft}{\kern0pt}{\isasymtau}{\isacharparenright}{\kern0pt}{\isasymtimes}P\ {\isasymin}\ M{\isachardoublequoteclose}\ {\isachardoublequoteopen}domain{\isacharparenleft}{\kern0pt}{\isasymtau}{\isacharparenright}{\kern0pt}\ {\isasymin}\ M{\isachardoublequoteclose}\isanewline
-\ \ \ \ \isacommand{using}\isamarkupfalse%
-\ domain{\isacharunderscore}{\kern0pt}closed\ cartprod{\isacharunderscore}{\kern0pt}closed\ P{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}M\isanewline
 \ \ \ \ \isacommand{by}\isamarkupfalse%
 \ simp{\isacharunderscore}{\kern0pt}all\isanewline
 \ \ \isacommand{then}\isamarkupfalse%
@@ -211,7 +209,7 @@ apply further previously proved lemmas.
 \ \ \isacommand{let}\isamarkupfalse%
 \ {\isacharquery}{\kern0pt}{\isasympi}{\isacharequal}{\kern0pt}{\isachardoublequoteopen}{\isacharquery}{\kern0pt}Q{\isasymtimes}{\isacharbraceleft}{\kern0pt}{\isasymone}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}\isanewline
 \ \ \isacommand{let}\isamarkupfalse%
-\ {\isacharquery}{\kern0pt}b{\isacharequal}{\kern0pt}{\isachardoublequoteopen}val{\isacharparenleft}{\kern0pt}P{\isacharcomma}{\kern0pt}G{\isacharcomma}{\kern0pt}{\isacharquery}{\kern0pt}{\isasympi}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}%% \isanewline
+\ {\isacharquery}{\kern0pt}b{\isacharequal}{\kern0pt}{\isachardoublequoteopen}val{\isacharparenleft}{\kern0pt}G{\isacharcomma}{\kern0pt}{\isacharquery}{\kern0pt}{\isasympi}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}%% \isanewline
 %% \ \ \isacommand{from}\isamarkupfalse%
 %% \ {\isacartoucheopen}{\isacharquery}{\kern0pt}Q{\isasymin}M{\isacartoucheclose}\isanewline
 %% \ \ \isacommand{have}\isamarkupfalse%
@@ -248,7 +246,7 @@ apply further previously proved lemmas.
 \ \ \ \ \isacommand{then}\isamarkupfalse%
 \isanewline
 \ \ \ \ \isacommand{obtain}\isamarkupfalse%
-\ {\isasymchi}\ \isakeyword{where}\ {\isachardoublequoteopen}c{\isasymin}M{\isacharbrackleft}{\kern0pt}G{\isacharbrackright}{\kern0pt}{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isasymchi}\ {\isasymin}\ M{\isachardoublequoteclose}\ {\isachardoublequoteopen}val{\isacharparenleft}{\kern0pt}P{\isacharcomma}{\kern0pt}G{\isacharcomma}{\kern0pt}{\isasymchi}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ c{\isachardoublequoteclose}\isanewline
+\ {\isasymchi}\ \isakeyword{where}\ {\isachardoublequoteopen}c{\isasymin}M{\isacharbrackleft}{\kern0pt}G{\isacharbrackright}{\kern0pt}{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isasymchi}\ {\isasymin}\ M{\isachardoublequoteclose}\ {\isachardoublequoteopen}val{\isacharparenleft}{\kern0pt}G{\isacharcomma}{\kern0pt}{\isasymchi}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ c{\isachardoublequoteclose}\isanewline
 \ \ \ \ \ \ \isacommand{using}\isamarkupfalse%
 \ GenExt{\isacharunderscore}{\kern0pt}iff\ \isacommand{by}\isamarkupfalse%
 \ auto
@@ -272,7 +270,7 @@ apply further previously proved lemmas.
 \ \ \ \ \isacommand{have}\isamarkupfalse%
 \ {\isachardoublequoteopen}{\isacharquery}{\kern0pt}{\isasymtheta}\ {\isasymin}\ M{\isachardoublequoteclose}\isanewline
 \ \ \ \ \ \ \isacommand{using}\isamarkupfalse%
-\ P{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}M\ one{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}M\ leq{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}M\ sats{\isacharunderscore}{\kern0pt}fst{\isacharunderscore}{\kern0pt}snd{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}M\isanewline
+\ sats{\isacharunderscore}{\kern0pt}fst{\isacharunderscore}{\kern0pt}snd{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}M\isanewline
 \ \ \ \ \ \ \isacommand{by}\isamarkupfalse%
 \ simp
 \end{isabelle}
@@ -287,9 +285,9 @@ apply further previously proved lemmas.
 \ \ \ \ \isacommand{then}\isamarkupfalse%
 \isanewline
 \ \ \ \ \isacommand{have}\isamarkupfalse%
-\ {\isachardoublequoteopen}val{\isacharparenleft}{\kern0pt}P{\isacharcomma}{\kern0pt}G{\isacharcomma}{\kern0pt}{\isacharquery}{\kern0pt}{\isasymtheta}{\isacharparenright}{\kern0pt}\ {\isasymin}\ {\isacharquery}{\kern0pt}b{\isachardoublequoteclose}\isanewline
+\ {\isachardoublequoteopen}val{\isacharparenleft}{\kern0pt}G{\isacharcomma}{\kern0pt}{\isacharquery}{\kern0pt}{\isasymtheta}{\isacharparenright}{\kern0pt}\ {\isasymin}\ {\isacharquery}{\kern0pt}b{\isachardoublequoteclose}\isanewline
 \ \ \ \ \ \ \isacommand{using}\isamarkupfalse%
-\ one{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}G\ one{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}P\ generic\ val{\isacharunderscore}{\kern0pt}of{\isacharunderscore}{\kern0pt}elem\ {\isacharbrackleft}{\kern0pt}of\ {\isacharquery}{\kern0pt}{\isasymtheta}\ {\isasymone}\ {\isacharquery}{\kern0pt}{\isasympi}\ G{\isacharbrackright}{\kern0pt}\isanewline
+\ one{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}G\ generic\ val{\isacharunderscore}{\kern0pt}of{\isacharunderscore}{\kern0pt}elem\ {\isacharbrackleft}{\kern0pt}of\ {\isacharquery}{\kern0pt}{\isasymtheta}\ {\isasymone}\ {\isacharquery}{\kern0pt}{\isasympi}\ G{\isacharbrackright}{\kern0pt}\isanewline
 \ \ \ \ \ \ \isacommand{by}\isamarkupfalse%
 \ auto
 \end{isabelle}
@@ -297,7 +295,7 @@ apply further previously proved lemmas.
   $\vartheta_{G}=c$.}
 \begin{isabelle}
 \ \ \ \ \isacommand{have}\isamarkupfalse%
-\ {\isachardoublequoteopen}val{\isacharparenleft}{\kern0pt}P{\isacharcomma}{\kern0pt}G{\isacharcomma}{\kern0pt}{\isacharquery}{\kern0pt}{\isasymtheta}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ c{\isachardoublequoteclose}
+\ {\isachardoublequoteopen}val{\isacharparenleft}{\kern0pt}G{\isacharcomma}{\kern0pt}{\isacharquery}{\kern0pt}{\isasymtheta}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ c{\isachardoublequoteclose}
 \end{isabelle}
 
 %%% Local Variables: 
