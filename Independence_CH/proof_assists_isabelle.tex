@@ -1,15 +1,15 @@
 \section{Proof assistants and Isabelle/ZF}
 \label{sec:proof-assist-isabelle}
 
-Let us briefly introduce Isabelle in the large landscape of proof
-assistans (or ITPs for interactive theorem provers); we refer to the
-excelent chapter by \citet{DBLP:series/hhl/HarrisonUW14} for a more
-thorough reconstruction of the history of ITPs.
+Let us briefly introduce Isabelle in the large landscape of \emph{proof
+assistants} (“assitants” for short; also known as “interactive theorem provers”); we refer to the
+excellent chapter by \citet{DBLP:series/hhl/HarrisonUW14} for a more
+thorough reconstruction of the history of assistants.
 
-It is expected that an ITP assists the human user while mechanizing
+It is expected that an assistant aids the human user while mechanizing
 some piece of mathematics; the interaction varies from system to
 system, but a common interface consists on the system showing the
-current goal and context. The user instructs the ITP to modify the
+current goal and context. The user instructs the assistant to modify the
 goal/context by means of tactics; a forward rule changes the context
 with the intention of having in the new context a hypothesis closer to
 the goal. A backward rule represents a deduction whose conclusion is
@@ -27,7 +27,7 @@ To have any value at all, the system should be able to say if a tactic
 makes sense (for instance, it must be forbidden to use the backward
 tactic \textit{conjI} when the main connective is a
 disjunction). Moreover one should be able to ascertain the validity of
-the reaction of an ITP (be its rejection or its acceptance of some
+the reaction of an assistant (be its rejection or its acceptance of some
 alleged logical step). Edinburgh LCF~\cite{Gordon1979-qm} was an
 influential proof assistant where that verification could be achieved
 by checking a small \emph{kernel}; this is the only module that
@@ -47,16 +47,16 @@ about a natural number $n$ by doing cases on whether $n=0$ or
 $n\neq 0$.  Moreover one can define functions that manipulate terms
 (in the usual sense) or even formulas.
 
-In contrast with LCF, some of the more prominent ITPs of today are
+In contrast with LCF, some of the more prominent assistants of today are
 based on some type theory. Both Coq~\cite{coq} and
-lean~\cite{DBLP:conf/cade/Moura021} are based on the Calculus of
+Lean~\cite{DBLP:conf/cade/Moura021} are based on the Calculus of
 Inductive Constructions
 \cite{DBLP:conf/mfps/PfenningP89,DBLP:journals/iandc/CoquandH88},
 while Agda~\cite{agda} is an extension of Martin-Löf type
 theory~\cite{DBLP:books/daglib/0000395}. Mizar~\cite{mizar} is the
-oldest ITP still used today but is far away both in terms of
+oldest assistant still used today but is far away both in terms of
 foundations and architecture from Isabelle; Mizar inspired, though, the
-Isar dialect used in nowadays Isabelle.
+Isar dialect used in Isabelle nowadays.
 
 % Proof assistants provide diverse aids for the task
 % of formalizing a piece of mathematics. They are usually implemented

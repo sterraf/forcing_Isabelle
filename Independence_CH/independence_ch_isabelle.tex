@@ -55,15 +55,17 @@ Matías Steinberg\inst{1}
 \maketitle              % typeset the header of the contribution
 %
 \begin{abstract}
-  We'll discuss some highlights of our computer-verified
-  proof of the construction, given a countable transitive set model $M$
+  We discuss some highlights of our computer-verified
+  proof of the construction, given a countable transitive set-model $M$
   of $\ZFC$, of generic extensions  satisfying $\ZFC+\neg\CH$ and $\ZFC+\CH$.
-  In particular,
-  we isolated a set $\Delta$ of 39 instances
-  of Axiom of Replacement and a function $F$
-  such that such that for any finite fragment $\Phi\sbq\ZFC$,
-  $F(\Phi)\sbq\ZFC$ is also finite and if
-  $M\models F(\Phi) + \Delta$ then $M[G]\models \Phi + \neg \CH$.
+  Moreover, let $\calR$ be the set of instances of the Axiom of
+  Replacement. We isolated a 32-element subset $\Omega\sbq\calR$ and
+  defined $\calF:\calR\to\calR$
+  such that such that for every finite $\Phi\sbq\calR$
+  we have
+  $M\models Z \cup \calF\dimg\Phi \cup \Delta$ implies $M[G]\models Z
+  \cup \Phi \cup \{ \neg \CH \}$ for any $M$-generic $G$, where $Z$ is
+  Zermelo set theory.
   We also obtained the formulas yielded by the Forcing Definability Theorem
   explicitly.
 
@@ -77,8 +79,7 @@ Matías Steinberg\inst{1}
   %% using  proof assistants/checkers will
   %% be dispelled.
 
-  We'll also compare our formalization with the recent one by Jesse
-  M.~Han and Floris van Doorn in the proof assistant \emph{Lean}.
+  We'll also compare our formalization with the recent one by J.~M.~Han and F.~van Doorn in the proof assistant \emph{Lean}.
 
   \keywords{forcing \and Isabelle/ZF \and countable transitive models
     \and absoluteness \and generic extension \and constructibility.}
