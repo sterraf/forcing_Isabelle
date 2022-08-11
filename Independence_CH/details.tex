@@ -9,27 +9,36 @@ cardinal arithmetic in $M$. Many of these were already present in
 relational form in the \session{ZF-Constructible} library.
 
 \begin{itemize}
-\item 6 instances for iteration of operations. For each construct,
+\item 6 instances for iteration of operations (between parentheses). For each construct,
   Paulson used one replacement instance in order to have absoluteness,
   and a second one to obtain closure.
   \begin{itemize}
   \item
-    Lists
-    \isatt{list{\uscore}repl1{\uscore}intf{\uscore}fm},
+    \isatt{list{\uscore}repl1{\uscore}intf{\uscore}fm} and 
     \isatt{list{\uscore}repl2{\uscore}intf{\uscore}fm}.
+    
+    For lists on a set $A$ ($X\mapsto \{0 \} \oplus A \times X$, where
+    $D\oplus E$ stands for the disjoint union/coproduct $(\{0 \}\times
+    D) \cup (\{1 \}\times E)$).
+    %
   \item
-    Formulas
-    \isatt{formula{\uscore}repl1{\uscore}intf{\uscore}fm},
+    \isatt{formula{\uscore}repl1{\uscore}intf{\uscore}fm} and
     \isatt{formula{\uscore}repl1{\uscore}intf{\uscore}fm}.
+    
+    For (codes of) first order formulas ($X\mapsto (\omega \times
+    \omega \oplus \omega \times \omega) \oplus X \times X \oplus X$).
+    %
   \item
-    Transitive closure %(iteration of $\union$)
-    \isatt{eclose{\uscore}repl1{\uscore}intf{\uscore}fm},
+    \isatt{eclose{\uscore}repl1{\uscore}intf{\uscore}fm} and 
     \isatt{eclose{\uscore}repl2{\uscore}intf{\uscore}fm}.
+
+    For transitive closure ($X\mapsto\union X$).
   \end{itemize}
-\item 1 instance for absoluteness of the definition of the
-  $n$th element of a list (iteration of the tail operation)
-  \isatt{tl{\uscore}repl{\uscore}intf{\uscore}fm}. By transitivity,
-  we do not need an instance for closure.
+\item \isatt{tl{\uscore}repl{\uscore}intf{\uscore}fm}
+
+  Absoluteness of the definition of the
+  $n$th element of a list (iteration of the tail operation).
+  By transitivity, we do not need an instance for closure.
 \end{itemize}
 The instances so far
 are needed to interpret locales \isatt{M{\uscore}datatypes} and
@@ -39,23 +48,36 @@ are needed to interpret locales \isatt{M{\uscore}datatypes} and
 \item
   2 instances for ordertypes.
   \begin{itemize}
-  \item Auxiliary for the definition of ordertypes
+  \item
     \isatt{replacement{\uscore}is{\uscore}order{\uscore}eq{\uscore}map{\uscore}fm}.
-    
-    This one is needed for the interpretation of
-    \isatt{M{\uscore}ordertype}.
-    
-  \item Replacement through $x\mapsto \otype(x)$, for Hartogs' Theorem
+
+    Auxiliary instance for the definition of ordertypes, needed for
+    the interpretation of \isatt{M{\uscore}ordertype}.
+    %
+  \item
     \isatt{replacement{\uscore}is{\uscore}order{\uscore}body{\uscore}fm}.
+
+    Replacement through $x\mapsto \otype(x)$, for Hartogs' Theorem.
   \end{itemize}
 \item
   4 instances for definitions by well-founded recursion.
   \begin{itemize}
-  \item Ordertypes
-    \isatt{wfrec{\uscore}replacement{\uscore}order{\uscore}pred{\uscore}fm}.
-  \item Rank \isatt{wfrec{\uscore}rank{\uscore}fm}.
-  \item Cumulative hierarchy (rank initial segments) \isatt{trans{\uscore}repl{\uscore}HVFrom{\uscore}fm}.
-  \item Aleph \isatt{replacement{\uscore}HAleph{\uscore}wfrec{\uscore}repl{\uscore}body{\uscore}fm}.
+  \item \isatt{wfrec{\uscore}replacement{\uscore}order{\uscore}pred{\uscore}fm}.
+
+    For ordertypes
+    %
+  \item \isatt{wfrec{\uscore}rank{\uscore}fm}.
+
+    For $\in$-rank.
+    %
+  \item \isatt{trans{\uscore}repl{\uscore}HVFrom{\uscore}fm}.
+
+    For the cumulative hierarchy (rank initial segments).
+    %
+  \item
+    \isatt{replacement{\uscore}HAleph{\uscore}wfrec{\uscore}repl{\uscore}body{\uscore}fm}.
+
+    For Aleph.
   \end{itemize}
 \end{itemize}
 
@@ -67,6 +89,8 @@ previous ones to have them in $M[G]$.
     \beta \mid \exists\tau\in V_\beta.\  \mathit{snd}(x) \forces
     \phi\ [\mathit{fst}(x),\tau,y_1,\dots,y_n]\bigr\}}
 \]
+Here, $\mathit{fst}(\lb a,b\rb) = a$, $\mathit{snd}(\lb a,b\rb) = b$
+(with default value $0$ for non pairs).
 In our development, the mapping $\phi\mapsto\psi$ defined above is given by the
 $\isatt{ground{\uscore}repl{\uscore}fm}$ function, and all ground replacement
 instances appear in the locale \isatt{M{\uscore}ZF4}. These are expressed using
@@ -80,25 +104,41 @@ require the following 5 instances (the last two are needed for the $\Delta$-Syst
 \begin{itemize}
 \item 2 instances for definitions by well-founded recursion.
   \begin{itemize}
-  \item
-    Check names
-    \isatt{wfrec{\uscore}Hcheck{\uscore}fm}.
-  \item Forcing for atomic formulas
-    \isatt{wfrec{\uscore}Hfrc{\uscore}at{\uscore}fm}.
+  \item \isatt{wfrec{\uscore}Hcheck{\uscore}fm}.
+
+    For check-names.
+    %
+  \item \isatt{wfrec{\uscore}Hfrc{\uscore}at{\uscore}fm}.
+
+    Definition of forcing for atomic formulas.
   \end{itemize}
-\item Replacement through $x\mapsto \lb x,\check{x}\rb$ (for the
-  definition of $\punto{G}$)
+  %
+\item
   \isatt{Lambda{\uscore}in{\uscore}M{\uscore}fm(check{\uscore}fm(2,0,1),1)}.
-\item Recursive construction of sets using a choice function
+
+  Replacement through $x\mapsto \lb x,\check{x}\rb$ (for the
+  definition of $\punto{G}$).
+  %
+\item
   \isatt{replacement{\uscore}is{\uscore}trans{\uscore}apply{\uscore}image{\uscore}fm}.
-\item Absoluteness of the previous construction \isatt{replacement{\uscore}transrec{\uscore}apply{\uscore}image{\uscore}body{\uscore}fm}.
+
+  Recursive construction of sets using a choice function (as in the
+  construction of a wellorder of $X$ given a choice function on $\Pow(X)$).
+  %
+\item
+  \isatt{replacement{\uscore}transrec{\uscore}apply{\uscore}image{\uscore}body{\uscore}fm}.
+
+  Absoluteness of the previous construction.
 \end{itemize}
 %
-This is enough to force $\neg\CH$. To force $\CH$, one further instance is needed:
+This is enough to force $\neg\CH$. To force $\CH$, we required one further instance:
 %
 \begin{itemize}
-\item Absoluteness of the recursive construction in the proof of the
-  Dependent Choices \isatt{replacement{\uscore}dcwit{\uscore}repl{\uscore}body{\uscore}fm}.
+\item
+  \isatt{replacement{\uscore}dcwit{\uscore}repl{\uscore}body{\uscore}fm}.
+
+  Absoluteness of the recursive construction in the proof of the
+  Dependent Choices from $\AC$.
 \end{itemize}
 
 The particular choice of some of the instances above arose from
