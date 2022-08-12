@@ -1,0 +1,41 @@
+\section{Lambda replacements}\label{sec:lambda-replacements}
+
+The development of the locale structure of the project was a dynamical
+process. As further properties of closure of the ground $M$ were
+required, we gather the relevant instances of Separation and
+Replacement into a new locale (always assuming a class model, for
+added generality), and proceded to apply them to those closure proofs.
+
+This procedure lead to a steady grow in the number of interpretation
+obligations and therefore, of formula synthesis (since the two axiom
+schemes were postulated using codes for formulas). That number would
+easily surpass the hundred, and the automatic tools at our disposal
+for that task were rudimentary (as discussed in
+Section~\ref{sec:bureaucracy-scale-factors}).
+
+Faced with this situation, we decided that we needed some sort of
+\emph{compositionality} in order to obtain instances new instances
+from the ones already proved: Having Replacement for class functions
+$F$ and $G$ does not entail immediately replacement under $F\circ G$
+(unless you use one further instance of Separation, and the net gain
+is zero). The solution was to postulate for the relevant $F$s, instead
+of replacement through $x\mapsto F(x)$, a \emph{lambda replacement}
+through $x\mapsto \lb x,F(x)\rb$. The name “lambda” corresponds to the
+fact that this type of replacement is equivalent to closure under
+$(\lambda x\in A.\ F(x)) \defi \{ \lb x,F(x)\rb : x\in A \}$ for every
+$A\in M$.
+
+Now, a fixed set of six replacements and one separation (apart from
+those in \locale{M{\uscore}basic}, which also assumes the Powerset
+Axiom for the class $M$) is sufficient to obtain the lambda
+replacement under $x\mapsto \lb x,F(G(x))\rb$ given those for $F$ and
+$G$. To obtain compositions with binary class functions $H$, it is
+enough to assume the lambda replacement
+$x\mapsto \lb x,H(\mathit{fst}(x),\mathit{snd}(x)))\rb$.
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "independence_ch_isabelle"
+%%% ispell-local-dictionary: "american"
+%%% End:

@@ -6,7 +6,7 @@
 The description of set models of fragments of $\ZFC$ was performed
 using locales that fix a variable $M::\tyi$
 and pack assumptions stating that $\lb M, \in\rb$ satisfy some
-axioms. For example, the locale \isatt{M{\uscore}Z{\uscore}basic}
+axioms. For example, the locale \locale{M{\uscore}Z{\uscore}basic}
 states that Zermelo set theory holds in $M$. The Union Axiom (\isatt{Union{\uscore}ax}), for
 instance, is defined as follows:
 \[
@@ -40,7 +40,7 @@ the expressions
 that consume a class $N$ and predicates $Q::\tyi\fun\tyo$ and $R::\tyi\fun\tyi\fun\tyo$, and state that $N$
 satisfies the $Q$-instance of Separation and the $R$-instance of
 Replacement, respectively. In the statement of the Separation Axiom in
-\isatt{M{\uscore}Z{\uscore}basic} and
+\locale{M{\uscore}Z{\uscore}basic} and
 the many replacement instances, predicates $Q$ and $R$ are actually
 defined as the satisfaction of formulas of the appropriate arity; we can only show
 that this form of the axioms hold in generic extensions. 
@@ -64,15 +64,15 @@ list concatenation):
 %% are actually “fake” instances in that they can be obtained from
 %% Powerset, or from other replacement instances already available in the
 %% respective context. An example of this is the sole instance of the
-%% \isatt{M{\uscore}basic} locale, originally from
+%% \locale{M{\uscore}basic} locale, originally from
 %% \session{ZF-Constructible}; we managed to eliminate it but in
 %% doing so we had to reprove many lemmas from
 %% that session in the weakened context. 
 The locales gathering all 32 replacement instances necessary are named
-\isatt{M{\uscore}ZF1} through \isatt{M{\uscore}ZF4},
-\isatt{M{\uscore}ZF{\uscore}ground},
-\isatt{M{\uscore}ZF{\uscore}ground{\uscore}notCH}, and
-\isatt{M{\uscore}ZF{\uscore}ground{\uscore}CH} (see
+\locale{M{\uscore}ZF1} through \locale{M{\uscore}ZF4},
+\locale{M{\uscore}ZF{\uscore}ground},
+\locale{M{\uscore}ZF{\uscore}ground{\uscore}notCH}, and
+\locale{M{\uscore}ZF{\uscore}ground{\uscore}CH} (see
 Section~\ref{sec:repl-instances} for details).
 These assumptions are then invoked to interpret at the class
 $\isatt{\#\#} M$ the relevant locales appearing in

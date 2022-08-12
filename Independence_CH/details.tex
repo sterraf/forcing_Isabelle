@@ -41,9 +41,9 @@ relational form in the \session{ZF-Constructible} library.
   By transitivity, we do not need an instance for closure.
 \end{itemize}
 The instances so far
-are needed to interpret locales \isatt{M{\uscore}datatypes} and
-\isatt{M{\uscore}eclose}.
-%% \isatt{M{\uscore}datatypes} is used in the relative definition of
+are needed to interpret locales \locale{M{\uscore}datatypes} and
+\locale{M{\uscore}eclose}.
+%% \locale{M{\uscore}datatypes} is used in the relative definition of
 %% \isatt{Vset}.
 \begin{itemize}
 \item
@@ -53,7 +53,7 @@ are needed to interpret locales \isatt{M{\uscore}datatypes} and
     \isatt{replacement{\uscore}is{\uscore}order{\uscore}eq{\uscore}map{\uscore}fm}.
 
     Auxiliary instance for the definition of ordertypes, needed for
-    the interpretation of \isatt{M{\uscore}ordertype}.
+    the interpretation of \locale{M{\uscore}ordertype}.
     %
   \item
     \isatt{replacement{\uscore}is{\uscore}order{\uscore}body{\uscore}fm}.
@@ -94,7 +94,7 @@ Here, $\mathit{fst}(\lb a,b\rb) = a$, $\mathit{snd}(\lb a,b\rb) = b$
 (with default value $0$ for non pairs).
 In our development, the mapping $\phi\mapsto\psi$ defined above is given by the
 $\isatt{ground{\uscore}repl{\uscore}fm}$ function, and all ground replacement
-instances appear in the locale \isatt{M{\uscore}ZF4}. These are expressed using
+instances appear in the locale \locale{M{\uscore}ZF4}. These are expressed using
 the \isatt{ground{\uscore}replacement{\uscore}assm(M,\isasymphi)} predicate
 obtained by replacing $\phi$ by
 $\isatt{ground{\uscore}repl{\uscore}fm}(\phi)$ in Eq.~(\ref{eq:replacement_assm_def}).
@@ -146,8 +146,8 @@ The particular choice of some of the instances above arose from
 Paulson's architecture on which we based our development.
 This applies every time
 a locale from \session{ZF-Constructible} has to be
-interpreted (namely \isatt{M{\uscore}datatypes}
-\isatt{M{\uscore}eclose}, and \isatt{M{\uscore}ordertype}).
+interpreted (namely \locale{M{\uscore}datatypes}
+\locale{M{\uscore}eclose}, and \locale{M{\uscore}ordertype}).
 %% For instance, the first
 %% instance required for the definition of relative ordertypes arises
 %% from Paulson's \session{ZF-Constructible}.
@@ -155,7 +155,7 @@ interpreted (namely \isatt{M{\uscore}datatypes}
 
 On the other hand, as explained in
 Section~\ref{sec:zfc-axioms-as-locales}, we managed to eliminate the
-instance arising from the \isatt{M{\uscore}basic} locale. Similarly,
+instance arising from the \locale{M{\uscore}basic} locale. Similarly,
 we replaced the original proof of the Schröder-Bernstein Theorem by
 Zermelo's one \cite[Exr. x4.27]{moschovakis1994notes}, because the
 former required at least one extra instance
