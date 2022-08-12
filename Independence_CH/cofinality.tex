@@ -1,0 +1,35 @@
+\section{Recursions in cofinality}\label{sec:recursions-cofinality}
+
+As we mentioned near the end of
+Section~\ref{sec:aims-formalization-planning}, we decided to minimize
+the requirements being formalized in order to achieve our immediate
+goal. In particular, the treatment of cofinality in the companion
+project \cite{Delta_System_Lemma-AFP} was left behind.
+
+We already observed that well-founded, and in particular transfinite,
+recursion is not easily dealt with in Isabelle/ZF. Nevertheless, and
+mainly as a curiosity, we found out that only one recursive
+construction is needed for the development of the basic theory of
+cofinality (as in \cite[Sect.~I.13]{kunen2011set}), which is used in
+the proof of the following “factorization” lemma:
+
+\begin{lemma}
+  Let $\del,\ga\in\Ord$ and assume $f:\del\to\ga$ is cofinal.  There exists
+  a strictly increasing $g:\cf(\ga)\to \del$ such that $f\circ g$ is
+  strictly increasing and cofinal in $\ga$. Moreover, if $f$ is
+  strictly increasing, then $g$ must also be cofinal.
+\end{lemma}
+
+It turns out that the rest of the basic results on cofinality (namely,
+idempotence of $\cf$, that regular ordinals are cardinals, the
+cofinality of Alephs, König's Theorem) follow easily from the previous
+Lemma by “algebraic” reasoning only.
+
+We therefore expect that the relativization of these
+results be straightforward, when time permits.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "independence_ch_isabelle"
+%%% ispell-local-dictionary: "american"
+%%% End:
