@@ -9,6 +9,11 @@
 \usepackage{xcolor}
 \usepackage{framed}
 \usepackage[numbers]{natbib}
+\usepackage{relsize}
+\DeclareRobustCommand{\isactrlbsub}{\emph\bgroup\math{}\sb\bgroup\mbox\bgroup\isaspacing\itshape\smaller}
+\DeclareRobustCommand{\isactrlesub}{\egroup\egroup\endmath\egroup}
+\DeclareRobustCommand{\isactrlbsup}{\emph\bgroup\math{}\sp\bgroup\mbox\bgroup\isaspacing\itshape\smaller}
+\DeclareRobustCommand{\isactrlesup}{\egroup\egroup\endmath\egroup}
 
 %%
 %% \usepackage[bottom=2cm, top=2cm, left=2cm, right=2cm]{geometry}

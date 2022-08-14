@@ -79,8 +79,9 @@ $\isatt{\#\#} M$ the relevant locales appearing in
 \session{ZF-Constructible}, and further ones required for the relative
 results from Section~\ref{sec:extension-isabellezf}.
 
+%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
 
-\subsection{The fundamental theorems}
+\subsection{The fundamental theorems}\label{sec:fundamental-theorems}
 Let $\lb \PP, {\preceq} ,\1\rb \in M$ be a forcing notion. In order to
 fix the notation, the
 $\val$ interpretation function takes $3$ arguments so that if $G\sbq \PP$, we have
@@ -179,6 +180,35 @@ datatype $\formula$ as indicated above. Technical details on the
 implementation and proofs of the
 Forcing Theorems have been spelled out in our
 \cite{2020arXiv200109715G}.
+
+%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
+\subsection{Models for $\CH$ and its negation}
+\label{sec:models-ch-negation}
+
+The statements of the existence of models of $\ZFC + \neg\CH$ and of
+$\ZFC + \CH$ negation appear in our formalization as follows:
+
+\begin{isabelle}
+\isacommand{corollary}\isamarkupfalse%
+\ ctm{\isacharunderscore}{\kern0pt}ZFC{\isacharunderscore}{\kern0pt}imp{\isacharunderscore}{\kern0pt}ctm{\isacharunderscore}{\kern0pt}not{\isacharunderscore}{\kern0pt}CH{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeyword{assumes}\isanewline
+\ \ \ \ {\isachardoublequoteopen}M\ {\isasymapprox}\ {\isasymomega}{\isachardoublequoteclose}\ {\isachardoublequoteopen}Transset{\isacharparenleft}{\kern0pt}M{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\ {\isachardoublequoteopen}M\ {\isasymTurnstile}\ ZFC{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\isanewline
+\ \ \ \ {\isachardoublequoteopen}{\isasymexists}N{\isachardot}{\kern0pt}\isanewline
+\ \ \ \ \ \ M\ {\isasymsubseteq}\ N\ {\isasymand}\ N\ {\isasymapprox}\ {\isasymomega}\ {\isasymand}\ Transset{\isacharparenleft}{\kern0pt}N{\isacharparenright}{\kern0pt}\ {\isasymand}\ N\ {\isasymTurnstile}\ ZFC\ {\isasymunion}\ {\isacharbraceleft}{\kern0pt}{\isasymcdot}{\isasymnot}{\isasymcdot}CH{\isasymcdot}{\isasymcdot}{\isacharbraceright}{\kern0pt}\ {\isasymand}\isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}{\isasymalpha}{\isachardot}{\kern0pt}\ Ord{\isacharparenleft}{\kern0pt}{\isasymalpha}{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\ {\isacharparenleft}{\kern0pt}{\isasymalpha}\ {\isasymin}\ M\ {\isasymlongleftrightarrow}\ {\isasymalpha}\ {\isasymin}\ N{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}
+\end{isabelle}
+
+\begin{isabelle}
+\isacommand{corollary}\isamarkupfalse%
+\ ctm{\isacharunderscore}{\kern0pt}ZFC{\isacharunderscore}{\kern0pt}imp{\isacharunderscore}{\kern0pt}ctm{\isacharunderscore}{\kern0pt}CH{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeyword{assumes}\isanewline
+\ \ \ \ {\isachardoublequoteopen}M\ {\isasymapprox}\ {\isasymomega}{\isachardoublequoteclose}\ {\isachardoublequoteopen}Transset{\isacharparenleft}{\kern0pt}M{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\ {\isachardoublequoteopen}M\ {\isasymTurnstile}\ ZFC{\isachardoublequoteclose}\isanewline
+\ \ \isakeyword{shows}\isanewline
+\ \ \ \ {\isachardoublequoteopen}{\isasymexists}N{\isachardot}{\kern0pt}\isanewline
+\ \ \ \ \ \ M\ {\isasymsubseteq}\ N\ {\isasymand}\ N\ {\isasymapprox}\ {\isasymomega}\ {\isasymand}\ Transset{\isacharparenleft}{\kern0pt}N{\isacharparenright}{\kern0pt}\ {\isasymand}\ N\ {\isasymTurnstile}\ ZFC\ {\isasymunion}\ {\isacharbraceleft}{\kern0pt}{\isasymcdot}CH{\isasymcdot}{\isacharbraceright}{\kern0pt}\ {\isasymand}\isanewline
+\ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}{\isasymalpha}{\isachardot}{\kern0pt}\ Ord{\isacharparenleft}{\kern0pt}{\isasymalpha}{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\ {\isacharparenleft}{\kern0pt}{\isasymalpha}\ {\isasymin}\ M\ {\isasymlongleftrightarrow}\ {\isasymalpha}\ {\isasymin}\ N{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}
+\end{isabelle}
 
 %%% Local Variables: 
 %%% mode: latex
