@@ -548,7 +548,7 @@ instances1_fms \<equiv>
 thm overhead_def overhead_notCH_def
 text\<open>@{thm [display] overhead_def overhead_notCH_def overhead_CH_def}\<close>
 (*
-  overhead \<equiv> instances1_fms \<union> instances2_fms \<union> instances_ground_fms
+  overhead \<equiv> instances1_fms \<union> instances_ground_fms
 
   overhead_notCH \<equiv> overhead \<union>
     instances3_fms \<union> instances4_fms \<union> instances_ground_notCH_fms

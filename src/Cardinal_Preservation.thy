@@ -39,8 +39,8 @@ notation check (\<open>_\<^sup>v\<close> [101] 100)
 end \<comment> \<open>\<^locale>\<open>forcing_data1\<close>\<close>
 
 
-locale G_generic3 = G_generic2 + forcing_data3
-locale G_generic3_AC = G_generic2_AC + G_generic3
+locale G_generic3 = G_generic1 + forcing_data3
+locale G_generic3_AC = G_generic1_AC + G_generic3
 
 locale G_generic4 = G_generic3 + forcing_data4
 locale G_generic4_AC = G_generic3_AC + G_generic4
