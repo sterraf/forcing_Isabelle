@@ -367,105 +367,52 @@ appears only because the definition of $\models$ requires that argument).%
 \begin{isabelle}%
 {\isasymlbrakk}env\ {\isasymin}\ list{\isacharparenleft}{\kern0pt}A{\isacharparenright}{\kern0pt}{\isacharsemicolon}{\kern0pt}\ {\isadigit{0}}\ {\isasymin}\ A{\isasymrbrakk}\ {\isasymLongrightarrow}\ is{\isacharunderscore}{\kern0pt}ContHyp{\isacharparenleft}{\kern0pt}{\isacharhash}{\kern0pt}{\isacharhash}{\kern0pt}A{\isacharparenright}{\kern0pt}\ {\isasymlongleftrightarrow}\ A{\isacharcomma}{\kern0pt}\ env\ {\isasymTurnstile}\ {\isasymcdot}CH{\isasymcdot}%
 \end{isabelle}%
-\subsection{Forcing \label{sec:def-main-forcing}%
-}
-Our first milestone was to obtain a proper extension using forcing.
-Its original proof didn't required the previous developments involving
-below.%
-\begin{isabelle}%
-{\isasymlbrakk}M\ {\isasymapprox}\ {\isasymomega}{\isacharsemicolon}{\kern0pt}\ Transset{\isacharparenleft}{\kern0pt}M{\isacharparenright}{\kern0pt}{\isacharsemicolon}{\kern0pt}\ M\ {\isasymTurnstile}\ ZF{\isasymrbrakk}\isanewline
-{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ M\ {\isasymsubseteq}\ N\ {\isasymand}\isanewline
-\isaindent{{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ }N\ {\isasymapprox}\ {\isasymomega}\ {\isasymand}\isanewline
-\isaindent{{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ }Transset{\isacharparenleft}{\kern0pt}N{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
-\isaindent{{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ }N\ {\isasymTurnstile}\ ZF\ {\isasymand}\isanewline
-\isaindent{{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ }M\ {\isasymnoteq}\ N\ {\isasymand}\ {\isacharparenleft}{\kern0pt}{\isasymforall}{\isasymalpha}{\isachardot}{\kern0pt}\ Ord{\isacharparenleft}{\kern0pt}{\isasymalpha}{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\ {\isasymalpha}\ {\isasymin}\ M\ {\isasymlongleftrightarrow}\ {\isasymalpha}\ {\isasymin}\ N{\isacharparenright}{\kern0pt}\ {\isasymand}\ {\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}M{\isacharcomma}{\kern0pt}\ {\isacharbrackleft}{\kern0pt}{\isacharbrackright}{\kern0pt}\ {\isasymTurnstile}\ {\isasymcdot}AC{\isasymcdot}{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\ N\ {\isasymTurnstile}\ ZFC{\isacharparenright}{\kern0pt}%
-\end{isabelle}%
-We can finally state our main results, namely, the existence of models
-for $\ZFC + \CH$ and $\ZFC + \neg\CH$ under the assumption of a ctm of $\ZFC$.%
-\begin{isabelle}%
-{\isasymlbrakk}M\ {\isasymapprox}\ {\isasymomega}{\isacharsemicolon}{\kern0pt}\ Transset{\isacharparenleft}{\kern0pt}M{\isacharparenright}{\kern0pt}{\isacharsemicolon}{\kern0pt}\ M\ {\isasymTurnstile}\ ZFC{\isasymrbrakk}\isanewline
-{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ M\ {\isasymsubseteq}\ N\ {\isasymand}\isanewline
-\isaindent{{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ }N\ {\isasymapprox}\ {\isasymomega}\ {\isasymand}\isanewline
-\isaindent{{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ }Transset{\isacharparenleft}{\kern0pt}N{\isacharparenright}{\kern0pt}\ {\isasymand}\ N\ {\isasymTurnstile}\ ZFC\ {\isasymunion}\ {\isacharbraceleft}{\kern0pt}{\isasymcdot}{\isasymnot}{\isasymcdot}CH{\isasymcdot}{\isasymcdot}{\isacharbraceright}{\kern0pt}\ {\isasymand}\ {\isacharparenleft}{\kern0pt}{\isasymforall}{\isasymalpha}{\isachardot}{\kern0pt}\ Ord{\isacharparenleft}{\kern0pt}{\isasymalpha}{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\ {\isasymalpha}\ {\isasymin}\ M\ {\isasymlongleftrightarrow}\ {\isasymalpha}\ {\isasymin}\ N{\isacharparenright}{\kern0pt}%
-\end{isabelle}%
-\begin{isabelle}%
-{\isasymlbrakk}M\ {\isasymapprox}\ {\isasymomega}{\isacharsemicolon}{\kern0pt}\ Transset{\isacharparenleft}{\kern0pt}M{\isacharparenright}{\kern0pt}{\isacharsemicolon}{\kern0pt}\ M\ {\isasymTurnstile}\ ZFC{\isasymrbrakk}\isanewline
-{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ M\ {\isasymsubseteq}\ N\ {\isasymand}\isanewline
-\isaindent{{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ }N\ {\isasymapprox}\ {\isasymomega}\ {\isasymand}\isanewline
-\isaindent{{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ }Transset{\isacharparenleft}{\kern0pt}N{\isacharparenright}{\kern0pt}\ {\isasymand}\ N\ {\isasymTurnstile}\ ZFC\ {\isasymunion}\ {\isacharbraceleft}{\kern0pt}{\isasymcdot}CH{\isasymcdot}{\isacharbraceright}{\kern0pt}\ {\isasymand}\ {\isacharparenleft}{\kern0pt}{\isasymforall}{\isasymalpha}{\isachardot}{\kern0pt}\ Ord{\isacharparenleft}{\kern0pt}{\isasymalpha}{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\ {\isasymalpha}\ {\isasymin}\ M\ {\isasymlongleftrightarrow}\ {\isasymalpha}\ {\isasymin}\ N{\isacharparenright}{\kern0pt}%
-\end{isabelle}%
-These results can be strengthened by enumerating six finite sets of
-replacement instances which are sufficient to develop forcing and for
-the construction of the aforementioned models: \isa{instances{\isadigit{1}}{\isacharunderscore}{\kern0pt}fms}
-through \isa{instances{\isadigit{4}}{\isacharunderscore}{\kern0pt}fms}, \isa{instances{\isacharunderscore}{\kern0pt}ground{\isacharunderscore}{\kern0pt}fms}, and
-\isa{instances{\isacharunderscore}{\kern0pt}ground{\isacharunderscore}{\kern0pt}notCH{\isacharunderscore}{\kern0pt}fms},
-which are then collected into the $31$-element set \isa{overhead{\isacharunderscore}{\kern0pt}notCH}.
-For example, we have:%
-\begin{isabelle}%
-instances{\isadigit{1}}{\isacharunderscore}{\kern0pt}fms\ {\isasymequiv}\isanewline
-{\isacharbraceleft}{\kern0pt}list{\isacharunderscore}{\kern0pt}repl{\isadigit{1}}{\isacharunderscore}{\kern0pt}intf{\isacharunderscore}{\kern0pt}fm{\isacharcomma}{\kern0pt}\ list{\isacharunderscore}{\kern0pt}repl{\isadigit{2}}{\isacharunderscore}{\kern0pt}intf{\isacharunderscore}{\kern0pt}fm{\isacharcomma}{\kern0pt}\ formula{\isacharunderscore}{\kern0pt}repl{\isadigit{1}}{\isacharunderscore}{\kern0pt}intf{\isacharunderscore}{\kern0pt}fm{\isacharcomma}{\kern0pt}\isanewline
-\isaindent{{\isacharbraceleft}{\kern0pt}}formula{\isacharunderscore}{\kern0pt}repl{\isadigit{2}}{\isacharunderscore}{\kern0pt}intf{\isacharunderscore}{\kern0pt}fm{\isacharcomma}{\kern0pt}\ eclose{\isacharunderscore}{\kern0pt}repl{\isadigit{1}}{\isacharunderscore}{\kern0pt}intf{\isacharunderscore}{\kern0pt}fm{\isacharcomma}{\kern0pt}\ eclose{\isacharunderscore}{\kern0pt}repl{\isadigit{2}}{\isacharunderscore}{\kern0pt}intf{\isacharunderscore}{\kern0pt}fm{\isacharcomma}{\kern0pt}\isanewline
-\isaindent{{\isacharbraceleft}{\kern0pt}}wfrec{\isacharunderscore}{\kern0pt}rank{\isacharunderscore}{\kern0pt}fm{\isacharcomma}{\kern0pt}\ trans{\isacharunderscore}{\kern0pt}repl{\isacharunderscore}{\kern0pt}HVFrom{\isacharunderscore}{\kern0pt}fm{\isacharcomma}{\kern0pt}\ tl{\isacharunderscore}{\kern0pt}repl{\isacharunderscore}{\kern0pt}intf{\isacharunderscore}{\kern0pt}fm{\isacharbraceright}{\kern0pt}%
-\end{isabelle}%
-\begin{isabelle}%
-overhead\ {\isasymequiv}\ instances{\isadigit{1}}{\isacharunderscore}{\kern0pt}fms\ {\isasymunion}\ instances{\isadigit{2}}{\isacharunderscore}{\kern0pt}fms\ {\isasymunion}\ instances{\isacharunderscore}{\kern0pt}ground{\isacharunderscore}{\kern0pt}fms\isasep\isanewline\isanewline%
-overhead{\isacharunderscore}{\kern0pt}notCH\ {\isasymequiv}\isanewline
-overhead\ {\isasymunion}\ instances{\isadigit{3}}{\isacharunderscore}{\kern0pt}fms\ {\isasymunion}\ instances{\isadigit{4}}{\isacharunderscore}{\kern0pt}fms\ {\isasymunion}\ instances{\isacharunderscore}{\kern0pt}ground{\isacharunderscore}{\kern0pt}notCH{\isacharunderscore}{\kern0pt}fms\isasep\isanewline\isanewline%
-overhead{\isacharunderscore}{\kern0pt}CH\ {\isasymequiv}\ overhead{\isacharunderscore}{\kern0pt}notCH\ {\isasymunion}\ {\isacharbraceleft}{\kern0pt}replacement{\isacharunderscore}{\kern0pt}dcwit{\isacharunderscore}{\kern0pt}repl{\isacharunderscore}{\kern0pt}body{\isacharunderscore}{\kern0pt}fm{\isacharbraceright}{\kern0pt}%
-\end{isabelle}%
-One further instance is needed to force $\CH$, with a total count
-of $32$ instances:%
-\begin{isabelle}%
-overhead{\isacharunderscore}{\kern0pt}CH\ {\isasymequiv}\ overhead{\isacharunderscore}{\kern0pt}notCH\ {\isasymunion}\ {\isacharbraceleft}{\kern0pt}replacement{\isacharunderscore}{\kern0pt}dcwit{\isacharunderscore}{\kern0pt}repl{\isacharunderscore}{\kern0pt}body{\isacharunderscore}{\kern0pt}fm{\isacharbraceright}{\kern0pt}%
-\end{isabelle}%
-\begin{isabelle}%
-{\isasymlbrakk}M\ {\isasymapprox}\ {\isasymomega}{\isacharsemicolon}{\kern0pt}\ Transset{\isacharparenleft}{\kern0pt}M{\isacharparenright}{\kern0pt}{\isacharsemicolon}{\kern0pt}\ M\ {\isasymTurnstile}\ {\isasymcdot}Z{\isasymcdot}\ {\isasymunion}\ {\isacharbraceleft}{\kern0pt}{\isasymcdot}Replacement{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}{\isasymcdot}\ {\isachardot}{\kern0pt}\ p\ {\isasymin}\ overhead{\isacharbraceright}{\kern0pt}{\isacharsemicolon}{\kern0pt}\isanewline
-\isaindent{\ }{\isasymPhi}\ {\isasymsubseteq}\ formula{\isacharsemicolon}{\kern0pt}\ M\ {\isasymTurnstile}\ {\isacharbraceleft}{\kern0pt}{\isasymcdot}Replacement{\isacharparenleft}{\kern0pt}ground{\isacharunderscore}{\kern0pt}repl{\isacharunderscore}{\kern0pt}fm{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isasymcdot}\ {\isachardot}{\kern0pt}\ {\isasymphi}\ {\isasymin}\ {\isasymPhi}{\isacharbraceright}{\kern0pt}{\isasymrbrakk}\isanewline
-{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ M\ {\isasymsubseteq}\ N\ {\isasymand}\isanewline
-\isaindent{{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ }N\ {\isasymapprox}\ {\isasymomega}\ {\isasymand}\isanewline
-\isaindent{{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ }Transset{\isacharparenleft}{\kern0pt}N{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
-\isaindent{{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ }M\ {\isasymnoteq}\ N\ {\isasymand}\isanewline
-\isaindent{{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ }{\isacharparenleft}{\kern0pt}{\isasymforall}{\isasymalpha}{\isachardot}{\kern0pt}\ Ord{\isacharparenleft}{\kern0pt}{\isasymalpha}{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\ {\isasymalpha}\ {\isasymin}\ M\ {\isasymlongleftrightarrow}\ {\isasymalpha}\ {\isasymin}\ N{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
-\isaindent{{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ }{\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}M{\isacharcomma}{\kern0pt}\ {\isacharbrackleft}{\kern0pt}{\isacharbrackright}{\kern0pt}\ {\isasymTurnstile}\ {\isasymcdot}AC{\isasymcdot}{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\ N{\isacharcomma}{\kern0pt}\ {\isacharbrackleft}{\kern0pt}{\isacharbrackright}{\kern0pt}\ {\isasymTurnstile}\ {\isasymcdot}AC{\isasymcdot}{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
-\isaindent{{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ }N\ {\isasymTurnstile}\ {\isasymcdot}Z{\isasymcdot}\ {\isasymunion}\ {\isacharbraceleft}{\kern0pt}{\isasymcdot}Replacement{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}{\isasymcdot}\ {\isachardot}{\kern0pt}\ {\isasymphi}\ {\isasymin}\ {\isasymPhi}{\isacharbraceright}{\kern0pt}%
-\end{isabelle}%
-\begin{isabelle}%
-{\isasymlbrakk}M\ {\isasymapprox}\ {\isasymomega}{\isacharsemicolon}{\kern0pt}\ Transset{\isacharparenleft}{\kern0pt}M{\isacharparenright}{\kern0pt}{\isacharsemicolon}{\kern0pt}\ M\ {\isasymTurnstile}\ ZC\ {\isasymunion}\ {\isacharbraceleft}{\kern0pt}{\isasymcdot}Replacement{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}{\isasymcdot}\ {\isachardot}{\kern0pt}\ p\ {\isasymin}\ overhead{\isacharunderscore}{\kern0pt}notCH{\isacharbraceright}{\kern0pt}{\isacharsemicolon}{\kern0pt}\isanewline
-\isaindent{\ }{\isasymPhi}\ {\isasymsubseteq}\ formula{\isacharsemicolon}{\kern0pt}\ M\ {\isasymTurnstile}\ {\isacharbraceleft}{\kern0pt}{\isasymcdot}Replacement{\isacharparenleft}{\kern0pt}ground{\isacharunderscore}{\kern0pt}repl{\isacharunderscore}{\kern0pt}fm{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isasymcdot}\ {\isachardot}{\kern0pt}\ {\isasymphi}\ {\isasymin}\ {\isasymPhi}{\isacharbraceright}{\kern0pt}{\isasymrbrakk}\isanewline
-{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ M\ {\isasymsubseteq}\ N\ {\isasymand}\isanewline
-\isaindent{{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ }N\ {\isasymapprox}\ {\isasymomega}\ {\isasymand}\isanewline
-\isaindent{{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ }Transset{\isacharparenleft}{\kern0pt}N{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
-\isaindent{{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ }N\ {\isasymTurnstile}\ ZC\ {\isasymunion}\ {\isacharbraceleft}{\kern0pt}{\isasymcdot}{\isasymnot}{\isasymcdot}CH{\isasymcdot}{\isasymcdot}{\isacharbraceright}{\kern0pt}\ {\isasymunion}\ {\isacharbraceleft}{\kern0pt}{\isasymcdot}Replacement{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}{\isasymcdot}\ {\isachardot}{\kern0pt}\ {\isasymphi}\ {\isasymin}\ {\isasymPhi}{\isacharbraceright}{\kern0pt}\ {\isasymand}\isanewline
-\isaindent{{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ }{\isacharparenleft}{\kern0pt}{\isasymforall}{\isasymalpha}{\isachardot}{\kern0pt}\ Ord{\isacharparenleft}{\kern0pt}{\isasymalpha}{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\ {\isasymalpha}\ {\isasymin}\ M\ {\isasymlongleftrightarrow}\ {\isasymalpha}\ {\isasymin}\ N{\isacharparenright}{\kern0pt}%
-\end{isabelle}%
-\begin{isabelle}%
-{\isasymlbrakk}M\ {\isasymapprox}\ {\isasymomega}{\isacharsemicolon}{\kern0pt}\ Transset{\isacharparenleft}{\kern0pt}M{\isacharparenright}{\kern0pt}{\isacharsemicolon}{\kern0pt}\ M\ {\isasymTurnstile}\ ZC\ {\isasymunion}\ {\isacharbraceleft}{\kern0pt}{\isasymcdot}Replacement{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}{\isasymcdot}\ {\isachardot}{\kern0pt}\ p\ {\isasymin}\ overhead{\isacharunderscore}{\kern0pt}CH{\isacharbraceright}{\kern0pt}{\isacharsemicolon}{\kern0pt}\isanewline
-\isaindent{\ }{\isasymPhi}\ {\isasymsubseteq}\ formula{\isacharsemicolon}{\kern0pt}\ M\ {\isasymTurnstile}\ {\isacharbraceleft}{\kern0pt}{\isasymcdot}Replacement{\isacharparenleft}{\kern0pt}ground{\isacharunderscore}{\kern0pt}repl{\isacharunderscore}{\kern0pt}fm{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isasymcdot}\ {\isachardot}{\kern0pt}\ {\isasymphi}\ {\isasymin}\ {\isasymPhi}{\isacharbraceright}{\kern0pt}{\isasymrbrakk}\isanewline
-{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ M\ {\isasymsubseteq}\ N\ {\isasymand}\isanewline
-\isaindent{{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ }N\ {\isasymapprox}\ {\isasymomega}\ {\isasymand}\isanewline
-\isaindent{{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ }Transset{\isacharparenleft}{\kern0pt}N{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
-\isaindent{{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ }N\ {\isasymTurnstile}\ ZC\ {\isasymunion}\ {\isacharbraceleft}{\kern0pt}{\isasymcdot}CH{\isasymcdot}{\isacharbraceright}{\kern0pt}\ {\isasymunion}\ {\isacharbraceleft}{\kern0pt}{\isasymcdot}Replacement{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}{\isasymcdot}\ {\isachardot}{\kern0pt}\ {\isasymphi}\ {\isasymin}\ {\isasymPhi}{\isacharbraceright}{\kern0pt}\ {\isasymand}\isanewline
-\isaindent{{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ }{\isacharparenleft}{\kern0pt}{\isasymforall}{\isasymalpha}{\isachardot}{\kern0pt}\ Ord{\isacharparenleft}{\kern0pt}{\isasymalpha}{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\ {\isasymalpha}\ {\isasymin}\ M\ {\isasymlongleftrightarrow}\ {\isasymalpha}\ {\isasymin}\ N{\isacharparenright}{\kern0pt}%
-\end{isabelle}%
-In the above three statements, the function \isa{ground{\isacharunderscore}{\kern0pt}repl{\isacharunderscore}{\kern0pt}fm}
-takes an element \isa{{\isasymphi}} of \isa{formula} and returns the
-replacement instance in the ground model that produces the
-\isa{{\isasymphi}}-replacement instance in the generic extension. The next
-result is stated in the context \isa{G{\isacharunderscore}{\kern0pt}generic{\isadigit{1}}}, which assumes
-the existence of a generic filter.
-%
-\begin{isabelle}%
-\isacommand{context}\isamarkupfalse%
-\ G{\isacharunderscore}{\kern0pt}generic{\isadigit{1}}\isanewline
-\isakeyword{begin}\isanewline
-\isanewline
-{\isasymlbrakk}{\isasymphi}\ {\isasymin}\ formula{\isacharsemicolon}{\kern0pt}\ M{\isacharcomma}{\kern0pt}\ {\isacharbrackleft}{\kern0pt}{\isacharbrackright}{\kern0pt}\ {\isasymTurnstile}\ {\isasymcdot}Replacement{\isacharparenleft}{\kern0pt}ground{\isacharunderscore}{\kern0pt}repl{\isacharunderscore}{\kern0pt}fm{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isasymcdot}{\isasymrbrakk}\isanewline
-{\isasymLongrightarrow}\ M{\isacharbrackleft}{\kern0pt}G{\isacharbrackright}{\kern0pt}{\isacharcomma}{\kern0pt}\ {\isacharbrackleft}{\kern0pt}{\isacharbrackright}{\kern0pt}\ {\isasymTurnstile}\ {\isasymcdot}Replacement{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}{\isasymcdot}%
-\end{isabelle}%
-\isacommand{end}\isamarkupfalse%
-\ %
-\isamarkupcmt{\isa{G{\isacharunderscore}{\kern0pt}generic{\isadigit{1}}}%
-}
+%% \subsection{Forcing \label{sec:def-main-forcing}%
+%% }
+%% Our first milestone was to obtain a proper extension using forcing.
+%% Its original proof didn't required the previous developments involving
+%% below.%
+%% \begin{isabelle}%
+%% {\isasymlbrakk}M\ {\isasymapprox}\ {\isasymomega}{\isacharsemicolon}{\kern0pt}\ Transset{\isacharparenleft}{\kern0pt}M{\isacharparenright}{\kern0pt}{\isacharsemicolon}{\kern0pt}\ M\ {\isasymTurnstile}\ ZF{\isasymrbrakk}\isanewline
+%% {\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ M\ {\isasymsubseteq}\ N\ {\isasymand}\isanewline
+%% \isaindent{{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ }N\ {\isasymapprox}\ {\isasymomega}\ {\isasymand}\isanewline
+%% \isaindent{{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ }Transset{\isacharparenleft}{\kern0pt}N{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
+%% \isaindent{{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ }N\ {\isasymTurnstile}\ ZF\ {\isasymand}\isanewline
+%% \isaindent{{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ }M\ {\isasymnoteq}\ N\ {\isasymand}\ {\isacharparenleft}{\kern0pt}{\isasymforall}{\isasymalpha}{\isachardot}{\kern0pt}\ Ord{\isacharparenleft}{\kern0pt}{\isasymalpha}{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\ {\isasymalpha}\ {\isasymin}\ M\ {\isasymlongleftrightarrow}\ {\isasymalpha}\ {\isasymin}\ N{\isacharparenright}{\kern0pt}\ {\isasymand}\ {\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}M{\isacharcomma}{\kern0pt}\ {\isacharbrackleft}{\kern0pt}{\isacharbrackright}{\kern0pt}\ {\isasymTurnstile}\ {\isasymcdot}AC{\isasymcdot}{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\ N\ {\isasymTurnstile}\ ZFC{\isacharparenright}{\kern0pt}%
+%% \end{isabelle}%
+%% We can finally state our main results, namely, the existence of models
+%% for $\ZFC + \CH$ and $\ZFC + \neg\CH$ under the assumption of a ctm of $\ZFC$.%
+%% \begin{isabelle}%
+%% {\isasymlbrakk}M\ {\isasymapprox}\ {\isasymomega}{\isacharsemicolon}{\kern0pt}\ Transset{\isacharparenleft}{\kern0pt}M{\isacharparenright}{\kern0pt}{\isacharsemicolon}{\kern0pt}\ M\ {\isasymTurnstile}\ ZFC{\isasymrbrakk}\isanewline
+%% {\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ M\ {\isasymsubseteq}\ N\ {\isasymand}\isanewline
+%% \isaindent{{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ }N\ {\isasymapprox}\ {\isasymomega}\ {\isasymand}\isanewline
+%% \isaindent{{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ }Transset{\isacharparenleft}{\kern0pt}N{\isacharparenright}{\kern0pt}\ {\isasymand}\ N\ {\isasymTurnstile}\ ZFC\ {\isasymunion}\ {\isacharbraceleft}{\kern0pt}{\isasymcdot}{\isasymnot}{\isasymcdot}CH{\isasymcdot}{\isasymcdot}{\isacharbraceright}{\kern0pt}\ {\isasymand}\ {\isacharparenleft}{\kern0pt}{\isasymforall}{\isasymalpha}{\isachardot}{\kern0pt}\ Ord{\isacharparenleft}{\kern0pt}{\isasymalpha}{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\ {\isasymalpha}\ {\isasymin}\ M\ {\isasymlongleftrightarrow}\ {\isasymalpha}\ {\isasymin}\ N{\isacharparenright}{\kern0pt}%
+%% \end{isabelle}%
+%% \begin{isabelle}%
+%% {\isasymlbrakk}M\ {\isasymapprox}\ {\isasymomega}{\isacharsemicolon}{\kern0pt}\ Transset{\isacharparenleft}{\kern0pt}M{\isacharparenright}{\kern0pt}{\isacharsemicolon}{\kern0pt}\ M\ {\isasymTurnstile}\ ZFC{\isasymrbrakk}\isanewline
+%% {\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ M\ {\isasymsubseteq}\ N\ {\isasymand}\isanewline
+%% \isaindent{{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ }N\ {\isasymapprox}\ {\isasymomega}\ {\isasymand}\isanewline
+%% \isaindent{{\isasymLongrightarrow}\ {\isasymexists}N{\isachardot}{\kern0pt}\ }Transset{\isacharparenleft}{\kern0pt}N{\isacharparenright}{\kern0pt}\ {\isasymand}\ N\ {\isasymTurnstile}\ ZFC\ {\isasymunion}\ {\isacharbraceleft}{\kern0pt}{\isasymcdot}CH{\isasymcdot}{\isacharbraceright}{\kern0pt}\ {\isasymand}\ {\isacharparenleft}{\kern0pt}{\isasymforall}{\isasymalpha}{\isachardot}{\kern0pt}\ Ord{\isacharparenleft}{\kern0pt}{\isasymalpha}{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\ {\isasymalpha}\ {\isasymin}\ M\ {\isasymlongleftrightarrow}\ {\isasymalpha}\ {\isasymin}\ N{\isacharparenright}{\kern0pt}%
+%% \end{isabelle}%
+%% In the above three statements, the function \isa{ground{\isacharunderscore}{\kern0pt}repl{\isacharunderscore}{\kern0pt}fm}
+%% takes an element \isa{{\isasymphi}} of \isa{formula} and returns the
+%% replacement instance in the ground model that produces the
+%% \isa{{\isasymphi}}-replacement instance in the generic extension. The next
+%% result is stated in the context \isa{G{\isacharunderscore}{\kern0pt}generic{\isadigit{1}}}, which assumes
+%% the existence of a generic filter.
+%% %
+%% \begin{isabelle}%
+%% \isacommand{context}\isamarkupfalse%
+%% \ G{\isacharunderscore}{\kern0pt}generic{\isadigit{1}}\isanewline
+%% \isakeyword{begin}\isanewline
+%% \isanewline
+%% {\isasymlbrakk}{\isasymphi}\ {\isasymin}\ formula{\isacharsemicolon}{\kern0pt}\ M{\isacharcomma}{\kern0pt}\ {\isacharbrackleft}{\kern0pt}{\isacharbrackright}{\kern0pt}\ {\isasymTurnstile}\ {\isasymcdot}Replacement{\isacharparenleft}{\kern0pt}ground{\isacharunderscore}{\kern0pt}repl{\isacharunderscore}{\kern0pt}fm{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isasymcdot}{\isasymrbrakk}\isanewline
+%% {\isasymLongrightarrow}\ M{\isacharbrackleft}{\kern0pt}G{\isacharbrackright}{\kern0pt}{\isacharcomma}{\kern0pt}\ {\isacharbrackleft}{\kern0pt}{\isacharbrackright}{\kern0pt}\ {\isasymTurnstile}\ {\isasymcdot}Replacement{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}{\isasymcdot}%
+%% \end{isabelle}%
+%% \isacommand{end}\isamarkupfalse%
+%% \ %
+%% \isamarkupcmt{\isa{G{\isacharunderscore}{\kern0pt}generic{\isadigit{1}}}%
+%% }
 
 %%% Local Variables:
 %%% mode: latex
