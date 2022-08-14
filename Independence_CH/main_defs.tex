@@ -1,6 +1,6 @@
 \section{Main definitions of the formalization}\label{sec:definitions_main}
 
-This appendix, which appears almost verbatim as
+This section, which appears almost verbatim as
 the theory \theory{Definitions\_Main} in \cite{Independence_CH-AFP},
 might be considered as the bare minimum reading requisite to
 trust that our development indeed formalizes the theory of
@@ -13,7 +13,7 @@ cardinal arithmetic as implemented in
 \isatt{T{\kern0pt}r{\kern0pt}a{\kern0pt}n{\kern0pt}s{\kern0pt}i{\kern0pt}t{\kern0pt}i{\kern0pt}v{\kern0pt}e{\kern0pt}{\char`\_}{\kern0pt}M{\kern0pt}o{\kern0pt}d{\kern0pt}e{\kern0pt}l{\kern0pt}s{\kern0pt}}. But in case one wants to dive deeper, the
 following sections treat some basic concepts of the ZF logic
 (Section~\ref{sec:def-main-ZF}) and in the
-ZF-Constructible library (Section~\ref{sec:def-main-relative})
+\session{ZF-Constructible} library (Section~\ref{sec:def-main-relative})
 on which our definitions are built.
 
 \subsection{ZF\label{sec:def-main-ZF}%
@@ -60,7 +60,7 @@ Then, addition and predecessor on \isa{{\isasymomega}} are inductively
 characterized as follows:%
 \begin{isabelle}%
 m\ {\isacharplus}{\kern0pt}\isactrlsub {\isasymomega}\ succ{\isacharparenleft}{\kern0pt}n{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ succ{\isacharparenleft}{\kern0pt}m\ {\isacharplus}{\kern0pt}\isactrlsub {\isasymomega}\ n{\isacharparenright}{\kern0pt}\isasep\isanewline%
-m\ {\isasymin}\ {\isasymomega}\ {\isasymLongrightarrow}\ m\ {\isacharplus}{\kern0pt}\isactrlsub {\isasymomega}\ {\isadigit{0}}\ {\isacharequal}{\kern0pt}\ m\isasep\isanewline%
+m\ {\isasymin}\ {\isasymomega}\ {\isasymLongrightarrow}\ m\ {\isacharplus}{\kern0pt}\isactrlsub {\isasymomega}\ {\isadigit{0}}\ {\isacharequal}{\kern0pt}\ m\isasep\isanewline\isanewline%
 pred{\isacharparenleft}{\kern0pt}{\isadigit{0}}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}\isasep\isanewline%
 pred{\isacharparenleft}{\kern0pt}succ{\isacharparenleft}{\kern0pt}y{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ y%
 \end{isabelle}%
@@ -71,17 +71,18 @@ the induction theorem for them shows that the characterization is
 “complete”.%
 \begin{isabelle}%
 {\isacharbrackleft}{\kern0pt}{\isacharbrackright}{\kern0pt}\ {\isasymin}\ list{\isacharparenleft}{\kern0pt}A{\isacharparenright}{\kern0pt}\isasep\isanewline%
-{\isasymlbrakk}a\ {\isasymin}\ A{\isacharsemicolon}{\kern0pt}\ l\ {\isasymin}\ list{\isacharparenleft}{\kern0pt}A{\isacharparenright}{\kern0pt}{\isasymrbrakk}\ {\isasymLongrightarrow}\ Cons{\isacharparenleft}{\kern0pt}a{\isacharcomma}{\kern0pt}\ l{\isacharparenright}{\kern0pt}\ {\isasymin}\ list{\isacharparenleft}{\kern0pt}A{\isacharparenright}{\kern0pt}\isasep\isanewline%
-{\isasymlbrakk}x\ {\isasymin}\ list{\isacharparenleft}{\kern0pt}A{\isacharparenright}{\kern0pt}{\isacharsemicolon}{\kern0pt}\ P{\isacharparenleft}{\kern0pt}{\isacharbrackleft}{\kern0pt}{\isacharbrackright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharsemicolon}{\kern0pt}\ {\isasymAnd}a\ l{\isachardot}{\kern0pt}\ {\isasymlbrakk}a\ {\isasymin}\ A{\isacharsemicolon}{\kern0pt}\ l\ {\isasymin}\ list{\isacharparenleft}{\kern0pt}A{\isacharparenright}{\kern0pt}{\isacharsemicolon}{\kern0pt}\ P{\isacharparenleft}{\kern0pt}l{\isacharparenright}{\kern0pt}{\isasymrbrakk}\ {\isasymLongrightarrow}\ P{\isacharparenleft}{\kern0pt}Cons{\isacharparenleft}{\kern0pt}a{\isacharcomma}{\kern0pt}\ l{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isasymrbrakk}\isanewline
+{\isasymlbrakk}a\ {\isasymin}\ A{\isacharsemicolon}{\kern0pt}\ l\ {\isasymin}\ list{\isacharparenleft}{\kern0pt}A{\isacharparenright}{\kern0pt}{\isasymrbrakk}\ {\isasymLongrightarrow}\ Cons{\isacharparenleft}{\kern0pt}a{\isacharcomma}{\kern0pt}\ l{\isacharparenright}{\kern0pt}\ {\isasymin}\ list{\isacharparenleft}{\kern0pt}A{\isacharparenright}{\kern0pt}\isasep\isanewline\isanewline%
+{\isasymlbrakk}x\ {\isasymin}\ list{\isacharparenleft}{\kern0pt}A{\isacharparenright}{\kern0pt}{\isacharsemicolon}{\kern0pt}\ P{\isacharparenleft}{\kern0pt}{\isacharbrackleft}{\kern0pt}{\isacharbrackright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharsemicolon}{\kern0pt}\ {\isasymAnd}a\ l{\isachardot}{\kern0pt}\ {\isasymlbrakk}a\ {\isasymin}\ A{\isacharsemicolon}{\kern0pt}\ l\ {\isasymin}\ list{\isacharparenleft}{\kern0pt}A{\isacharparenright}{\kern0pt}{\isacharsemicolon}{\kern0pt}\ P{\isacharparenleft}{\kern0pt}l{\isacharparenright}{\kern0pt}{\isasymrbrakk}\ {\isasymLongrightarrow}\isanewline
+\ \ P{\isacharparenleft}{\kern0pt}Cons{\isacharparenleft}{\kern0pt}a{\isacharcomma}{\kern0pt}\ l{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isasymrbrakk}
 {\isasymLongrightarrow}\ P{\isacharparenleft}{\kern0pt}x{\isacharparenright}{\kern0pt}%
 \end{isabelle}%
 Length, concatenation, and \isa{n}th element of lists are
 recursively characterized as follows.%
 \begin{isabelle}%
 length{\isacharparenleft}{\kern0pt}{\isacharbrackleft}{\kern0pt}{\isacharbrackright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}\isasep\isanewline%
-length{\isacharparenleft}{\kern0pt}Cons{\isacharparenleft}{\kern0pt}a{\isacharcomma}{\kern0pt}\ l{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ succ{\isacharparenleft}{\kern0pt}length{\isacharparenleft}{\kern0pt}l{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\isasep\isanewline%
+length{\isacharparenleft}{\kern0pt}Cons{\isacharparenleft}{\kern0pt}a{\isacharcomma}{\kern0pt}\ l{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ succ{\isacharparenleft}{\kern0pt}length{\isacharparenleft}{\kern0pt}l{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\isasep\isanewline\isanewline%
 {\isacharbrackleft}{\kern0pt}{\isacharbrackright}{\kern0pt}\ {\isacharat}{\kern0pt}\ ys\ {\isacharequal}{\kern0pt}\ ys\isasep\isanewline%
-Cons{\isacharparenleft}{\kern0pt}a{\isacharcomma}{\kern0pt}\ l{\isacharparenright}{\kern0pt}\ {\isacharat}{\kern0pt}\ ys\ {\isacharequal}{\kern0pt}\ Cons{\isacharparenleft}{\kern0pt}a{\isacharcomma}{\kern0pt}\ l\ {\isacharat}{\kern0pt}\ ys{\isacharparenright}{\kern0pt}\isasep\isanewline%
+Cons{\isacharparenleft}{\kern0pt}a{\isacharcomma}{\kern0pt}\ l{\isacharparenright}{\kern0pt}\ {\isacharat}{\kern0pt}\ ys\ {\isacharequal}{\kern0pt}\ Cons{\isacharparenleft}{\kern0pt}a{\isacharcomma}{\kern0pt}\ l\ {\isacharat}{\kern0pt}\ ys{\isacharparenright}{\kern0pt}\isasep\isanewline\isanewline%
 nth{\isacharparenleft}{\kern0pt}{\isadigit{0}}{\isacharcomma}{\kern0pt}\ Cons{\isacharparenleft}{\kern0pt}a{\isacharcomma}{\kern0pt}\ l{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ a\isasep\isanewline%
 n\ {\isasymin}\ {\isasymomega}\ {\isasymLongrightarrow}\ nth{\isacharparenleft}{\kern0pt}succ{\isacharparenleft}{\kern0pt}n{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ Cons{\isacharparenleft}{\kern0pt}a{\isacharcomma}{\kern0pt}\ l{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ nth{\isacharparenleft}{\kern0pt}n{\isacharcomma}{\kern0pt}\ l{\isacharparenright}{\kern0pt}%
 \end{isabelle}%
@@ -144,7 +145,8 @@ image{\isacharparenleft}{\kern0pt}M{\isacharcomma}{\kern0pt}\ r{\isacharcomma}{\
 \begin{isabelle}%
 is{\isacharunderscore}{\kern0pt}apply{\isacharparenleft}{\kern0pt}M{\isacharcomma}{\kern0pt}\ f{\isacharcomma}{\kern0pt}\ x{\isacharcomma}{\kern0pt}\ y{\isacharparenright}{\kern0pt}\ {\isasymequiv}\isanewline
 {\isasymexists}xs{\isacharbrackleft}{\kern0pt}M{\isacharbrackright}{\kern0pt}{\isachardot}{\kern0pt}\isanewline
-\isaindent{\ \ \ }{\isasymexists}fxs{\isacharbrackleft}{\kern0pt}M{\isacharbrackright}{\kern0pt}{\isachardot}{\kern0pt}\ upair{\isacharparenleft}{\kern0pt}M{\isacharcomma}{\kern0pt}\ x{\isacharcomma}{\kern0pt}\ x{\isacharcomma}{\kern0pt}\ xs{\isacharparenright}{\kern0pt}\ {\isasymand}\ image{\isacharparenleft}{\kern0pt}M{\isacharcomma}{\kern0pt}\ f{\isacharcomma}{\kern0pt}\ xs{\isacharcomma}{\kern0pt}\ fxs{\isacharparenright}{\kern0pt}\ {\isasymand}\ big{\isacharunderscore}{\kern0pt}union{\isacharparenleft}{\kern0pt}M{\isacharcomma}{\kern0pt}\ fxs{\isacharcomma}{\kern0pt}\ y{\isacharparenright}{\kern0pt}%
+\isaindent{\ \ \ }{\isasymexists}fxs{\isacharbrackleft}{\kern0pt}M{\isacharbrackright}{\kern0pt}{\isachardot}{\kern0pt}\ upair{\isacharparenleft}{\kern0pt}M{\isacharcomma}{\kern0pt}\ x{\isacharcomma}{\kern0pt}\ x{\isacharcomma}{\kern0pt}\ xs{\isacharparenright}{\kern0pt}\ {\isasymand}\ image{\isacharparenleft}{\kern0pt}M{\isacharcomma}{\kern0pt}\ f{\isacharcomma}{\kern0pt}\ xs{\isacharcomma}{\kern0pt}\ fxs{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
+\isaindent{\ \ \ \ \ }big{\isacharunderscore}{\kern0pt}union{\isacharparenleft}{\kern0pt}M{\isacharcomma}{\kern0pt}\ fxs{\isacharcomma}{\kern0pt}\ y{\isacharparenright}{\kern0pt}%
 \end{isabelle}%
 \begin{isabelle}%
 is{\isacharunderscore}{\kern0pt}function{\isacharparenleft}{\kern0pt}M{\isacharcomma}{\kern0pt}\ r{\isacharparenright}{\kern0pt}\ {\isasymequiv}\isanewline
@@ -172,8 +174,8 @@ is{\isacharunderscore}{\kern0pt}domain{\isacharparenleft}{\kern0pt}M{\isacharcom
 \end{isabelle}%
 \begin{isabelle}%
 is{\isacharunderscore}{\kern0pt}function{\isacharunderscore}{\kern0pt}space{\isacharparenleft}{\kern0pt}M{\isacharcomma}{\kern0pt}\ A{\isacharcomma}{\kern0pt}\ B{\isacharcomma}{\kern0pt}\ fs{\isacharparenright}{\kern0pt}\ {\isasymequiv}\isanewline
-M{\isacharparenleft}{\kern0pt}fs{\isacharparenright}{\kern0pt}\ {\isasymand}\ {\isacharparenleft}{\kern0pt}{\isasymforall}f{\isacharbrackleft}{\kern0pt}M{\isacharbrackright}{\kern0pt}{\isachardot}{\kern0pt}\ f\ {\isasymin}\ fs\ {\isasymlongleftrightarrow}\ typed{\isacharunderscore}{\kern0pt}function{\isacharparenleft}{\kern0pt}M{\isacharcomma}{\kern0pt}\ A{\isacharcomma}{\kern0pt}\ B{\isacharcomma}{\kern0pt}\ f{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\isasep\isanewline%
-A\ {\isasymrightarrow}\isactrlbsup M\isactrlesup \ B\ {\isasymequiv}\ THE\ d{\isachardot}{\kern0pt}\ is{\isacharunderscore}{\kern0pt}function{\isacharunderscore}{\kern0pt}space{\isacharparenleft}{\kern0pt}M{\isacharcomma}{\kern0pt}\ A{\isacharcomma}{\kern0pt}\ B{\isacharcomma}{\kern0pt}\ d{\isacharparenright}{\kern0pt}\isasep\isanewline%
+M{\isacharparenleft}{\kern0pt}fs{\isacharparenright}{\kern0pt}\ {\isasymand}\ {\isacharparenleft}{\kern0pt}{\isasymforall}f{\isacharbrackleft}{\kern0pt}M{\isacharbrackright}{\kern0pt}{\isachardot}{\kern0pt}\ f\ {\isasymin}\ fs\ {\isasymlongleftrightarrow}\ typed{\isacharunderscore}{\kern0pt}function{\isacharparenleft}{\kern0pt}M{\isacharcomma}{\kern0pt}\ A{\isacharcomma}{\kern0pt}\ B{\isacharcomma}{\kern0pt}\ f{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\isasep\isanewline\isanewline%
+A\ {\isasymrightarrow}\isactrlbsup M\isactrlesup \ B\ {\isasymequiv}\ THE\ d{\isachardot}{\kern0pt}\ is{\isacharunderscore}{\kern0pt}function{\isacharunderscore}{\kern0pt}space{\isacharparenleft}{\kern0pt}M{\isacharcomma}{\kern0pt}\ A{\isacharcomma}{\kern0pt}\ B{\isacharcomma}{\kern0pt}\ d{\isacharparenright}{\kern0pt}\isasep\isanewline\isanewline%
 surjection{\isacharparenleft}{\kern0pt}M{\isacharcomma}{\kern0pt}\ A{\isacharcomma}{\kern0pt}\ B{\isacharcomma}{\kern0pt}\ f{\isacharparenright}{\kern0pt}\ {\isasymequiv}\isanewline
 typed{\isacharunderscore}{\kern0pt}function{\isacharparenleft}{\kern0pt}M{\isacharcomma}{\kern0pt}\ A{\isacharcomma}{\kern0pt}\ B{\isacharcomma}{\kern0pt}\ f{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline
 {\isacharparenleft}{\kern0pt}{\isasymforall}y{\isacharbrackleft}{\kern0pt}M{\isacharbrackright}{\kern0pt}{\isachardot}{\kern0pt}\ y\ {\isasymin}\ B\ {\isasymlongrightarrow}\ {\isacharparenleft}{\kern0pt}{\isasymexists}x{\isacharbrackleft}{\kern0pt}M{\isacharbrackright}{\kern0pt}{\isachardot}{\kern0pt}\ x\ {\isasymin}\ A\ {\isasymand}\ is{\isacharunderscore}{\kern0pt}apply{\isacharparenleft}{\kern0pt}M{\isacharcomma}{\kern0pt}\ f{\isacharcomma}{\kern0pt}\ x{\isacharcomma}{\kern0pt}\ y{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}%
@@ -237,6 +239,8 @@ quantifier are also provided. For instance, negation:%
 \begin{isabelle}%
 {\isasymcdot}{\isasymnot}p{\isasymcdot}\ {\isasymequiv}\ {\isasymcdot}{\isasymnot}{\isacharparenleft}{\kern0pt}p\ {\isasymand}\ p{\isacharparenright}{\kern0pt}{\isasymcdot}%
 \end{isabelle}%
+The \isatt{arity} function strictly bounding the free de Bruijn
+indices of a formula is defined below:
 \begin{isabelle}%
 arity{\isacharparenleft}{\kern0pt}{\isasymcdot}x\ {\isasymin}\ y{\isasymcdot}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ succ{\isacharparenleft}{\kern0pt}x{\isacharparenright}{\kern0pt}\ {\isasymunion}\ succ{\isacharparenleft}{\kern0pt}y{\isacharparenright}{\kern0pt}\isasep\isanewline%
 arity{\isacharparenleft}{\kern0pt}{\isasymcdot}x\ {\isacharequal}{\kern0pt}\ y{\isasymcdot}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ succ{\isacharparenleft}{\kern0pt}x{\isacharparenright}{\kern0pt}\ {\isasymunion}\ succ{\isacharparenleft}{\kern0pt}y{\isacharparenright}{\kern0pt}\isasep\isanewline%
@@ -251,7 +255,8 @@ We have the satisfaction relation between $\in$-models and
 {\isasymLongrightarrow}\ x\ {\isasymin}\ y\ {\isasymlongleftrightarrow}\ A{\isacharcomma}{\kern0pt}\ env\ {\isasymTurnstile}\ {\isasymcdot}i\ {\isasymin}\ j{\isasymcdot}\isasep\isanewline\isanewline%
 {\isasymlbrakk}nth{\isacharparenleft}{\kern0pt}i{\isacharcomma}{\kern0pt}\ env{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ x{\isacharsemicolon}{\kern0pt}\ nth{\isacharparenleft}{\kern0pt}j{\isacharcomma}{\kern0pt}\ env{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ y{\isacharsemicolon}{\kern0pt}\ env\ {\isasymin}\ list{\isacharparenleft}{\kern0pt}A{\isacharparenright}{\kern0pt}{\isasymrbrakk}\isanewline
 {\isasymLongrightarrow}\ x\ {\isacharequal}{\kern0pt}\ y\ {\isasymlongleftrightarrow}\ A{\isacharcomma}{\kern0pt}\ env\ {\isasymTurnstile}\ {\isasymcdot}i\ {\isacharequal}{\kern0pt}\ j{\isasymcdot}\isasep\isanewline\isanewline%
-env\ {\isasymin}\ list{\isacharparenleft}{\kern0pt}A{\isacharparenright}{\kern0pt}\ {\isasymLongrightarrow}\ {\isacharparenleft}{\kern0pt}A{\isacharcomma}{\kern0pt}\ env\ {\isasymTurnstile}\ {\isasymcdot}{\isasymnot}{\isacharparenleft}{\kern0pt}p\ {\isasymand}\ q{\isacharparenright}{\kern0pt}{\isasymcdot}{\isacharparenright}{\kern0pt}\ {\isasymlongleftrightarrow}\ {\isasymnot}\ {\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}A{\isacharcomma}{\kern0pt}\ env\ {\isasymTurnstile}\ p{\isacharparenright}{\kern0pt}\ {\isasymand}\ {\isacharparenleft}{\kern0pt}A{\isacharcomma}{\kern0pt}\ env\ {\isasymTurnstile}\ q{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\isasep\isanewline\isanewline%
+env\ {\isasymin}\ list{\isacharparenleft}{\kern0pt}A{\isacharparenright}{\kern0pt}\ {\isasymLongrightarrow}\ {\isacharparenleft}{\kern0pt}A{\isacharcomma}{\kern0pt}\ env\ {\isasymTurnstile}\ {\isasymcdot}{\isasymnot}{\isacharparenleft}{\kern0pt}p\ {\isasymand}\ q{\isacharparenright}{\kern0pt}{\isasymcdot}{\isacharparenright}{\kern0pt}\ {\isasymlongleftrightarrow}\ {\isasymnot}\ {\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}A{\isacharcomma}{\kern0pt}\ env\ {\isasymTurnstile}\ p{\isacharparenright}{\kern0pt}\ {\isasymand}\isanewline%
+\ \ {\isacharparenleft}{\kern0pt}A{\isacharcomma}{\kern0pt}\ env\ {\isasymTurnstile}\ q{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\isasep\isanewline\isanewline%
 env\ {\isasymin}\ list{\isacharparenleft}{\kern0pt}A{\isacharparenright}{\kern0pt}\ {\isasymLongrightarrow}\ {\isacharparenleft}{\kern0pt}A{\isacharcomma}{\kern0pt}\ env\ {\isasymTurnstile}\ {\isacharparenleft}{\kern0pt}{\isasymcdot}{\isasymforall}p{\isasymcdot}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymlongleftrightarrow}\ {\isacharparenleft}{\kern0pt}{\isasymforall}x{\isasymin}A{\isachardot}{\kern0pt}\ A{\isacharcomma}{\kern0pt}\ Cons{\isacharparenleft}{\kern0pt}x{\isacharcomma}{\kern0pt}\ env{\isacharparenright}{\kern0pt}\ {\isasymTurnstile}\ p{\isacharparenright}{\kern0pt}%
 \end{isabelle}%
 as well as the satisfaction of an arbitrary set of sentences.%
@@ -259,7 +264,7 @@ as well as the satisfaction of an arbitrary set of sentences.%
 A\ {\isasymTurnstile}\ {\isasymPhi}\ {\isasymequiv}\ {\isasymforall}{\isasymphi}{\isasymin}{\isasymPhi}{\isachardot}{\kern0pt}\ A{\isacharcomma}{\kern0pt}\ {\isacharbrackleft}{\kern0pt}{\isacharbrackright}{\kern0pt}\ {\isasymTurnstile}\ {\isasymphi}%
 \end{isabelle}%
 The internalized (viz. as elements of the set \isa{formula})
-    version of the axioms follow next.%
+versions of the axioms are checked next against the relative statements.%
 \begin{isabelle}%
 Union{\isacharunderscore}{\kern0pt}ax{\isacharparenleft}{\kern0pt}{\isacharhash}{\kern0pt}{\isacharhash}{\kern0pt}A{\isacharparenright}{\kern0pt}\ {\isasymlongleftrightarrow}\ A{\isacharcomma}{\kern0pt}\ {\isacharbrackleft}{\kern0pt}{\isacharbrackright}{\kern0pt}\ {\isasymTurnstile}\ {\isasymcdot}Union\ Ax{\isasymcdot}\isasep\isanewline%
 power{\isacharunderscore}{\kern0pt}ax{\isacharparenleft}{\kern0pt}{\isacharhash}{\kern0pt}{\isacharhash}{\kern0pt}A{\isacharparenright}{\kern0pt}\ {\isasymlongleftrightarrow}\ A{\isacharcomma}{\kern0pt}\ {\isacharbrackleft}{\kern0pt}{\isacharbrackright}{\kern0pt}\ {\isasymTurnstile}\ {\isasymcdot}Powerset\ Ax{\isasymcdot}\isasep\isanewline%
@@ -355,8 +360,10 @@ M{\isacharunderscore}{\kern0pt}ZF{\isacharunderscore}{\kern0pt}library{\isacharp
 is{\isacharunderscore}{\kern0pt}ContHyp{\isacharparenleft}{\kern0pt}{\isasymV}{\isacharparenright}{\kern0pt}\ {\isasymlongleftrightarrow}\ {\isasymaleph}\isactrlbsub {\isadigit{1}}\isactrlesub \ {\isacharequal}{\kern0pt}\ {\isadigit{2}}\isactrlbsup {\isasymup}{\isasymaleph}\isactrlbsub {\isadigit{0}}\isactrlesub \isactrlesup %
 \end{isabelle}%
 In turn, the fully relational version evaluated on a nonempty
-    transitive \isa{A} is equivalent to the satisfaction of the
-    first-order formula \isa{{\isasymcdot}CH{\isasymcdot}}.%
+transitive \isa{A} is equivalent to the satisfaction of the
+first-order formula \isa{{\isasymcdot}CH{\isasymcdot}} (since it
+actually is a sentence, it does not depend on \isatt{env}, which
+appears only because the definition of $\models$ requires that argument).%
 \begin{isabelle}%
 {\isasymlbrakk}env\ {\isasymin}\ list{\isacharparenleft}{\kern0pt}A{\isacharparenright}{\kern0pt}{\isacharsemicolon}{\kern0pt}\ {\isadigit{0}}\ {\isasymin}\ A{\isasymrbrakk}\ {\isasymLongrightarrow}\ is{\isacharunderscore}{\kern0pt}ContHyp{\isacharparenleft}{\kern0pt}{\isacharhash}{\kern0pt}{\isacharhash}{\kern0pt}A{\isacharparenright}{\kern0pt}\ {\isasymlongleftrightarrow}\ A{\isacharcomma}{\kern0pt}\ env\ {\isasymTurnstile}\ {\isasymcdot}CH{\isasymcdot}%
 \end{isabelle}%
