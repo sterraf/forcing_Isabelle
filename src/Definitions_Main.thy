@@ -531,9 +531,9 @@ text\<open>@{thm [display] ctm_ZFC_imp_ctm_CH}\<close>
 text\<open>These results can be strengthened by enumerating six finite sets of
 replacement instances which are sufficient to develop forcing and for
 the construction of the aforementioned models: \<^term>\<open>instances1_fms\<close>
-through \<^term>\<open>instances4_fms\<close>, \<^term>\<open>instances_ground_fms\<close>, and
+through \<^term>\<open>instances3_fms\<close>, \<^term>\<open>instances_ground_fms\<close>, and
 \<^term>\<open>instances_ground_notCH_fms\<close>,
-which are then collected into the $33$-element set \<^term>\<open>overhead_notCH\<close>.
+which are then collected into the $31$-element set \<^term>\<open>overhead_notCH\<close>.
 For example, we have:\<close>
 
 thm instances1_fms_def
@@ -551,7 +551,7 @@ text\<open>@{thm [display] overhead_def overhead_notCH_def overhead_CH_def}\<clo
   overhead \<equiv> instances1_fms \<union> instances_ground_fms
 
   overhead_notCH \<equiv> overhead \<union>
-    instances3_fms \<union> instances4_fms \<union> instances_ground_notCH_fms
+    instances2_fms \<union> instances3_fms \<union> instances_ground_notCH_fms
 *)
 
 text\<open>One further instance is needed to force $\CH$, with a total count

@@ -100,8 +100,8 @@ Here, $\mathit{fst}(\lb a,b\rb) = a$, $\mathit{snd}(\lb a,b\rb) = b$
 (with default value $0$ for non pairs).
 In our development, the mapping $\phi\mapsto\psi$ defined above is given by the
 $\isatt{ground{\uscore}repl{\uscore}fm}$ function, and all ground replacement
-instances appear in the locale \locale{M{\uscore}ZF4} and form the set
-\isa{instances{\isadigit{4}}{\isacharunderscore}{\kern0pt}fms}. These are expressed using
+instances appear in the locale \locale{M{\uscore}ZF3} and form the set
+\isa{instances{\isadigit{3}}{\isacharunderscore}{\kern0pt}fms}. These are expressed using
 the \isatt{ground{\uscore}replacement{\uscore}assm(M,\isasymphi)} predicate
 obtained by replacing $\phi$ by
 $\isatt{ground{\uscore}repl{\uscore}fm}(\phi)$ in Eq.~(\ref{eq:replacement_assm_def}).
@@ -236,7 +236,7 @@ considering extensions of ctms of fragments of $\ZF$.
 \ \ \ \ \ \ N\ {\isasymTurnstile}\ {\isasymcdot}Z{\isasymcdot}\ {\isasymunion}\ {\isacharbraceleft}{\kern0pt}\ {\isasymcdot}Replacement{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}{\isasymcdot}\ {\isachardot}{\kern0pt}\ {\isasymphi}\ {\isasymin}\ {\isasymPhi}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}
 \end{isabelle}
 
-Here, the 12-element \isatt{overhead} is enough to construct a proper
+Here, the 12-element set \isatt{overhead} is enough to construct a proper
 extension. It is  the union of
 \isa{instances{\isadigit{1}}{\isacharunderscore}{\kern0pt}fms} and
 \isa{instances{\isacharunderscore}{\kern0pt}ground{\isacharunderscore}{\kern0pt}fms}.
