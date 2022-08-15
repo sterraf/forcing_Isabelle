@@ -68,7 +68,11 @@ Lists on a set \isa{A} can be characterized by being
 recursively generated from the empty list \isa{{\isacharbrackleft}{\kern0pt}{\isacharbrackright}{\kern0pt}} and the
 operation \isa{Cons} that adds a new element to the left end;
 the induction theorem for them shows that the characterization is
-“complete”.%
+“complete”. (Mind the
+\isatt{\isasymlbrakk P; Q\isasymrbrakk\ \isasymLongrightarrow\ R}
+abbreviation for
+\isatt{P\ \isasymLongrightarrow\ Q\ \isasymLongrightarrow\ R}.)
+
 \begin{isabelle}%
 {\isacharbrackleft}{\kern0pt}{\isacharbrackright}{\kern0pt}\ {\isasymin}\ list{\isacharparenleft}{\kern0pt}A{\isacharparenright}{\kern0pt}\isasep\isanewline%
 {\isasymlbrakk}a\ {\isasymin}\ A{\isacharsemicolon}{\kern0pt}\ l\ {\isasymin}\ list{\isacharparenleft}{\kern0pt}A{\isacharparenright}{\kern0pt}{\isasymrbrakk}\ {\isasymLongrightarrow}\ Cons{\isacharparenleft}{\kern0pt}a{\isacharcomma}{\kern0pt}\ l{\isacharparenright}{\kern0pt}\ {\isasymin}\ list{\isacharparenleft}{\kern0pt}A{\isacharparenright}{\kern0pt}\isasep\isanewline\isanewline%
