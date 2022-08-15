@@ -11,12 +11,14 @@ It is \<^bold>\<open>not\<close> intended as the entry point of the session. For
 consult \<^theory>\<open>Independence_CH.Definitions_Main\<close>\<close>
 
 
-text\<open>The next snippet (by M. Pagano) provides a directed graph picturing the
-locale structure.\<close>
+text\<open>The snippet (by M. Pagano) commented out below outputs a directed
+graph picturing the locale structure.\<close>
+\<comment> \<open>
 ML\<open>Locale.pretty_locale_deps @{theory} |>
 map (fn n => let val nom = #name n
     in  map (writeln o (fn p => "\"" ^ p ^ "\" -> \"" ^ nom ^ "\";")) (#parents n)
 end)
+\<close>
 \<close>
 
 locale Demo = M_trivial + M_AC +
