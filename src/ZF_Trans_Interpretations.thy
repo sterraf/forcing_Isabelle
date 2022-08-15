@@ -405,7 +405,8 @@ proof -
     moreover from calculation
     have "arity(\<phi>) \<le> succ(length(env)) \<Longrightarrow> separation(##M, \<lambda>x. (M, Cons(x, env) \<Turnstile> \<phi>))"
       "arity(\<phi>) \<le> succ(succ(length(env))) \<Longrightarrow> strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,Cons(x,Cons(y, env))))"
-      using sats_ZF_separation_fm_iff sats_ZF_replacement_fm_iff by simp_all
+      using sats_ZF_separation_fm_iff sats_ZF_replacement_fm_iff
+      unfolding replacement_assm_def by simp_all
   }
   with fin
   show "M_ZF1(M)"
@@ -454,7 +455,8 @@ proof -
     have "M, [] \<Turnstile> \<cdot>Replacement(\<phi>)\<cdot>" by auto
     ultimately
     have "arity(\<phi>) \<le> succ(succ(length(env))) \<Longrightarrow> strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,Cons(x,Cons(y, env))))"
-      using sats_ZF_replacement_fm_iff[of \<phi>] instances1_fms_type by auto
+      using sats_ZF_replacement_fm_iff[of \<phi>] instances1_fms_type
+      unfolding replacement_assm_def by auto
   }
   ultimately
   show ?thesis
@@ -485,7 +487,8 @@ proof -
     have "M, [] \<Turnstile> \<cdot>Replacement(\<phi>)\<cdot>" by auto
     ultimately
     have "arity(\<phi>) \<le> succ(succ(length(env))) \<Longrightarrow> strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,Cons(x,Cons(y, env))))"
-      using sats_ZF_replacement_fm_iff[of \<phi>] instances_ground_fms_type by auto
+      using sats_ZF_replacement_fm_iff[of \<phi>] instances_ground_fms_type
+      unfolding replacement_assm_def by auto
   }
   then
   show ?thesis
@@ -510,7 +513,8 @@ proof -
       unfolding overhead_notCH_def by auto
     ultimately
     have "arity(\<phi>) \<le> succ(succ(length(env))) \<Longrightarrow> strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,Cons(x,Cons(y, env))))"
-      using sats_ZF_replacement_fm_iff[of \<phi>] instances_ground_notCH_fms_type by auto
+      using sats_ZF_replacement_fm_iff[of \<phi>] instances_ground_notCH_fms_type
+      unfolding replacement_assm_def by auto
   }
   then
   show ?thesis
@@ -536,6 +540,7 @@ proof -
     have "arity(replacement_dcwit_repl_body_fm) \<le> succ(succ(length(env)))
       \<Longrightarrow> strong_replacement(##M,\<lambda>x y. sats(M,replacement_dcwit_repl_body_fm,Cons(x,Cons(y, env))))"
       using sats_ZF_replacement_fm_iff[of replacement_dcwit_repl_body_fm]
+      unfolding replacement_assm_def
       by (auto simp:replacement_dcwit_repl_body_fm_def)
   }
   then
@@ -581,7 +586,8 @@ proof -
     moreover from calculation
     have "arity(\<phi>) \<le> succ(length(env)) \<Longrightarrow> separation(##M, \<lambda>x. (M, Cons(x, env) \<Turnstile> \<phi>))"
       "arity(\<phi>) \<le> succ(succ(length(env))) \<Longrightarrow> strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,Cons(x,Cons(y, env))))"
-      using sats_ZF_separation_fm_iff sats_ZF_replacement_fm_iff by simp_all
+      using sats_ZF_separation_fm_iff sats_ZF_replacement_fm_iff
+      unfolding replacement_assm_def by simp_all
   }
   with fin
   show "M_ZF(M)"
@@ -668,7 +674,8 @@ proof
     have "M, [] \<Turnstile> \<cdot>Replacement(\<phi>)\<cdot>" by auto
     ultimately
     have "arity(\<phi>) \<le> succ(succ(length(env))) \<Longrightarrow> strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,Cons(x,Cons(y, env))))"
-      using sats_ZF_replacement_fm_iff[of \<phi>] overhead_notCH_type by auto
+      using sats_ZF_replacement_fm_iff[of \<phi>] overhead_notCH_type
+      unfolding replacement_assm_def by auto
   }
   ultimately
   show "M_ZFC3(M)"

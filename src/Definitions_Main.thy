@@ -394,10 +394,7 @@ text\<open>@{thm [display] ZF_union_iff_sats ZF_power_iff_sats
       arity(\<phi>) \<le> 1 +\<^sub>\<omega> length(env) \<longrightarrow> separation(##M, \<lambda>x. M, [x] @ env \<Turnstile> \<phi>))
 
   \<phi> \<in> formula \<Longrightarrow>
-  (M, [] \<Turnstile> \<cdot>Replacement(\<phi>)\<cdot>) \<longleftrightarrow>
-  (\<forall>env\<in>list(M).
-      arity(\<phi>) \<le> 2 +\<^sub>\<omega> length(env) \<longrightarrow>
-      strong_replacement(##M, \<lambda>x y. M, [x, y] @ env \<Turnstile> \<phi>))
+  (M, [] \<Turnstile> \<cdot>Replacement(\<phi>)\<cdot>) \<longleftrightarrow> (\<forall>env. replacement_assm(M, env, \<phi>))
 
   choice_ax(##A) \<longleftrightarrow> A, [] \<Turnstile> \<cdot>AC\<cdot>
 *)

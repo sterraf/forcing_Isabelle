@@ -47,7 +47,7 @@ that this form of the axioms hold in generic extensions.
 
 Further locales gather the assumption of transitivity of $M$ and
 particular replacement instances expressed by means of the
-\isatt{replacement{\uscore}assm(M,\isasymphi)} predicate ($@$ denotes
+\isatt{replacement{\uscore}assm(M,\mathit{env},\isasymphi)} predicate ($@$ denotes
 list concatenation):
 \begin{multline}\label{eq:replacement_assm_def}
 \varphi \in \formula  \limp \mathit{env} \in \isatt{list}(M) \limp \isatt{arity}(\varphi) \leq 2+ \isatt{length}(\mathit{env}) \limp \\
@@ -59,6 +59,13 @@ list concatenation):
 %% {\isasymphi}\;{\isasymin}\;formula\ {\isasymlongrightarrow}\ env\;{\isasymin}\;list{\isacharparenleft}{\kern0pt}M{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow} arity{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}\;{\isasymle}\;{\isadigit{2}}\ {\isacharplus}{\kern0pt}\isactrlsub {\isasymomega}\ length{\isacharparenleft}{\kern0pt}env{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\isanewline
 %% \ \ \ \ strong{\isacharunderscore}{\kern0pt}replacement{\isacharparenleft}{\kern0pt}{\isacharhash}{\kern0pt}{\isacharhash}{\kern0pt}M{\isacharcomma}{\kern0pt}{\isasymlambda}x\ y{\isachardot}{\kern0pt}\ {\isacharparenleft}{\kern0pt}M\ {\isacharcomma}{\kern0pt}\ {\isacharbrackleft}{\kern0pt}x{\isacharcomma}{\kern0pt}y{\isacharbrackright}{\kern0pt}{\isacharat}{\kern0pt}env\ {\isasymTurnstile}\ {\isasymphi}{\isacharparenright}{\kern0pt}{\isacharparenright}
 %% \end{isabelle}
+In turn, the \isatt{{\isasymcdot}Replacement{\isasymcdot}} function
+takes a formula code and returns the corresponding replacement
+instance:
+\begin{isabelle}
+{\isasymphi}\ {\isasymin}\ formula\ {\isasymLongrightarrow}\isanewline
+{\isacharparenleft}{\kern0pt}M{\isacharcomma}{\kern0pt}\ {\isacharbrackleft}{\kern0pt}{\isacharbrackright}{\kern0pt}\ {\isasymTurnstile}\ {\isasymcdot}Replacement{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}{\isasymcdot}{\isacharparenright}{\kern0pt}\ {\isasymlongleftrightarrow}\ {\isacharparenleft}{\kern0pt}{\isasymforall}env{\isachardot}{\kern0pt}\ replacement{\isacharunderscore}{\kern0pt}assm{\isacharparenleft}{\kern0pt}M{\isacharcomma}{\kern0pt}\ env{\isacharcomma}{\kern0pt}\ {\isasymphi}{\isacharparenright}{\kern0pt}{\isacharparenright}
+\end{isabelle}
 %
 %% Some of those instances, which we included for simplicity of design,
 %% are actually “fake” instances in that they can be obtained from
@@ -68,6 +75,7 @@ list concatenation):
 %% \session{ZF-Constructible}; we managed to eliminate it but in
 %% doing so we had to reprove many lemmas from
 %% that session in the weakened context. 
+
 The locales gathering all 32 replacement instances necessary are named
 \locale{M{\uscore}ZF1} through \locale{M{\uscore}ZF3},
 \locale{M{\uscore}ZF{\uscore}ground},
