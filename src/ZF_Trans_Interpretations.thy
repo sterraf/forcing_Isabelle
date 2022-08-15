@@ -31,7 +31,7 @@ locale M_ZF2_trans = M_ZF1_trans + M_ZF2
 
 locale M_ZFC2 = M_ZFC1 + M_ZF2
 
-locale M_ZFC2_trans = M_ZFC1_trans + M_ZF2_trans
+locale M_ZFC2_trans = M_ZFC1_trans + M_ZF2_trans + M_ZFC2
 
 locale M_ZF2_ground_notCH = M_ZF2 + M_ZF_ground_notCH
 
@@ -287,9 +287,6 @@ sublocale M_ZF1_trans \<subseteq> M_FiniteFun "##M"
   using separation_is_function separation_omfunspace
   by unfold_locales simp
 
-sublocale M_ZFC1_trans \<subseteq> M_AC "##M"
-  using choice_ax by (unfold_locales, simp_all)
-
 sublocale M_ZFC2_trans \<subseteq> M_cardinal_AC "##M"
   using lam_replacement_minimum
   by unfold_locales simp
@@ -384,7 +381,7 @@ locale M_ZF3_trans = M_ZF2_trans + M_ZF3
 
 locale M_ZFC3 = M_ZFC2 + M_ZF3
 
-locale M_ZFC3_trans = M_ZFC2_trans + M_ZF3_trans
+locale M_ZFC3_trans = M_ZFC2_trans + M_ZF3_trans + M_ZFC3
 
 locale M_ctm3 = M_ctm2 + M_ZF3_trans
 
@@ -562,6 +559,10 @@ locale M_ZF = M_Z_basic +
   assumes
     replacement_ax:"replacement_assm(M,env,\<phi>)"
 
+sublocale M_ZF \<subseteq> M_ZF3
+  using replacement_ax
+  by unfold_locales (simp_all add:ground_replacement_assm_def)
+
 lemma M_satT_imp_M_ZF: " M \<Turnstile> ZF \<Longrightarrow> M_ZF(M)"
 proof -
   assume "M \<Turnstile> ZF"
@@ -600,6 +601,9 @@ lemma M_ZF_iff_M_satT: "M_ZF(M) \<longleftrightarrow> (M \<Turnstile> ZF)"
 
 locale M_ZFC = M_ZF + M_ZC_basic
 
+sublocale M_ZFC \<subseteq> M_ZFC3
+  by unfold_locales
+
 lemma M_ZFC_iff_M_satT:
   notes iff_trans[trans]
   shows "M_ZFC(M) \<longleftrightarrow> (M \<Turnstile> ZFC)"
@@ -618,37 +622,21 @@ lemma M_satT_imp_M_ZF3: "(M \<Turnstile> ZF) \<longrightarrow> M_ZF3(M)"
 proof
   assume "M \<Turnstile> ZF"
   then
-  have fin: "upair_ax(##M)" "Union_ax(##M)" "power_ax(##M)"
-    "extensionality(##M)" "foundation_ax(##M)" "infinity_ax(##M)"
-    unfolding ZF_def ZF_fin_def ZFC_fm_defs satT_def
-    using ZFC_fm_sats[of M] by simp_all
-  {
-    fix \<phi> env
-    assume "\<phi> \<in> formula" "env\<in>list(M)"
-    moreover from \<open>M \<Turnstile> ZF\<close>
-    have "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_separation_fm(p)))"
-      "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_replacement_fm(p)))"
-      unfolding ZF_def ZF_schemes_def by auto
-    moreover from calculation
-    have "arity(\<phi>) \<le> succ(length(env)) \<Longrightarrow> separation(##M, \<lambda>x. (M, Cons(x, env) \<Turnstile> \<phi>))"
-      "arity(\<phi>) \<le> succ(succ(length(env))) \<Longrightarrow> strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,Cons(x,Cons(y, env))))"
-      using sats_ZF_separation_fm_iff sats_ZF_replacement_fm_iff by simp_all
-  }
-  with fin
+  interpret M_ZF M
+    using M_satT_imp_M_ZF by simp
   show "M_ZF3(M)"
-    by unfold_locales (simp_all add:replacement_assm_def ground_replacement_assm_def)
+    by unfold_locales
 qed
 
 lemma M_satT_imp_M_ZFC3:
   shows "(M \<Turnstile> ZFC) \<longrightarrow> M_ZFC3(M)"
-proof -
-  have "(M \<Turnstile> ZF) \<and> choice_ax(##M) \<longrightarrow> M_ZFC3(M)"
-    using M_satT_imp_M_ZF3[of M] unfolding M_ZF3_def M_ZFC1_def M_ZFC3_def
-      M_ZF2_def M_ZFC2_def M_ZC_basic_def M_ZF1_def M_AC_def
-    by auto
+proof
+  assume "M \<Turnstile> ZFC"
   then
-  show ?thesis
-    unfolding ZFC_def by auto
+  interpret M_ZFC M
+    using M_ZFC_iff_M_satT  by simp
+  show "M_ZFC3(M)"
+    by unfold_locales
 qed
 
 lemma M_satT_overhead_imp_M_ZF3:

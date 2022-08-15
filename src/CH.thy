@@ -164,10 +164,6 @@ qed
 
 end \<comment> \<open>\<^locale>\<open>M_ctm2_AC\<close>\<close>
 
-sublocale M_ZFC2_trans \<subseteq> M_library "##M"
-  by unfold_locales (simp_all add:repl_instances sep_instances del:setclass_iff
-      add: transrec_replacement_def wfrec_replacement_def)
-
 locale collapse_CH = G_generic3_AC_CH "Fn\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" "Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" 0
 
 sublocale collapse_CH \<subseteq> forcing_notion "Coll" "Colleq" 0
