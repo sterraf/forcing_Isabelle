@@ -399,6 +399,20 @@ text\<open>@{thm [display] ZF_union_iff_sats ZF_power_iff_sats
   choice_ax(##A) \<longleftrightarrow> A, [] \<Turnstile> \<cdot>AC\<cdot>
 *)
 
+text\<open>Above, we use the following:\<close>
+
+thm replacement_assm_def
+text\<open>@{thm [display] replacement_assm_def}\<close>
+(*
+replacement_assm(M, env, \<phi>) \<equiv>
+\<phi> \<in> formula \<longrightarrow>
+env \<in> list(M) \<longrightarrow>
+arity(\<phi>) \<le> 2 +\<^sub>\<omega> length(env) \<longrightarrow>
+strong_replacement(##M, \<lambda>x y. M, [x, y] @ env \<Turnstile> \<phi>
+*)
+
+text\<open>Finally, the axiom sets are defined as follows.\<close>
+
 thm ZF_fin_def ZF_schemes_def Zermelo_fms_def ZC_def ZF_def ZFC_def
 text\<open>@{thm [display] ZF_fin_def ZF_schemes_def Zermelo_fms_def ZC_def ZF_def
   ZFC_def}\<close>
