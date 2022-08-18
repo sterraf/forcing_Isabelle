@@ -4,7 +4,7 @@
 
 section \<open>Separation for Facts About Recursion\<close>
 
-theory Rec_Separation imports "ZF-Constructible.Separation" Internalize begin
+theory Rec_Separation imports "ZF-Constructible.Separation" Internalize Datatype_absolute begin
 
 text\<open>This theory proves all instances needed for locales \<open>M_trancl\<close> and \<open>M_datatypes\<close>\<close>
 
@@ -304,6 +304,28 @@ lemma nth_fm_type [TC]:
  "[| x \<in> nat; y \<in> nat; z \<in> nat |] ==> nth_fm(x,y,z) \<in> formula"
 by (simp add: nth_fm_def)
 
+lemma sats_nth_fm [simp]:
+   "[| x < length(env); y \<in> nat; z \<in> nat; env \<in> list(A)|]
+    ==> sats(A, nth_fm(x,y,z), env) \<longleftrightarrow>
+        is_nth(##A, nth(x,env), nth(y,env), nth(z,env))"
+apply (frule lt_length_in_nat, assumption)  
+apply (simp add: nth_fm_def is_nth_def sats_is_iterates_fm) 
+done
+
+lemma nth_iff_sats:
+      "[| nth(i,env) = x; nth(j,env) = y; nth(k,env) = z;
+          i < length(env); j \<in> nat; k \<in> nat; env \<in> list(A)|]
+       ==> is_nth(##A, x, y, z) \<longleftrightarrow> sats(A, nth_fm(i,j,k), env)"
+by (simp)
+
+theorem nth_reflection:
+     "REFLECTS[\<lambda>x. is_nth(L, f(x), g(x), h(x)),  
+               \<lambda>i x. is_nth(##Lset(i), f(x), g(x), h(x))]"
+apply (simp only: is_nth_def)
+apply (intro FOL_reflections is_iterates_reflection
+             hd_reflection tl_reflection) 
+done
+
 
 subsubsection\<open>An Instance of Replacement for \<^term>\<open>nth\<close>\<close>
 
@@ -335,9 +357,18 @@ done
 
 subsubsection\<open>Instantiating the locale \<open>M_datatypes\<close>\<close>
 
+lemma M_datatypes_axioms_L: "M_datatypes_axioms(L)"
+  apply (rule M_datatypes_axioms.intro)
+      apply (assumption | rule
+        list_replacement1 list_replacement2
+        formula_replacement1 formula_replacement2
+        nth_replacement)+
+  done
+
 theorem M_datatypes_L: "M_datatypes(L)"
   apply (rule M_datatypes.intro)
    apply (rule M_trancl_L)
+  apply (rule M_datatypes_axioms_L) 
   done
 
 interpretation L: M_datatypes L by (rule M_datatypes_L)
@@ -399,7 +430,7 @@ lemma M_eclose_axioms_L: "M_eclose_axioms(L)"
 
 theorem M_eclose_L: "M_eclose(L)"
   apply (rule M_eclose.intro)
-   apply (rule M_datatypes_L)
+   apply (rule M_trancl_L)
   apply (rule M_eclose_axioms_L)
   done
 

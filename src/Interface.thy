@@ -631,9 +631,6 @@ qed
 
 end \<comment> \<open>\<^locale>\<open>M_ZF1_trans\<close>\<close>
 
-sublocale M_ZF1_trans \<subseteq> M_datatypes "##M"
-  by unfold_locales
-
 sublocale M_ZF1_trans \<subseteq> M_eclose "##M"
   using eclose_repl1_intf eclose_repl2_intf
   by unfold_locales auto

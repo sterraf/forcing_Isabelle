@@ -288,7 +288,7 @@ by (simp add: satisfies_formula_def satisfies_a_def satisfies_b_def
 text\<open>Further constraints on the class \<^term>\<open>M\<close> in order to prove
       absoluteness for the constants defined above.  The ultimate goal
       is the absoluteness of the function \<^term>\<open>satisfies\<close>.\<close>
-locale M_satisfies = M_eclose +
+locale M_satisfies = M_eclose + M_datatypes +
  assumes 
    Member_replacement:
     "[|M(A); x \<in> nat; y \<in> nat|]
@@ -484,7 +484,7 @@ theorem (in M_satisfies) Formula_Rec_M:
                          satisfies_c(A), satisfies_is_c(M,A), 
                          satisfies_d(A), satisfies_is_d(M,A))"
   apply (rule Formula_Rec.intro)
-   apply (rule M_satisfies.axioms, rule M_satisfies_axioms)
+   apply (rule M_satisfies.axioms, rule M_satisfies_axioms, rule M_datatypes_axioms)
   apply (erule Formula_Rec_axioms_M) 
   done
 
@@ -1029,6 +1029,7 @@ lemma M_satisfies_axioms_L: "M_satisfies_axioms(L)"
 theorem M_satisfies_L: "M_satisfies(L)"
   apply (rule M_satisfies.intro)
    apply (rule M_eclose_L)
+   apply (rule M_datatypes_L)
   apply (rule M_satisfies_axioms_L)
   done
 

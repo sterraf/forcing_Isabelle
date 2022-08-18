@@ -1,7 +1,7 @@
 section\<open>Some enhanced theorems on recursion\<close>
 
 theory Recursion_Thms
-  imports "Datatype_absolute"
+  imports "Eclose_Absolute"
 
 begin
 

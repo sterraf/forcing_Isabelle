@@ -2,7 +2,7 @@
     Author:     Lawrence C Paulson, Cambridge University Computer Laboratory
 *)
 
-theory Internalize imports "ZF-Constructible.L_axioms" Datatype_absolute begin
+theory Internalize imports "ZF-Constructible.L_axioms" Eclose_Absolute begin
 
 subsection\<open>Internalized Forms of Data Structuring Operators\<close>
 

@@ -5,7 +5,7 @@ far as possible; assuming that the witnesses for the relativized terms are alway
 
 theory Relativization
   imports
-    "Datatype_absolute"
+    "Eclose_Absolute"
     Higher_Order_Constructs
   keywords
     "relativize" :: thy_decl % "ML"
