@@ -109,17 +109,14 @@ lemmas sharp_simps = Card_rel_Union Card_rel_cardinal_rel Collect_abs
   cons_abs cons_closed converse_abs converse_closed csquare_lam_closed
   csquare_rel_closed depth_closed domain_abs domain_closed eclose_abs
   eclose_closed empty_abs field_abs field_closed finite_funspace_closed
-  finite_ordinal_abs formula_N_abs formula_N_closed formula_abs
-  formula_case_abs formula_case_closed formula_closed
-  formula_functor_abs fst_closed function_abs function_space_rel_closed
+  finite_ordinal_abs fst_closed function_abs function_space_rel_closed
   hd_abs image_abs image_closed inj_rel_closed injection_abs inter_abs
-  irreflexive_abs is_depth_apply_abs is_eclose_n_abs is_funspace_abs
-  iterates_closed length_abs length_closed lepoll_rel_refl
-  limit_ordinal_abs linear_rel_abs list_N_abs list_N_closed list_abs
-  list_case'_closed list_case_abs list_closed list_functor_abs
-  mem_bij_abs mem_eclose_abs mem_inj_abs mem_list_abs membership_abs
+  irreflexive_abs is_eclose_n_abs is_funspace_abs
+  iterates_closed length_closed lepoll_rel_refl
+  limit_ordinal_abs linear_rel_abs
+  mem_bij_abs mem_eclose_abs mem_inj_abs membership_abs
   minimum_closed nat_case_abs nat_case_closed nonempty not_abs
-  not_closed nth_abs number1_abs number2_abs number3_abs omega_abs
+  not_closed number1_abs number2_abs number3_abs omega_abs
   or_abs or_closed order_isomorphism_abs ordermap_closed
   ordertype_closed ordinal_abs pair_abs pair_in_M_iff powerset_abs
   pred_closed pred_set_abs quasilist_abs quasinat_abs radd_closed
@@ -131,7 +128,7 @@ lemmas sharp_simps = Card_rel_Union Card_rel_cardinal_rel Collect_abs
   surj_rel_closed surjection_abs tl_abs trancl_abs trancl_closed
   transitive_rel_abs transitive_set_abs typed_function_abs union_abs
   upair_abs upair_in_M_iff vimage_abs vimage_closed well_ord_abs
-  mem_formula_abs nth_closed Aleph_rel_closed csucc_rel_closed
+  nth_closed Aleph_rel_closed csucc_rel_closed
   Card_rel_Aleph_rel
 
 declare sharp_simps[simp del, simplified setclass_iff, simp]
@@ -167,21 +164,17 @@ lemmas mg_sharp_simps = ext.Card_rel_Union ext.Card_rel_cardinal_rel
   ext.csquare_lam_closed ext.csquare_rel_closed ext.depth_closed
   ext.domain_abs ext.domain_closed ext.eclose_abs ext.eclose_closed
   ext.empty_abs ext.field_abs ext.field_closed
-  ext.finite_funspace_closed ext.finite_ordinal_abs ext.formula_N_abs
-  ext.formula_N_closed ext.formula_abs ext.formula_case_abs
-  ext.formula_case_closed ext.formula_closed ext.formula_functor_abs
+  ext.finite_funspace_closed ext.finite_ordinal_abs
   ext.fst_closed ext.function_abs ext.function_space_rel_closed
   ext.hd_abs ext.image_abs ext.image_closed ext.inj_rel_closed
   ext.injection_abs ext.inter_abs ext.irreflexive_abs
-  ext.is_depth_apply_abs ext.is_eclose_n_abs ext.is_funspace_abs
-  ext.iterates_closed ext.length_abs ext.length_closed
+  ext.is_eclose_n_abs ext.is_funspace_abs
+  ext.iterates_closed ext.length_closed
   ext.lepoll_rel_refl ext.limit_ordinal_abs ext.linear_rel_abs
-  ext.list_N_abs ext.list_N_closed ext.list_abs
-  ext.list_case'_closed ext.list_case_abs ext.list_closed
-  ext.list_functor_abs ext.mem_bij_abs ext.mem_eclose_abs
-  ext.mem_inj_abs ext.mem_list_abs ext.membership_abs
+  ext.mem_bij_abs ext.mem_eclose_abs
+  ext.mem_inj_abs ext.membership_abs
   ext.nat_case_abs ext.nat_case_closed
-  ext.nonempty ext.not_abs ext.not_closed ext.nth_abs
+  ext.nonempty ext.not_abs ext.not_closed
   ext.number1_abs ext.number2_abs ext.number3_abs ext.omega_abs
   ext.or_abs ext.or_closed ext.order_isomorphism_abs
   ext.ordermap_closed ext.ordertype_closed ext.ordinal_abs
@@ -198,7 +191,7 @@ lemmas mg_sharp_simps = ext.Card_rel_Union ext.Card_rel_cardinal_rel
   ext.trancl_abs ext.trancl_closed ext.transitive_rel_abs
   ext.transitive_set_abs ext.typed_function_abs ext.union_abs
   ext.upair_abs ext.upair_in_M_iff ext.vimage_abs ext.vimage_closed
-  ext.well_ord_abs ext.mem_formula_abs ext.nth_closed ext.Aleph_rel_closed
+  ext.well_ord_abs ext.nth_closed ext.Aleph_rel_closed
   ext.csucc_rel_closed ext.Card_rel_Aleph_rel
 
 \<comment> \<open>The following was motivated by the fact that
