@@ -1,90 +1,72 @@
 \section{Main achievements of the formalization}
 \label{sec:main-achievements}
 
-\subsection{32 replacement instances to rule them all}
+\subsection{22 replacement instances to rule them all}
 \label{sec:repl-instances}
 
-We isolated 32 instances of Replacement that are sufficient to force
+We isolated 22 instances of Replacement that are sufficient to force
 $\CH$ or $\neg\CH$, which are enumerated below by the name of the
 corresponding internalized first order formula. Many of these were already present in
 relational form in the \session{ZF-Constructible} library.
 
-The first 13 instances are needed to set up
-cardinal arithmetic in $M$, along some other basic constructions.
+The first 4 instances, collected in the subset
+\isatt{instances1{\uscore}fms} of \formula, consist of basic
+constructions.
 
 \begin{itemize}
-\item 6 instances for iteration of operations (between parentheses). For each construct,
-  Paulson used one replacement instance in order to have absoluteness,
-  and a second one to obtain closure.
+\item 2 instances for transitive closure.
   \begin{itemize}
   \item
-    \isatt{list{\uscore}repl1{\uscore}intf{\uscore}fm} and 
-    \isatt{list{\uscore}repl2{\uscore}intf{\uscore}fm}.
-    
-    For lists on a set $A$ ($X\mapsto \{0 \} \oplus A \times X$, where
-    $D\oplus E$ stands for the disjoint union/coproduct $(\{0 \}\times
-    D) \cup (\{1 \}\times E)$).
-    %
+    \isatt{eclose{\uscore}repl1{\uscore}intf{\uscore}fm}.
+
+    To prove closure under iteration of $X\mapsto\union X$.
   \item
-    \isatt{formula{\uscore}repl1{\uscore}intf{\uscore}fm} and
-    \isatt{formula{\uscore}repl1{\uscore}intf{\uscore}fm}.
-    
-    For (codes of) first order formulas ($X\mapsto (\omega \times
-    \omega \oplus \omega \times \omega) \oplus X \times X \oplus X$).
-    %
-  \item
-    \isatt{eclose{\uscore}repl1{\uscore}intf{\uscore}fm} and 
     \isatt{eclose{\uscore}repl2{\uscore}intf{\uscore}fm}.
 
-    For transitive closure ($X\mapsto\union X$).
+    Auxiliary instance used to show absoluteness.
   \end{itemize}
-\item \isatt{tl{\uscore}repl{\uscore}intf{\uscore}fm}.
-
-  Absoluteness of the definition of the
-  $n$th element of a list (iteration of the tail operation).
-  By transitivity, we do not need an instance for closure.
-\end{itemize}
 %% The instances so far
-%% are needed to interpret locales \locale{M{\uscore}datatypes} and
+%% are needed to interpret locale
 %% \locale{M{\uscore}eclose}.
-%% \locale{M{\uscore}datatypes} is used in the relative definition of
-%% \isatt{Vset}.
-These formulas, together with the next two, form the set
-\isa{instances{\isadigit{1}}{\isacharunderscore}{\kern0pt}fms}.
+\item \isatt{wfrec{\uscore}rank{\uscore}fm}.
+  
+  For $\in$-rank.
+  %
+\item \isatt{trans{\uscore}repl{\uscore}HVFrom{\uscore}fm}.
+
+  For the cumulative hierarchy (rank initial segments).
+\end{itemize}
+
+%% The last two and next pair have the same syntactic structure, because
+%% they are definitions by well-founded recursion.
+The next 4 instances (gathered in \isatt{instances2{\uscore}fms})
+are needed to set up
+cardinal arithmetic in $M$.
 \begin{itemize}
-\item
-  4 instances for definitions by well-founded recursion.
+\item 2 instances for ordertypes:
   \begin{itemize}
-  \item \isatt{wfrec{\uscore}rank{\uscore}fm}.
-
-    For $\in$-rank.
-    %
-  \item \isatt{trans{\uscore}repl{\uscore}HVFrom{\uscore}fm}.
-
-    For the cumulative hierarchy (rank initial segments).
-    %
-  \item \isatt{wfrec{\uscore}replacement{\uscore}order{\uscore}pred{\uscore}fm}.
-
-    For ordertypes
-    %
   \item
-    \isatt{replacement{\uscore}HAleph{\uscore}wfrec{\uscore}repl{\uscore}body{\uscore}fm}.
+    \isatt{wfrec{\uscore}replacement{\uscore}order{\uscore}pred{\uscore}fm}.
 
-    For Aleph.
-  \end{itemize}
-\item
-  2 instances for ordertypes.
-  \begin{itemize}
+    Well-founded recursion for the construction of ordertypes.
+    %
   \item
     \isatt{replacement{\uscore}is{\uscore}order{\uscore}eq{\uscore}map{\uscore}fm}.
 
-    Auxiliary instance for the definition of ordertypes, needed for
-    the interpretation of \locale{M{\uscore}ordertype}.
+    Auxiliary instance for the definition of ordertypes.
+  \end{itemize}
+\item 2 instances for Aleph:
+  \begin{itemize}
     %
   \item
     \isatt{replacement{\uscore}is{\uscore}order{\uscore}body{\uscore}fm}.
 
     Replacement through $x\mapsto \otype(x)$, for Hartogs' Theorem.
+    %
+  \item
+    \isatt{replacement{\uscore}HAleph{\uscore}wfrec{\uscore}repl{\uscore}body{\uscore}fm}.
+
+    The well-founded recursion to define Aleph.
   \end{itemize}
 \end{itemize}
 
@@ -101,24 +83,23 @@ Here, $\mathit{fst}(\lb a,b\rb) = a$, $\mathit{snd}(\lb a,b\rb) = b$
 In our development, the mapping $\phi\mapsto\psi$ defined above is given by the
 $\isatt{ground{\uscore}repl{\uscore}fm}$ function, and all ground replacement
 instances appear in the locale \locale{M{\uscore}ZF3} and form the set
-\isa{instances{\isadigit{3}}{\isacharunderscore}{\kern0pt}fms}. These are expressed using
+\isatt{instances3{\uscore}fms}. These are expressed using
 the \isatt{ground{\uscore}replacement{\uscore}assm(M,\isasymphi)} predicate
 obtained by replacing $\phi$ by
 $\isatt{ground{\uscore}repl{\uscore}fm}(\phi)$ in Eq.~(\ref{eq:replacement_assm_def}).
 
-That makes 26 instances up to now. For the setup of forcing, we
-require the following 3 instances, which form the set \isa{instances{\isacharunderscore}{\kern0pt}ground{\isacharunderscore}{\kern0pt}fms}.
+That makes 16 instances up to now. For the setup of forcing, we
+require the following 3 instances, which form the set
+\isatt{instances{\uscore}ground{\uscore}fms}.
+
 \begin{itemize}
-\item 2 instances for definitions by well-founded recursion.
-  \begin{itemize}
-  \item \isatt{wfrec{\uscore}Hcheck{\uscore}fm}.
+\item \isatt{wfrec{\uscore}Hcheck{\uscore}fm}.
+  
+  Well-founded recursion to define check-names.
+  %
+\item \isatt{wfrec{\uscore}Hfrc{\uscore}at{\uscore}fm}.
 
-    For check-names.
-    %
-  \item \isatt{wfrec{\uscore}Hfrc{\uscore}at{\uscore}fm}.
-
-    Definition of forcing for atomic formulas.
-  \end{itemize}
+  Well-founded recursion for the definition of forcing for atomic formulas.
   %
 \item
   \isatt{Lambda{\uscore}in{\uscore}M{\uscore}fm(check{\uscore}fm(2,0,1),1)}.
@@ -128,7 +109,7 @@ require the following 3 instances, which form the set \isa{instances{\isacharund
   %
 \end{itemize}
 The next two formulas, which form the set
-\isa{instances{\isacharunderscore}{\kern0pt}ground{\isacharunderscore}{\kern0pt}notCH{\isacharunderscore}{\kern0pt}fms},
+\isatt{instances{\uscore}ground{\uscore}notCH{\uscore}fms},
 are needed for the $\Delta$-System Lemma.
 \begin{itemize}
 \item
@@ -143,8 +124,8 @@ are needed for the $\Delta$-System Lemma.
   Absoluteness of the previous construction.
 \end{itemize}
 %
-The $31$ formulas up to this point are collected into the set
-\isa{overhead{\isacharunderscore}{\kern0pt}notCH}, which is enough to
+The $21$ formulas up to this point are collected into the set
+\isatt{overhead{\uscore}notCH}, which is enough to
 force $\neg\CH$. To force $\CH$, we required one further instance:
 %
 \begin{itemize}
@@ -159,8 +140,8 @@ The particular choice of some of the instances above arose from
 Paulson's architecture on which we based our development.
 This applies every time
 a locale from \session{ZF-Constructible} has to be
-interpreted (namely \locale{M{\uscore}datatypes}
-\locale{M{\uscore}eclose}, and \locale{M{\uscore}ordertype}).
+interpreted (\locale{M{\uscore}eclose} and
+\locale{M{\uscore}ordertype}, respectively, for the “auxiliary” instances).
 %% For instance, the first
 %% instance required for the definition of relative ordertypes arises
 %% from Paulson's \session{ZF-Constructible}.
@@ -173,9 +154,12 @@ we replaced the original proof of the Schröder-Bernstein Theorem by
 Zermelo's one \cite[Exr. x4.27]{moschovakis1994notes}, because the
 former required at least one extra instance
 % (\isatt{banach{\uscore}iterates{\uscore}fm})
-arising from an iteration.
+arising from an iteration. We also managed to avoid 10 further
+replacements by restructuring some of original theories in
+\session{ZF-Constructible}, so these modifications are included as
+part of our project.
 
-It is to be noted that application of the Forcing Theorems do not
+It is to be noted that the application of the Forcing Theorems do not
 require any extra replacement instances on $M$ (independently of the
 formula $\phi$ for which they are invoked). This is not the case for
 Separation, at least from our formalization: More instances are needed
@@ -237,7 +221,7 @@ considering extensions of ctms of fragments of $\ZF$.
 \ \ \ \ \ \ N\ {\isasymTurnstile}\ {\isasymcdot}Z{\isasymcdot}\ {\isasymunion}\ {\isacharbraceleft}{\kern0pt}\ {\isasymcdot}Replacement{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}{\isasymcdot}\ {\isachardot}{\kern0pt}\ {\isasymphi}\ {\isasymin}\ {\isasymPhi}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}
 \end{isabelle}
 
-Here, the 12-element set \isatt{overhead} is enough to construct a proper
+Here, the 7-element set \isatt{overhead} is enough to construct a proper
 extension. It is  the union of
 \isa{instances{\isadigit{1}}{\isacharunderscore}{\kern0pt}fms} and
 \isa{instances{\isacharunderscore}{\kern0pt}ground{\isacharunderscore}{\kern0pt}fms}.
