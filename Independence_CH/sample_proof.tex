@@ -1,9 +1,12 @@
 \section{A sample formal proof}
 \label{sec:sample-formal-proof}
 
-We present a fragment of the formal version of Kunen's proof that the
-Powerset Axiom holds in a generic extension. We quote the relevant
-paragraph of \cite[Thm.~IV.2.27]{kunen2011set}:
+We present a fragment of the formal version of the proof that the
+Powerset Axiom holds in a generic extension, which also serves to
+illustrate the Isar dialect of Isabelle.
+
+We quote the relevant
+paragraph of Kunen's \cite[Thm.~IV.2.27]{kunen2011set}:
 \begin{quote}
   For Power Set (similarly to Union above), it is sufficient to prove
   that whenever $a \in M[G]$, there is a $b \in M[G]$ such that
@@ -169,8 +172,8 @@ apply further previously proved lemmas.
 Undoubtedly, even for this cherry-picked example, the formalization
 looks a bit codish. It is therefore inevitable to compare this to the
 magnificent results obtained by P.~Koepke and his team by using
-Isabelle/Naproche \cite{10.1007/978-3-030-81097-9_2} (notoriously,
-König's Theorem). The trick there consists in presenting the result
+Isabelle/Naproche \cite{10.1007/978-3-030-81097-9_2} (particularly,
+the proof König's Theorem). The trick there consists in presenting the result
 being formalized as a restricted first-order problem, and then each
 proof step can be handled by an automatic theorem prover.
 

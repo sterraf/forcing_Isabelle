@@ -72,7 +72,7 @@ cardinal arithmetic in $M$.
 
 We also need a one extra replacement instance $\psi$ on $M$ for each
 $\phi$ of the
-previous ones to have them in $M[G]$.
+previous ones to have them in $M[G]$:
 \[
   \psi(x,\alpha,y_1,\dots,y_n) \defi \quine{\alpha = \min \bigl\{
     \beta \mid \exists\tau\in V_\beta.\  \mathit{snd}(x) \forces
@@ -84,7 +84,7 @@ In our development, the mapping $\phi\mapsto\psi$ defined above is given by the
 $\isatt{ground{\uscore}repl{\uscore}fm}$ function, and all ground replacement
 instances appear in the locale \locale{M{\uscore}ZF3} and form the set
 \isatt{instances3{\uscore}fms}. These are expressed using
-the \isatt{ground{\uscore}replacement{\uscore}assm(M,\isasymphi)} predicate
+the $\isatt{ground{\uscore}replacement{\uscore}assm}(M,\mathit{env},\phi)$ predicate
 obtained by replacing $\phi$ by
 $\isatt{ground{\uscore}repl{\uscore}fm}(\phi)$ in Eq.~(\ref{eq:replacement_assm_def}).
 
@@ -147,28 +147,32 @@ interpreted (\locale{M{\uscore}eclose} and
 %% from Paulson's \session{ZF-Constructible}.
 % https://isabelle.in.tum.de/dist/library/ZF/ZF-Constructible/Rank.html#offset_1123..1139
 
-On the other hand, as explained in
-Section~\ref{sec:zfc-axioms-as-locales}, we managed to eliminate the
-instance arising from the \locale{M{\uscore}basic} locale. Similarly,
-we replaced the original proof of the Schröder-Bernstein Theorem by
-Zermelo's one \cite[Exr. x4.27]{moschovakis1994notes}, because the
-former required at least one extra instance
+On the other hand, we replaced the original proof of the
+Schröder-Bernstein Theorem by Zermelo's one
+\cite[Exr. x4.27]{moschovakis1994notes}, because the former required
+at least one extra instance
 % (\isatt{banach{\uscore}iterates{\uscore}fm})
-arising from an iteration. We also managed to avoid 10 further
+arising from an iteration. We also managed to avoid 12 further
 replacements by restructuring some of original theories in
 \session{ZF-Constructible}, so these modifications are included as
 part of our project.
 
-It is to be noted that the application of the Forcing Theorems do not
-require any extra replacement instances on $M$ (independently of the
-formula $\phi$ for which they are invoked). This is not the case for
-Separation, at least from our formalization: More instances are needed
+It is to be noted that the \emph{application} of the Forcing Theorems \emph{does not
+require any extra replacement}. That is, no further replacement
+instance holding at $M$ is necessary to invoke
+Theorem~\ref{th:forcing-thms}, independently of the
+formula $\phi$. But this seems  not be the case for
+Separation, at least from inspecting our formalization: More instances are needed
 as the complexity of $\phi$ grows. One point where this is apparent is
 in the proof of Theorem~\ref{th:forcing-thms}(\ref{item:truth-lemma}),
 that appears as the \isatt{truth{\uscore}lemma} in our development; it
 depends on \isatt{truth{\uscore}lemma'} and
-\isatt{truth{\uscore}lemma{\uscore}Neg} which explicitly invoke
-\isatt{separation{\uscore}ax}.
+\isatt{truth{\uscore}lemma{\uscore}Neg}, which explicitly invoke
+\isatt{separation{\uscore}ax}. In any case, our intended grounds
+(v.g., the transitive collapse of countable elementary submodels of a
+rank initial segment $V_\alpha$ or an $H(\kappa)$) all satisfy full
+Separation.
+
 
 %-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
 \subsection{Models for $\CH$ and its negation}
@@ -198,7 +202,9 @@ $\ZFC + \CH$  appear in our formalization as follows:
 \ \ \ \ \ \ M\ {\isasymsubseteq}\ N\ {\isasymand}\ N\ {\isasymapprox}\ {\isasymomega}\ {\isasymand}\ Transset{\isacharparenleft}{\kern0pt}N{\isacharparenright}{\kern0pt}\ {\isasymand}\ N\ {\isasymTurnstile}\ ZFC\ {\isasymunion}\ {\isacharbraceleft}{\kern0pt}{\isasymcdot}CH{\isasymcdot}{\isacharbraceright}{\kern0pt}\ {\isasymand}\isanewline
 \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}{\isasymalpha}{\isachardot}{\kern0pt}\ Ord{\isacharparenleft}{\kern0pt}{\isasymalpha}{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\ {\isacharparenleft}{\kern0pt}{\isasymalpha}\ {\isasymin}\ M\ {\isasymlongleftrightarrow}\ {\isasymalpha}\ {\isasymin}\ N{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}
 \end{isabelle}
-Both results are proved in $\ZF$ (no choice is used).
+where $\approx$ is equipotence, and the predicate \isatt{Transset}
+holds for
+transitive sets. Both results are proved without using Choice.
 
 As the excerpts indicate, these results are obtained as corollaries of
 two theorems in which only a subset of the aforementioned

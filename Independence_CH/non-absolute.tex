@@ -5,7 +5,7 @@ The treatment of relativization/internalization described in the
 previous sections was enough for the Paulson's treatment of
 constructibility. This is the case because essentially all the
 concepts in the way of proving the consistency of $\AC$ are
-absolute, and treatment of relational versions and relativized notions
+absolute, and the treatment of relational versions and relativized notions
 could be minimized after proving the relevant absoluteness results:
 For example, the lemma \isatt{Union{\uscore}abs},
 \[
@@ -24,9 +24,9 @@ In order to cope with this, we added the missing step from the
 literature consisting of relative versions of the various non-absolute
 functions and programmed in ML limited automatic facilities that
 define the needed concepts, and  state and
-prove the requisite lemmas. For instance, the 
-$\isatt{cardinal}::\tyi \fun \tyi$ function is defined in
-\session{Isabelle/ZF}, and the commands
+prove the requisite lemmas. For instance, consider the 
+$\isatt{cardinal}::\tyi \fun \tyi$ function defined in
+\session{Isabelle/ZF}. Then the commands
 \begin{isabelle}
   \isacommand{relativize}\isamarkupfalse%
   \ \isakeyword{functional}\ {\isachardoublequoteopen}cardinal{\isachardoublequoteclose}\ {\isachardoublequoteopen}cardinal{\isacharunderscore}{\kern0pt}rel{\isachardoublequoteclose}\ \isakeyword{external}\isanewline
@@ -38,7 +38,7 @@ $\isatt{cardinal}::\tyi \fun \tyi$ function is defined in
 define the relative cardinal function
 $\isatt{cardinal{\uscore}rel}::(\tyi \fun \tyo) \fun \tyi \fun\tyi$
 (denoted  $|\cdot|^M$, as expected),
-the relational version of the latter $\isatt{is{\uscore}cardinal}$, the
+the relational version $\isatt{is{\uscore}cardinal}$ of the latter, the
 internalized formula \isatt{is{\uscore}cardinal{\uscore}fm} whose
 satisfaction by a set is equivalent to the relational version, and
 prove the previous statement (analogous to (\ref{eq:sats_big_union_fm})).
@@ -64,7 +64,7 @@ This material was subsequently put in relative form in our formal
 development on transitive class models \cite{Transitive_Models-AFP}
 using as an aid the tools from
 Section~\ref{sec:tools-relativization}. We also relativized many
-original theories appearing in \session{ZF}, including the
+original theories appearing in Isabelle/ZF, including the
 fundamentals of cardinal arithmetic, the cumulative hierarchy, and the
 definition of the $\ale{}$ function.
 
