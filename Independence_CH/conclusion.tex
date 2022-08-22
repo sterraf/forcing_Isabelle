@@ -1,40 +1,43 @@
 \section{Future directions}
 \label{sec:conclusion}
 
-One of our main goals was to provide a \emph{proof document}, which
-can hopefully be read by mathematicians/set-theorists.
+There are many possibilities for further work starting from this
+formalization. We will mention just a few.
 
-Where did we fail on this?
-\begin{enumerate}
-\item
-  The definition of forces is too codish.
-\item
-  Proving instances of axiom schemes.
-\end{enumerate}
+Obvious missing pieces would be proving the standard properties of
+general Cohen posets $\Fn_\kappa(I,J)$, and to modify the core
+definitions to allow for class forcing. We would also like to try the
+Boolean valued approach to compare the (un)ease of formalization using
+Isabelle/ZF.
 
-The experience of formalizing math:
-\begin{enumerate}
-\item It is fun, almost addictive.
-\item Feeling of accomplishment after seeing your writings
-  validated beyond reasonable doubt (v.g. cofinality).
-\item On the grim side: It is easy to forget to put perspective on a
-  formalization issue and meditate on paper.
-\end{enumerate}
+Another desirable goal is to construct transitive set models of $\ZFC$
+from a large cardinal. There's some work to be done for that: Even the
+definition of inaccessibles, and of the transitive collapse (for that
+matter), are still missing.
 
-Loose ends:
-\begin{enumerate}
-\item
-  Boolean algebras;
-\item
-  Gödel for Separation.
-\item
-  Refine Constructible even more? Building with Lambda replacements
-\item
-  Connect to \session{ZFC\_in\_HOL} \cite{2022arXiv220503159P}.
-\item
-  Can we move more of the forcing infraestructure to class locales?
-  For instance, names.
-\end{enumerate}
+In line with identifying (almost) minimal set of axioms, we would like
+to obtained formalized results concerning which instances of
+Separation are needed to use forcing. A necessary ingredient will
+certainly be an implementation of Gödel operations
+\cite[Thm.~13.4]{Jech_Millennium}.
+
+In our previous landmark \cite{2020arXiv200109715G}, we contributed
+with some modifications to \session{ZF-Constructible}; this is now
+part of the official Isabelle distribution.  We intend ask Isabelle
+maintainers to consider the more modular versions of some of those
+theories that we are presenting in this project.
+
+As final words about our journey, we believe that, as in mathematics
+in general, the experience of working in a formal environment can be
+daunting, but at the same time extremely rewarding: The feeling of
+accomplishment after seeing one's writings validated beyond doubt is
+in some ways comparable that of finding a proof of an important
+lemma. It also allows subtly different ways of reasoning (with their
+own merits and pitfalls---it is easy to forget how easy a proof on
+paper is once you are fully engaged in directing your assistant). We
+hope that at some point these experiencies are shared by our community
+at large.
+
 
 \section*{Acknowledgments}
 \label{sec:acknowledgments}
