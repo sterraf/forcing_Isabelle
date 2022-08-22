@@ -20,7 +20,7 @@ The fact is that our present proofs of the “definition of forces” (and many
 consequences) and of the lemma for “forcing a value” of function
 unnecessarily depend on the countability of the ground model. \<close>
 
-locale forcing_data1 = forcing_notion + M_ctm1 + M_ZF_ground_trans +
+locale forcing_data1 = forcing_notion + M_ctm1 +
   assumes P_in_M:           "P \<in> M"
     and leq_in_M:         "leq \<in> M"
 
