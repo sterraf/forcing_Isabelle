@@ -27,7 +27,7 @@ many engineering decisions were also taken before it was clear the
 precise way things would develop in the future.
 
 A similar experience, but on an opposite side of the formalization
-spectrum happened to the Liquid Tensor Experiment as described by Scholze
+spectrum happened to the Liquid Tensor Experiment \cite{nature-lte} as described by Scholze
 in \cite{LTE2021}. People involved in the formalization simply pushed
 their way to reach the summit, formalizing lemma after lemma. They
 actually wrote the blueprint for that formalization \emph{afterwards}
@@ -50,11 +50,11 @@ our target results. For example,
 \begin{itemize}
 \item
   we only proved the Delta System Lemma for $\aleph_1$-sized families;
-  thus limiting us to the plain ccc, and avoiding the relativization
+  thus limiting us to $\kappa=\aleph_1$ case of the $\kappa$-chain condition, and dodging the relativization
   of the material on cofinalities \cite{Delta_System_Lemma-AFP};
 \item we showed preservation of sequences by considering countably
   closed forcings (in fact, we formalized the bare minimum requirement
-  of being $(<\omega+1)$-closed); and
+  of being $(<\omega+1)$-closed, that is, under plain $\omega$-sequences).
 \end{itemize}
 In doing this we went against the tried and
 true advice that one should formalize the most general version of the
@@ -116,8 +116,7 @@ bureaucracy. Some of the material filed under this category comprises:
 \item proving that certain constructions belong to the relevant
   models;
 \item (required for the above) showing that particular instances of
-  separation and replacement hold in the ground model;
-\item etc.
+  separation and replacement hold in the ground model.
 \end{itemize}
 
 Some of those proofs were almost copy-pasted once and again with minor
@@ -126,8 +125,7 @@ meta-language, but we were unable to do this due to our limitations in
 programming Isabelle/ML\footnote{%
   On the other hand, our inability to automate proofs of replacement
   instances paved the way for identifying which were the ones needed for
-  forcing! ($\leftarrow$\textbf{put somewhere, don't know if this is the right
-    place}).}.
+  forcing!}.
 
 Nevertheless, the experience of the CS members of the team (and
 community) is invaluable for the kind of engineering that is needed in
