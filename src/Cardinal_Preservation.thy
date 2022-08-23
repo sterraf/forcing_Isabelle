@@ -221,7 +221,7 @@ proof -
     using strengthening_lemma[of r \<phi> _ env] by blast
 qed
 
-subsection\<open>\<bbbP>reservation by ccc forcing notions\<close>
+subsection\<open>Preservation by ccc forcing notions\<close>
 
 lemma ccc_fun_closed_lemma_aux:
   assumes "f_dot\<in>M" "p\<in>M" "a\<in>M" "b\<in>M"
