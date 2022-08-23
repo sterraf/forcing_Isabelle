@@ -45,7 +45,7 @@ the many replacement instances, predicates $Q$ and $R$ are actually
 defined as the satisfaction of formulas of the appropriate arity; we can only show
 that this form of the axioms hold in generic extensions. 
 
-Further locales gather the assumption of transitivity of $M$ and
+Further locales gather
 particular replacement instances expressed by means of the
 $\isatt{replacement{\uscore}assm}(M,\mathit{env},\phi)$ predicate ($@$ denotes
 list concatenation):
@@ -90,9 +90,36 @@ results from Section~\ref{sec:extension-isabellezf}.
 %-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
 
 \subsection{The fundamental theorems}\label{sec:fundamental-theorems}
-In order to fix notation, let $\lb \PP, {\preceq} ,\1\rb \in M$ be a forcing notion. The
-$\val$ interpretation function takes $3$ arguments so that if $G\sbq \PP$, we have
-$M[G]\defi \{ \val(\PP,G,\punto{a}) : \punto{a}\in M \}$.
+At this point, we work inside the locale \isatt{M{\uscore}ctm1} that
+assumes $M$ to be
+countable and transitive, and satisfies some fragment of
+$\ZFC$.
+\footnote{%
+Namely, Zermelo set theory plus the replacement instances included in
+\locale{M{\uscore}ZF1} and \locale{M{\uscore}ZF{\uscore}ground}.
+}%
+conjunction of the sets This is further extended by assuming a forcing notion
+$\lb \PP, {\preceq} ,\1\rb \in M$. The actual implementation reads:
+
+\begin{isabelle}
+\isacommand{locale}\isamarkupfalse%
+\ forcing{\isacharunderscore}{\kern0pt}notion\ {\isacharequal}{\kern0pt}\isanewline
+\ \ \isakeyword{fixes}\ P\ {\isacharparenleft}{\kern0pt}{\isacartoucheopen}{\isasymbbbP}{\isacartoucheclose}{\isacharparenright}{\kern0pt}\ \isakeyword{and}\ leq\ \isakeyword{and}\ one\ {\isacharparenleft}{\kern0pt}{\isacartoucheopen}{\isasymone}{\isacartoucheclose}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeyword{assumes}\ one{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}P{\isacharcolon}{\kern0pt}\ \ \ \ \ \ \ {\isachardoublequoteopen}{\isasymone}\ {\isasymin}\ {\isasymbbbP}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeyword{and}\ leq{\isacharunderscore}{\kern0pt}preord{\isacharcolon}{\kern0pt}\ \ \ \ \ \ \ {\isachardoublequoteopen}preorder{\isacharunderscore}{\kern0pt}on{\isacharparenleft}{\kern0pt}{\isasymbbbP}{\isacharcomma}{\kern0pt}leq{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeyword{and}\ one{\isacharunderscore}{\kern0pt}max{\isacharcolon}{\kern0pt}\ \ \ \ \ \ \ \ \ \ {\isachardoublequoteopen}{\isasymforall}p{\isasymin}{\isasymbbbP}{\isachardot}{\kern0pt}\ {\isasymlangle}p{\isacharcomma}{\kern0pt}{\isasymone}{\isasymrangle}{\isasymin}leq{\isachardoublequoteclose}
+\end{isabelle}
+
+\begin{isabelle}
+\isacommand{locale}\isamarkupfalse%
+\ forcing{\isacharunderscore}{\kern0pt}data{\isadigit{1}}\ {\isacharequal}{\kern0pt}\ forcing{\isacharunderscore}{\kern0pt}notion\ {\isacharplus}{\kern0pt}\ M{\isacharunderscore}{\kern0pt}ctm{\isadigit{1}}\ {\isacharplus}{\kern0pt}\isanewline
+\ \ \isakeyword{assumes}\ P{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}M{\isacharcolon}{\kern0pt}\ \ \ \ \ \ \ \ \ \ \ {\isachardoublequoteopen}{\isasymbbbP}\ {\isasymin}\ M{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeyword{and}\ leq{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}M{\isacharcolon}{\kern0pt}\ \ \ \ \ \ \ \ \ {\isachardoublequoteopen}leq\ {\isasymin}\ M{\isachardoublequoteclose}
+\end{isabelle}
+In order to fix notation, the
+$\val$ interpretation function takes as its first argument the filter
+and then the name, so we have
+$M[G]\defi \{ \val(G,\tau) : \tau\in M \}$.
 
 The version of the Forcing Theorems that we formalized follows the
 considerations on the $\forces^*$ relation as discussed in Kunen's new
@@ -109,31 +136,31 @@ way.
 \begin{theorem}\label{th:forcing-thms}
   There exists a function  $\forceisa$
   such that for every
-  $\phi\in\formula$ and $\punto{a}_0,\dots,\punto{a}_n\in M$,
+  $\phi\in\formula$ and $\tau_0,\dots,\tau_n\in M$,
   \begin{enumerate}
   \item\label{item:definability} (Definability)
     $\forceisa(\phi)\in\formula$, 
   \end{enumerate}
   where the 
   arity of $\forceisa(\phi)$ is at most $\isatt{arity}(\phi) + 4$; and if
-  “$p \forces \phi\ [\punto{a}_0,\dots,\punto{a}_n]$”
+  “$p \forces \phi\ [\tau_0,\dots,\tau_n]$”
   denotes
-  “$M, [p,\PP,\preceq,\1, \punto{a}_0,\dots,\punto{a}_n]  \models
+  “$M, [p,\PP,\preceq,\1, \tau_0,\dots,\tau_n]  \models
   \forceisa(\phi)$”, we have:
   \begin{enumerate}
     \setcounter{enumi}{1}
   \item\label{item:truth-lemma} (Truth Lemma) for every $M$-generic $G$,
     \[
-      \exists p\in G.\ \; p \forces \phi\ [\punto{a}_0,\dots,\punto{a}_n]
+      \exists p\in G.\ \; p \forces \phi\ [\tau_0,\dots,\tau_n]
     \]
     is equivalent to 
     \[
-      M[G], [\val(\PP,G,\punto{a}_0),\dots,\val(\PP,G,\punto{a}_n)]
+      M[G], [\val(G,\tau_0),\dots,\val(G,\tau_n)]
       \models \phi.
     \]
-  \item \label{item:density-lemma} (Density Lemma) $p \forces \phi\ [\punto{a}_0,\dots,\punto{a}_n]$
+  \item \label{item:density-lemma} (Density Lemma) $p \forces \phi\ [\tau_0,\dots,\tau_n]$
     if and only if 
-    $\{q\in \PP :  q \forces \phi\ [\punto{a}_0,\dots,\punto{a}_n]\}$
+    $\{q\in \PP :  q \forces \phi\ [\tau_0,\dots,\tau_n]\}$
     is dense below $p$.
   \end{enumerate}
 \end{theorem}
@@ -151,17 +178,17 @@ follows:
 \isacommand{lemma}\isamarkupfalse%
 \ truth{\isacharunderscore}{\kern0pt}lemma{\isacharcolon}{\kern0pt}\isanewline
 \ \ \isakeyword{assumes}\isanewline
-\ \ \ \ {\isachardoublequoteopen}{\isasymphi}{\isasymin}formula{\isachardoublequoteclose}\ {\isachardoublequoteopen}M{\isacharunderscore}{\kern0pt}generic{\isacharparenleft}{\kern0pt}G{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ {\isachardoublequoteopen}{\isasymphi}{\isasymin}formula{\isachardoublequoteclose}\isanewline
 \ \ \ \ {\isachardoublequoteopen}env{\isasymin}list{\isacharparenleft}{\kern0pt}M{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\ {\isachardoublequoteopen}arity{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}{\isasymle}length{\isacharparenleft}{\kern0pt}env{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
 \ \ \isakeyword{shows}\isanewline
-\ \ \ \ {\isachardoublequoteopen}{\isacharparenleft}{\kern0pt}{\isasymexists}p{\isasymin}G{\isachardot}{\kern0pt}\ p\ {\isasymtturnstile}\ {\isasymphi}\ env{\isacharparenright}{\kern0pt}\ \ \ {\isasymlongleftrightarrow}\ \ \ M{\isacharbrackleft}{\kern0pt}G{\isacharbrackright}{\kern0pt}{\isacharcomma}{\kern0pt}\ map{\isacharparenleft}{\kern0pt}val{\isacharparenleft}{\kern0pt}P{\isacharcomma}{\kern0pt}G{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}env{\isacharparenright}{\kern0pt}\ {\isasymTurnstile}\ {\isasymphi}{\isachardoublequoteclose}
+\ \ \ \ {\isachardoublequoteopen}{\isacharparenleft}{\kern0pt}{\isasymexists}p{\isasymin}G{\isachardot}{\kern0pt}\ p\ {\isasymtturnstile}\ {\isasymphi}\ env{\isacharparenright}{\kern0pt}\ \ \ {\isasymlongleftrightarrow}\ \ \ M{\isacharbrackleft}{\kern0pt}G{\isacharbrackright}{\kern0pt}{\isacharcomma}{\kern0pt}\ map{\isacharparenleft}{\kern0pt}val{\isacharparenleft}{\kern0pt}G{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}env{\isacharparenright}{\kern0pt}\ {\isasymTurnstile}\ {\isasymphi}{\isachardoublequoteclose}
 \end{isabelle}
 where the $\forces$ notation (and its precedence) had already been set up in the
 \theory{Forces{\uscore}Definition} theory as follows:
 \begin{isabelle}
 \isacommand{abbreviation}\isamarkupfalse%
 \ Forces\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharbrackleft}{\kern0pt}i{\isacharcomma}{\kern0pt}\ i{\isacharcomma}{\kern0pt}\ i{\isacharbrackright}{\kern0pt}\ {\isasymRightarrow}\ o{\isachardoublequoteclose}\ \ {\isacharparenleft}{\kern0pt}{\isachardoublequoteopen}{\isacharunderscore}{\kern0pt}\ {\isasymtturnstile}\ {\isacharunderscore}{\kern0pt}\ {\isacharunderscore}{\kern0pt}{\isachardoublequoteclose}\ {\isacharbrackleft}{\kern0pt}{\isadigit{3}}{\isadigit{6}}{\isacharcomma}{\kern0pt}{\isadigit{3}}{\isadigit{6}}{\isacharcomma}{\kern0pt}{\isadigit{3}}{\isadigit{6}}{\isacharbrackright}{\kern0pt}\ {\isadigit{6}}{\isadigit{0}}{\isacharparenright}{\kern0pt}\ \isakeyword{where}\isanewline
-\ \ {\isachardoublequoteopen}p\ {\isasymtturnstile}\ {\isasymphi}\ env\ \ \ {\isasymequiv}\ \ \ M{\isacharcomma}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isacharbrackleft}{\kern0pt}p{\isacharcomma}{\kern0pt}P{\isacharcomma}{\kern0pt}leq{\isacharcomma}{\kern0pt}{\isasymone}{\isacharbrackright}{\kern0pt}\ {\isacharat}{\kern0pt}\ env{\isacharparenright}{\kern0pt}\ {\isasymTurnstile}\ forces{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ {\isachardoublequoteopen}p\ {\isasymtturnstile}\ {\isasymphi}\ env\ \ \ {\isasymequiv}\ \ \ M{\isacharcomma}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isacharbrackleft}{\kern0pt}p{\isacharcomma}{\kern0pt}{\isasymbbbP}{\isacharcomma}{\kern0pt}leq{\isacharcomma}{\kern0pt}{\isasymone}{\isacharbrackright}{\kern0pt}\ {\isacharat}{\kern0pt}\ env{\isacharparenright}{\kern0pt}\ {\isasymTurnstile}\ forces{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}
 \end{isabelle}
 
 Kunen first describes forcing for atomic formulas using a mutual
