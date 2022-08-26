@@ -157,12 +157,12 @@ replacements by restructuring some of original theories in
 \session{ZF-Constructible}, so these modifications are included as
 part of our project.
 
-It is to be noted that the \emph{application} of the Forcing Theorems \emph{does not
-require any extra replacement}. That is, no further replacement
-instance holding at $M$ is necessary to invoke
-Theorem~\ref{th:forcing-thms}, independently of the
-formula $\phi$. But this seems  not be the case for
-Separation, at least from inspecting our formalization: More instances are needed
+It is to be noted that the proofs of the Forcing Theorems do not
+require any extra replacement; actually, they only need the 7
+instances appearing in \isatt{instances1{\uscore}fms} and
+\isatt{instances{\uscore}ground{\uscore}fms}.  But this seems not be
+the case for Separation, at least by inspecting our formalization:
+More instances holding in $M$ are needed 
 as the complexity of $\phi$ grows. One point where this is apparent is
 in the proof of Theorem~\ref{th:forcing-thms}(\ref{item:truth-lemma}),
 that appears as the \isatt{truth{\uscore}lemma} in our development; it
