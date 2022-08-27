@@ -25,7 +25,7 @@ the proof.
 %% proof languages that aim to have intelligible proof scripts.}
 
 To have any value at all, the system should only allow the application
-of sound tactics; in particular, neither the author nor (any part) of
+of sound tactics; in particular, neither the author nor (any part of)
 the system should be able to fake proofs. Edinburgh LCF~\cite{Gordon1979-qm} was an
 influential proof assistant in which the critical code (that
 constructs proofs in response to user scripts or other modules) was reduced to a small
@@ -74,7 +74,7 @@ tactics to encapsulate common patterns used to solve goals. In
 fact, this is the origin of the ML family of languages: a
 Meta-Language for programming tactics.
 In the case of Isabelle, \emph{Standard} ML is the first of the four layers
-in which we work in this assistant. Both the kernel and the automation
+on which we work in this assistant. Both the kernel and the automation
 of proofs are coded in ML, sometimes as a substitute for induction on
 formulas, as the next section explains.
 
@@ -180,7 +180,7 @@ has a free predicate variable $P$: % $P ::\tyi\fun\tyi\fun\tyo$:
 \end{multline*}
 The restrictions on sorts described above ensure that it is not
 possible that higher-order quantification gets used in $P$. The
-statement of $\AC$, also uses a free higher-order variable to denote
+statement of $\AC$ also uses a free higher-order variable to denote
 an indexed family of nonempty sets. % but we only
 % use $\AC$ for demonstration purposes.
 
