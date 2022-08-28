@@ -1,8 +1,8 @@
 \section{Proof assistants and Isabelle/ZF}
 \label{sec:proof-assist-isabelle}
 
-Let us briefly introduce Isabelle \cite{DBLP:books/sp/Paulson94} in the large landscape of \emph{proof
-assistants} (“assistants” for short; also known as “interactive theorem provers”); we refer to the
+Let us briefly introduce Isabelle \cite{DBLP:books/sp/Paulson94} in the large landscape of proof
+assistants (“assistants” for short; also known as “interactive theorem provers”); we refer to the
 excellent chapter by \citet{DBLP:series/hhl/HarrisonUW14} for a more
 thorough reconstruction of the history of assistants.
 
@@ -52,7 +52,13 @@ while Agda~\cite{agda} is an extension of Martin-Löf type
 theory~\cite{DBLP:books/daglib/0000395}. Mizar~\cite{mizar} is the
 oldest assistant still used today but is far away both in terms of
 foundations and architecture from Isabelle; Mizar inspired, though, the
-Isar \cite{DBLP:conf/tphol/Wenzel99} dialect used in Isabelle nowadays.
+Isar \cite{DBLP:conf/tphol/Wenzel99} dialect used in Isabelle
+nowadays, which aims at the production of proof scripts that are
+closer to mathematical texts.%
+\footnote{%
+We recommend the excellent survey \cite{2020arXiv200909541A} by
+J.~Avigad for details about the different logical foundations in which
+assistants are based.}
 
 % Proof assistants provide diverse aids for the task
 % of formalizing a piece of mathematics. They are usually implemented
@@ -62,7 +68,7 @@ Isar \cite{DBLP:conf/tphol/Wenzel99} dialect used in Isabelle nowadays.
 % underlying foundation of the assistant. Further developments interact
 % with the type of theorems only through the kernel, and thus the latter
 % is the only ``trusted'' part of the assistant's code.
-
+%
 % Several of the more established assistants (HOL Light, Coq, Isabelle)
 % are programmed in some variant of the ML language (which was
 % designed for this purpose); the newer Lean, on the other
