@@ -2,7 +2,7 @@
 \label{sec:relat-vers-non-absol}
 
 The treatment of relativization/internalization described in the
-previous sections was enough for the Paulson's treatment of
+previous sections was enough for Paulson's treatment of
 constructibility. This is the case because essentially all the
 concepts in the way of proving the consistency of $\AC$ are
 absolute, and the treatment of relational versions and relativized notions
@@ -12,13 +12,22 @@ For example, the lemma \isatt{Union{\uscore}abs},
   M(A) \implies M(z) \implies \isatt{big{\uscore}union}(M, A, z) \longleftrightarrow z = \union
   A
 \]
-proved under the assumption that $M$ is transitive nonempty. Working
-in this relational 
-way with powersets, cardinalities, and the like would be
-unfeasible. As such, cardinal arithmetic was not put in relative form
-in \session{ZF-Constructible}.
+proved under the assumption that $M$ is transitive and nonempty.
 
-\subsection{Tools for relativization}
+Our first attempt to relativize cardinal arithmetic proceeded in the
+same way
+and we rapidly found out that stating and proving statements like $(||A||
+= |A|) ^M$ in a completely relational language was extremely
+cumbersome. This observation lead to the discovery of the discipline
+expounded in the next subsection.
+
+%% Working
+%% in this relational 
+%% way with powersets, cardinalities, and the like would be
+%% unfeasible. As such, cardinal arithmetic was not put in relative form
+%% in \session{ZF-Constructible}.
+
+\subsection{Discipline and tools for relativization}
 \label{sec:tools-relativization}
 In order to cope with this, we added the missing step from the
 literature consisting of relative versions of the various non-absolute

@@ -23,7 +23,7 @@ this third layer of the formalization has more tools at our
 disposal. Later, an equivalent statement “in the codes” (our fourth
 layer) is obtained,
 \[
-  \isatt{Union{\uscore}ax}(\isatt{\#\#}M) \lsii A, [\,]\models \isatt{{\isasymcdot}Union\ Ax{\isasymcdot}}
+  \isatt{Union{\uscore}ax}(\isatt{\#\#}M) \lsii M, [\,]\models \isatt{{\isasymcdot}Union\ Ax{\isasymcdot}}
 \]
 %% % Same a above
 %% \begin{isabelle}
@@ -170,9 +170,8 @@ formalization.
 Moreover, the items in Theorem~\ref{th:forcing-thms} appear as three
 separated lemmas in the theory
 \theory{Forcing{\uscore}Theorems} of our
-\session{Independence\_CH} session \cite{Independence_CH-AFP},
-and benefit from the $\isatt{map}$ function that applies a function to
-each element of a list. For instance, the Truth Lemma is stated as
+\session{Independence\_CH} session \cite{Independence_CH-AFP}.
+For instance, the Truth Lemma is stated as
 follows:
 \begin{isabelle}
 \isacommand{lemma}\isamarkupfalse%
@@ -183,6 +182,8 @@ follows:
 \ \ \isakeyword{shows}\isanewline
 \ \ \ \ {\isachardoublequoteopen}{\isacharparenleft}{\kern0pt}{\isasymexists}p{\isasymin}G{\isachardot}{\kern0pt}\ p\ {\isasymtturnstile}\ {\isasymphi}\ env{\isacharparenright}{\kern0pt}\ \ \ {\isasymlongleftrightarrow}\ \ \ M{\isacharbrackleft}{\kern0pt}G{\isacharbrackright}{\kern0pt}{\isacharcomma}{\kern0pt}\ map{\isacharparenleft}{\kern0pt}val{\isacharparenleft}{\kern0pt}G{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}env{\isacharparenright}{\kern0pt}\ {\isasymTurnstile}\ {\isasymphi}{\isachardoublequoteclose}
 \end{isabelle}
+%% where the $\isatt{map}$ function that applies a function to
+%% each element of a list and
 where the $\forces$ notation (and its precedence) had already been set up in the
 \theory{Forces{\uscore}Definition} theory as follows:
 \begin{isabelle}

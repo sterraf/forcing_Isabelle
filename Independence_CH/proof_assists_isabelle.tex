@@ -9,8 +9,8 @@ thorough reconstruction of the history of assistants.
 It is expected that an assistant aids the human user while mechanizing
 some piece of mathematics; the interaction varies from system to
 system, but a common interface consists of a display showing the
-current goal and assumptions. The user instructs the assistant to modify the
-latter by means of \emph{tactics}; a %% forward rule changes the context
+current goal and assumptions. The user instructs the assistant to
+modify them by means of \emph{tactics}; a %% forward rule changes the context
 %% with the intention of having in the new context a hypothesis closer to
 %% the goal. A backward rule represents a deduction whose conclusion is
 %% the goal, thus the new goal corresponds to the premises of the rule. A
@@ -25,8 +25,10 @@ the proof.
 %% proof languages that aim to have intelligible proof scripts.}
 
 To have any value at all, the system should only allow the application
-of sound tactics; in particular, neither the author nor (any part of)
-the system should be able to fake proofs. Edinburgh LCF~\cite{Gordon1979-qm} was an
+of sound tactics.
+%% ; neither the author nor (any part of)
+%% the system should be able to counterfeit proofs.
+Edinburgh LCF~\cite{Gordon1979-qm} was an
 influential proof assistant in which the critical code (that
 constructs proofs in response to user scripts or other modules) was reduced to a small
 \emph{kernel}. Hence, by verfying the correctness of the kernel, one
@@ -35,7 +37,7 @@ achieves confidence on the whole system.
 %% can interact with the kernel via an interface that exposes functions
 %% guaranteeing the validity of the proofs.
 
-The metalogic of Isabelle, as well as LCF, is based on higher-order logic.
+The metalogic of Isabelle, as well as that of LCF, is based on higher-order logic.
 %% In contrast with LCF, Isabelle
 %% was designed~\cite{Paulson1990} as a generic theorem for several
 %% logics. Isabelle still offers a programmable interface (in ML) that
@@ -56,7 +58,7 @@ Isar \cite{DBLP:conf/tphol/Wenzel99} dialect used in Isabelle
 nowadays, which aims at the production of proof scripts that are
 closer to mathematical texts.%
 \footnote{%
-We recommend the excellent survey \cite{2020arXiv200909541A} by
+We recommend the survey \cite{2020arXiv200909541A} by
 J.~Avigad for details about the different logical foundations in which
 assistants are based.}
 
@@ -80,7 +82,7 @@ tactics to encapsulate common patterns used to solve goals. In
 fact, this is the origin of the ML family of languages: a
 Meta-Language for programming tactics.
 In the case of Isabelle, \emph{Standard} ML is the first of the four layers
-on which we work in this assistant. Both the kernel and the automation
+on which we worked in this assistant. Both the kernel and the automation
 of proofs are coded in ML, sometimes as a substitute for induction on
 formulas, as the next section explains.
 
@@ -204,7 +206,7 @@ This is an example of what was said at the end of Section~\ref{sec:isabelle-meta
 The development of relativization and absoluteness for classes $C::
 \isatt{i} \fun \isatt{o}$ follows the same pattern. Each particular
 concept was manually written in a relational form and relativized.
-Here, the contrast between the usual way one regards $\ZF$ as
+Here, the contrast between the usual way one regards $\ZF$ as a
 first-order theory in the language $\{\in \}$ and the mathematical
 practice of freely using defined concepts comes to the
 forefront. Assistants have refined mechanisms to cope with defined
@@ -212,7 +214,7 @@ concepts and the introduction of new notation (which also make their foundations
 than plain first-order logic), and this is the only way that nontrivial
 mathematics can be formalized. But when studying relative interpretations, one
 usually assumes a spartan syntax and defines relativization by
-induction of formulas of the more succinct language. The approach
+induction on formulas of the more succinct language. The approach
 taken in \session{ZF-Constructible} is to consider relativizations of
 the formulas that define each concept. For instance,
 in the case of unions, we find a relativization
@@ -235,10 +237,10 @@ There is one further point concerning the organization of
 \session{ZF-Constructible}. Isabelle provides a very convenient way to
 define “contexts,” called \emph{locales}, in which some variables are
 fixed and assumptions are made. In the case of the constructibility
-library, several locales are defined where the variable $M$ assumed to
+library, several locales are defined where the variable $M$ is assumed to
 denote a class satisfying certain finite amount of $\ZF$; the weakest
 one, \locale{M{\uscore}trans} \cite[Sect.~3]{2020arXiv200109715G}, just
-assumes that $M$ is transitive nonempty. Inside such context, many
+assumes that $M$ is transitive and nonempty. Inside such context, many
 absoluteness results are proved. In order to quote those results for a
 particular class $C$, one has to \emph{interpret} the locale at
 $C$, which amounts to prove that $C$ satisfies the assumptions made by
@@ -288,16 +290,16 @@ hand; this is the case for union,
 for which we have the following satisfaction lemma:
 % https://isabelle.in.tum.de/dist/library/ZF/ZF-Constructible/L_axioms.html#L_axioms.sats_big_union_fm|fact
 \begin{multline}\label{eq:sats_big_union_fm}
-  x \in \omega \implies y \in \omega \implies \mathit{env} \in \isatt{list}(A)
+  A \in \omega \implies z \in \omega \implies \mathit{env} \in \isatt{list}(M)
   \implies \\
-  A, \mathit{env} \models \isatt{big{\uscore}union{\uscore}fm}(x,y)%\cdot\union x \isatt{ is } y\cdot
+  \bigl(M, \mathit{env} \models \isatt{big{\uscore}union{\uscore}fm}(A,z)\bigr)%\cdot\union x \isatt{ is } y\cdot
   \longleftrightarrow \\
-  \isatt{big{\uscore}union}(\isatt{\#\#} A, \isatt{nth}(x,
-  \mathit{env}), \isatt{nth}(y, \mathit{env}))
+  \isatt{big{\uscore}union}(\isatt{\#\#} M, \isatt{nth}(A,
+  \mathit{env}), \isatt{nth}(z, \mathit{env}))
 \end{multline}
 Above, $\isatt{nth}(x,\mathit{env})$ is the $x$th element of $\mathit{env}$
-and $\isatt{\#\#}A::\tyi\fun \tyo$ is the class corresponding to the
-set $A::\tyi$.
+and $\isatt{\#\#}M::\tyi\fun \tyo$ is the class corresponding to the
+set $M::\tyi$.
 
 %%% Local Variables:
 %%% mode: latex
