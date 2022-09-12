@@ -10,30 +10,30 @@ of type $\tyi$) and predicates/relations (terms of type $\tyo$).
 Paulson only had, for each set, the relational version. It seemed
 clearer to us to have a functional version of the relativized concept.
 Going back to our example in \ref{sec:tools-relativization}, for the
-concept $\isatt{cardinal}::\tyi \fun \tyi$ we want its relative
+concept $\isa{cardinal}::\tyi \fun \tyi$ we want its relative
 version
-$\isatt{cardinal{\uscore}rel}::(\tyi \fun \tyo) \fun \tyi \fun\tyi$
+$\isa{cardinal{\uscore}rel}::(\tyi \fun \tyo) \fun \tyi \fun\tyi$
 and the relational version of the latter
-$\isatt{is{\uscore}cardinal}::(\tyi \fun \tyo) \fun \tyi \fun \tyi
+$\isa{is{\uscore}cardinal}::(\tyi \fun \tyo) \fun \tyi \fun \tyi
 \fun \tyo$.
 
 Our first attempt of defining a discipline was inspired by
 mathematical considerations: if we might prove that
-$\isatt{is{\uscore}cardinal}$ is functional and also prove the
-existence of a witness $\isatt{c}$ such that $\isatt{M(c)}$ and
-$\isatt{is{\uscore}cardinal(M,x,c)}$ then
-$\isatt{cardinal{\uscore}rel(M,x)}$ can be obtained by the operator of
+$\isa{is{\uscore}cardinal}$ is functional and also prove the
+existence of a witness $\isa{c}$ such that $\isa{M(c)}$ and
+$\isa{is{\uscore}cardinal(M,x,c)}$ then
+$\isa{cardinal{\uscore}rel(M,x)}$ can be obtained by the operator of
 definite descriptions.
 
 Soon we realized that resorting to definite descriptions was needed
 only for the most primitive concepts. In fact, once we have a
 relativized concept, we can use it to define other relativizations.
-For instance, $\isatt{cardinal{\uscore}rel}$ depends on having
-relative versions of $\isatt{bij}$. Instead of relationalizing
-$\isatt{bij}$ to get $\isatt{is{\uscore}bij}$ and then prove
+For instance, $\isa{cardinal{\uscore}rel}$ depends on having
+relative versions of $\isa{bij}$. Instead of relationalizing
+$\isa{bij}$ to get $\isa{is{\uscore}bij}$ and then prove
 uniqueness and existence of a witness, we define
-$\isatt{bij{\uscore}rel}$ using $\isatt{inj{\uscore}rel}$ and
-$\isatt{surj{\uscore}rel}$.
+$\isa{bij{\uscore}rel}$ using $\isa{inj{\uscore}rel}$ and
+$\isa{surj{\uscore}rel}$.
 
 %%% Local Variables: 
 %%% mode: latex

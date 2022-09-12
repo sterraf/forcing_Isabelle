@@ -13,10 +13,10 @@ axioms.
 \item We retain satisfactions for the predicates for Separation and Replacement.
 \end{itemize}
 For example, the locale \locale{M{\uscore}Z{\uscore}basic}
-states that Zermelo set theory holds in $M$. The Union Axiom (\isatt{Union{\uscore}ax}), for
+states that Zermelo set theory holds in $M$. The Union Axiom (\isa{Union{\uscore}ax}), for
 instance, is defined as follows:
 \[
-\forall x[\isatt{\#\#}M].\ \exists z[\isatt{\#\#}M].\ \isatt{big{\uscore}union}(\isatt{\#\#}M,x,z)
+\forall x[\isa{\#\#}M].\ \exists z[\isa{\#\#}M].\ \isa{big{\uscore}union}(\isa{\#\#}M,x,z)
 \]
 %% % Same a above
 %% \begin{isabelle}%
@@ -29,19 +29,19 @@ this third layer of the formalization has more tools at our
 disposal. Later, an equivalent statement “in the codes” (our fourth
 layer) is obtained,
 \[
-  \isatt{Union{\uscore}ax}(\isatt{\#\#}M) \lsii M, [\,]\models \isatt{{\isasymcdot}Union\ Ax{\isasymcdot}}
+  \isa{Union{\uscore}ax}(\isa{\#\#}M) \lsii M, [\,]\models \isa{{\isasymcdot}Union\ Ax{\isasymcdot}}
 \]
 %% % Same a above
 %% \begin{isabelle}
 %% Union{\isacharunderscore}{\kern0pt}ax{\isacharparenleft}{\kern0pt}{\isacharhash}{\kern0pt}{\isacharhash}{\kern0pt}A{\isacharparenright}{\kern0pt}\ {\isasymlongleftrightarrow}\ A{\isacharcomma}{\kern0pt}\ {\isacharbrackleft}{\kern0pt}{\isacharbrackright}{\kern0pt}\ {\isasymTurnstile}\ {\isasymcdot}Union\ Ax{\isasymcdot}\isasep
 %% \end{isabelle}
-where \isatt{{\isasymcdot}Union\ Ax{\isasymcdot}} is the $\formula$ code for the
+where \isa{{\isasymcdot}Union\ Ax{\isasymcdot}} is the $\formula$ code for the
 Union axiom. For the axiom schemes, \session{ZF-Constructible} defines
 the expressions
 \[
-  \isatt{separation}(N,Q)
+  \isa{separation}(N,Q)
   \text{ and }
-  \isatt{strong{\uscore}replacement}(N,R)
+  \isa{strong{\uscore}replacement}(N,R)
 \]
 %%%%%%%%%%
 \sout{that consume a class $N$ and predicates $Q::\tyi\fun\tyo$ and $R::\tyi\fun\tyi\fun\tyo$, and state that $N$
@@ -61,11 +61,11 @@ The Separation axiom is axiomatized like
   \text{This}
 \]
 Particular replacement instances expressed by means of the
-$\isatt{replacement{\uscore}assm}(M,\mathit{env},\phi)$ predicate ($@$ denotes
+$\isa{replacement{\uscore}assm}(M,\mathit{env},\phi)$ predicate ($@$ denotes
 list concatenation):
 \begin{multline}\label{eq:replacement_assm_def}
-\varphi \in \formula  \limp \mathit{env} \in \isatt{list}(M) \limp \isatt{arity}(\varphi) \leq 2+ \isatt{length}(\mathit{env}) \limp \\
- \isatt{strong{\uscore}replacement}(\isatt{\#\#} M, \lambda x\, y.\ (M, [x,y]
+\varphi \in \formula  \limp \mathit{env} \in \isa{list}(M) \limp \isa{arity}(\varphi) \leq 2+ \isa{length}(\mathit{env}) \limp \\
+ \isa{strong{\uscore}replacement}(\isa{\#\#} M, \lambda x\, y.\ (M, [x,y]
 \mathbin{@} \mathit{env}  \models \varphi))
 \end{multline}
 %% % Same as above
@@ -73,7 +73,7 @@ list concatenation):
 %% {\isasymphi}\;{\isasymin}\;formula\ {\isasymlongrightarrow}\ env\;{\isasymin}\;list{\isacharparenleft}{\kern0pt}M{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow} arity{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}\;{\isasymle}\;{\isadigit{2}}\ {\isacharplus}{\kern0pt}\isactrlsub {\isasymomega}\ length{\isacharparenleft}{\kern0pt}env{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\isanewline
 %% \ \ \ \ strong{\isacharunderscore}{\kern0pt}replacement{\isacharparenleft}{\kern0pt}{\isacharhash}{\kern0pt}{\isacharhash}{\kern0pt}M{\isacharcomma}{\kern0pt}{\isasymlambda}x\ y{\isachardot}{\kern0pt}\ {\isacharparenleft}{\kern0pt}M\ {\isacharcomma}{\kern0pt}\ {\isacharbrackleft}{\kern0pt}x{\isacharcomma}{\kern0pt}y{\isacharbrackright}{\kern0pt}{\isacharat}{\kern0pt}env\ {\isasymTurnstile}\ {\isasymphi}{\isacharparenright}{\kern0pt}{\isacharparenright}
 %% \end{isabelle}
-In turn, the \isatt{{\isasymcdot}Replacement{\isasymcdot}} function
+In turn, the \isa{{\isasymcdot}Replacement{\isasymcdot}} function
 takes a formula code and returns the corresponding replacement
 instance:
 \begin{isabelle}
@@ -83,7 +83,7 @@ instance:
 
 In \session{ZF-Constructible} some results are proved assuming some instances of
 separation or replacement (mejor si ponemos ejemplo concreto). In contrast,
-our locale \isatt{M{\uscore}Z{\uscore}basic} assumes the full scheme of separation in terms
+our locale \isa{M{\uscore}Z{\uscore}basic} assumes the full scheme of separation in terms
 of satisfaction of some internalized formula but no instance of replacement. (Mostrar el enunciado de separation\_ax:
 es distinto a Reemplazo y se nombra después)
 
@@ -109,7 +109,7 @@ the class\dots
 \locale{M{\uscore}ZF{\uscore}ground{\uscore}CH} (see
 Section~\ref{sec:repl-instances} for details).}
 These assumptions are then invoked to interpret at the class
-$\isatt{\#\#} M$ the relevant locales appearing in
+$\isa{\#\#} M$ the relevant locales appearing in
 \session{ZF-Constructible}, and further ones required for the relative
 results from Section~\ref{sec:extension-isabellezf}. See
 Section~\ref{sec:repl-instances} for details.
@@ -117,7 +117,7 @@ Section~\ref{sec:repl-instances} for details.
 %-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
 
 \subsection{The fundamental theorems}\label{sec:fundamental-theorems}
-At this point, we work inside the locale \isatt{M{\uscore}ctm1} that
+At this point, we work inside the locale \isa{M{\uscore}ctm1} that
 assumes $M$ to be
 countable and transitive, and satisfies some fragment of
 $\ZFC$%
@@ -164,13 +164,13 @@ $\tau$.
 
 \begin{theorem}\label{th:forcing-thms}
   For every
-  $\phi\in\formula$ with $\isatt{arity}(\phi)\leq n$ and $\tau_1,\dots,\tau_n\in M$,
+  $\phi\in\formula$ with $\isa{arity}(\phi)\leq n$ and $\tau_1,\dots,\tau_n\in M$,
   \begin{enumerate}
   \item\label{item:definability} (Definability)
     $\forceisa(\phi)\in\formula$, 
   \end{enumerate}
   where the 
-  arity of $\forceisa(\phi)$ is at most $\isatt{arity}(\phi) + 4$; and if
+  arity of $\forceisa(\phi)$ is at most $\isa{arity}(\phi) + 4$; and if
   “$p \forces \phi\ [\tau_1,\dots,\tau_n]$”
   denotes
   “$M, [p,\PP,\preceq,\1, \tau_1,\dots,\tau_n]  \models
@@ -207,7 +207,7 @@ follows:
 \ \ \isakeyword{shows}\isanewline
 \ \ \ \ {\isachardoublequoteopen}{\isacharparenleft}{\kern0pt}{\isasymexists}p{\isasymin}G{\isachardot}{\kern0pt}\ p\ {\isasymtturnstile}\ {\isasymphi}\ env{\isacharparenright}{\kern0pt}\ \ \ {\isasymlongleftrightarrow}\ \ \ M{\isacharbrackleft}{\kern0pt}G{\isacharbrackright}{\kern0pt}{\isacharcomma}{\kern0pt}\ map{\isacharparenleft}{\kern0pt}val{\isacharparenleft}{\kern0pt}G{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}env{\isacharparenright}{\kern0pt}\ {\isasymTurnstile}\ {\isasymphi}{\isachardoublequoteclose}
 \end{isabelle}
-%% where the $\isatt{map}$ function that applies a function to
+%% where the $\isa{map}$ function that applies a function to
 %% each element of a list and
 where the $\forces$ notation (and its precedence) had already been set up in the
 \theory{Forces{\uscore}Definition} theory.
@@ -227,7 +227,7 @@ recursion
 but then \cite[p.~257]{kunen2011set} it is cast as a single
 recursively defined function $F$ over a well-founded  relation $R$.
 In our formalization, these are called $\frcat$ and 
-$\isatt{frecR}$, respectively, and are defined on tuples $\lb \mathit{ft},t_1,t_2,p\rb$ (where
+$\isa{frecR}$, respectively, and are defined on tuples $\lb \mathit{ft},t_1,t_2,p\rb$ (where
 $\mathit{ft}\in\{0,1\}$ indicates whether the atomic formula being
 forced is an equality or a membership, respectively).
 Forcing for general formulas is then defined by recursion on the

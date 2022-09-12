@@ -10,7 +10,7 @@ corresponding internalized first order formula. Many of these were already prese
 relational form in the \session{ZF-Constructible} library.
 
 The first 4 instances, collected in the subset
-\isatt{instances1{\uscore}fms} of \formula, consist of basic
+\isa{instances1{\uscore}fms} of \formula, consist of basic
 constructions:
 
 \begin{itemize}
@@ -21,7 +21,7 @@ constructions:
 \item 1 instance to construct the cumulative hierarchy (rank initial segments).
 \end{itemize}
 
-The next 4 instances (gathered in \isatt{instances2{\uscore}fms})
+The next 4 instances (gathered in \isa{instances2{\uscore}fms})
 are needed to set up
 cardinal arithmetic in $M$:
 \begin{itemize}
@@ -43,20 +43,20 @@ previous ones to have them in $M[G]$:
 Here, $\mathit{fst}(\lb a,b\rb) = a$, $\mathit{snd}(\lb a,b\rb) = b$
 (with default value $0$ for non pairs).
 In our development, the mapping $\phi\mapsto\psi$ defined above is given by the
-$\isatt{ground{\uscore}repl{\uscore}fm}$ function, and all ground replacement
+$\isa{ground{\uscore}repl{\uscore}fm}$ function, and all ground replacement
 instances appear in the locale \locale{M{\uscore}ZF3} and form the set
-\isatt{instances3{\uscore}fms}. These are expressed using
+\isa{instances3{\uscore}fms}. These are expressed using
 the
 \[
-  \isatt{ground{\uscore}replacement{\uscore}assm}(M,\mathit{env},\phi)
+  \isa{ground{\uscore}replacement{\uscore}assm}(M,\mathit{env},\phi)
 \]
 predicate
 obtained by replacing $\phi$ by
-$\isatt{ground{\uscore}repl{\uscore}fm}(\phi)$ in Eq.~(\ref{eq:replacement_assm_def}).
+$\isa{ground{\uscore}repl{\uscore}fm}(\phi)$ in Eq.~(\ref{eq:replacement_assm_def}).
 
 That makes 16 instances up to now. For the setup of forcing, we
 require the following 3 instances, which form the set
-\isatt{instances{\uscore}ground{\uscore}fms}:
+\isa{instances{\uscore}ground{\uscore}fms}:
 %
 \begin{itemize}
 \item Well-founded recursion to define check-names.
@@ -68,13 +68,13 @@ require the following 3 instances, which form the set
   %
 \end{itemize}
 The proof of the $\Delta$-System Lemma requires 2 instances which form the set
-\isatt{instances{\uscore}ground{\uscore}notCH{\uscore}fms}, that are
+\isa{instances{\uscore}ground{\uscore}notCH{\uscore}fms}, that are
 used for the recursive construction of sets using a choice function (as in the
 construction of a wellorder of $X$ given a choice function on
 $\Pow(X)$), and to show its absoluteness.
 
 The $21$ formulas up to this point are collected into the set
-\isatt{overhead{\uscore}notCH}, which is enough to
+\isa{overhead{\uscore}notCH}, which is enough to
 force $\neg\CH$. To force $\CH$, we required one further instance for
 the absoluteness of the recursive construction in the proof of
 Dependent Choices from $\AC$.
@@ -94,7 +94,7 @@ On the other hand, we replaced the original proof of the
 Schröder-Bernstein Theorem by Zermelo's one
 \cite[Exr. x4.27]{moschovakis1994notes}, because the former required
 at least one extra instance
-% (\isatt{banach{\uscore}iterates{\uscore}fm})
+% (\isa{banach{\uscore}iterates{\uscore}fm})
 arising from an iteration. We also managed to avoid 12 further
 replacements by restructuring some of original theories in
 \session{ZF-Constructible}, so these modifications are included as
@@ -102,16 +102,16 @@ part of our project.
 
 It is to be noted that the proofs of the Forcing Theorems do not
 require any extra replacement; actually, they only need the 7
-instances appearing in \isatt{instances1{\uscore}fms} and
-\isatt{instances{\uscore}ground{\uscore}fms}.  But this seems not be
+instances appearing in \isa{instances1{\uscore}fms} and
+\isa{instances{\uscore}ground{\uscore}fms}.  But this seems not be
 the case for Separation, at least by inspecting our formalization:
 More instances holding in $M$ are needed 
 as the complexity of $\phi$ grows. One point where this is apparent is
 in the proof of Theorem~\ref{th:forcing-thms}(\ref{item:truth-lemma}),
-that appears as the \isatt{truth{\uscore}lemma} in our development; it
-depends on \isatt{truth{\uscore}lemma'} and
-\isatt{truth{\uscore}lemma{\uscore}Neg}, which explicitly invoke
-\isatt{separation{\uscore}ax}. In any case, our intended grounds
+that appears as the \isa{truth{\uscore}lemma} in our development; it
+depends on \isa{truth{\uscore}lemma'} and
+\isa{truth{\uscore}lemma{\uscore}Neg}, which explicitly invoke
+\isa{separation{\uscore}ax}. In any case, our intended grounds
 (v.g., the transitive collapse of countable elementary submodels of a
 rank initial segment $V_\alpha$ or an $H(\kappa)$) all satisfy full
 Separation.
@@ -145,7 +145,7 @@ $\ZFC + \CH$  appear in our formalization as follows:
 \ \ \ \ \ \ M\ {\isasymsubseteq}\ N\ {\isasymand}\ N\ {\isasymapprox}\ {\isasymomega}\ {\isasymand}\ Transset{\isacharparenleft}{\kern0pt}N{\isacharparenright}{\kern0pt}\ {\isasymand}\ N\ {\isasymTurnstile}\ ZFC\ {\isasymunion}\ {\isacharbraceleft}{\kern0pt}{\isasymcdot}CH{\isasymcdot}{\isacharbraceright}{\kern0pt}\ {\isasymand}\isanewline
 \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}{\isasymalpha}{\isachardot}{\kern0pt}\ Ord{\isacharparenleft}{\kern0pt}{\isasymalpha}{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\ {\isacharparenleft}{\kern0pt}{\isasymalpha}\ {\isasymin}\ M\ {\isasymlongleftrightarrow}\ {\isasymalpha}\ {\isasymin}\ N{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}
 \end{isabelle}
-where $\approx$ is equipotence, and the predicate \isatt{Transset}
+where $\approx$ is equipotence, and the predicate \isa{Transset}
 holds for
 transitive sets. Both results are proved without using Choice.
 
@@ -170,15 +170,15 @@ considering extensions of ctms of fragments of $\ZF$.
 \ \ \ \ \ \ N\ {\isasymTurnstile}\ {\isasymcdot}Z{\isasymcdot}\ {\isasymunion}\ {\isacharbraceleft}{\kern0pt}\ {\isasymcdot}Replacement{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}{\isasymcdot}\ {\isachardot}{\kern0pt}\ {\isasymphi}\ {\isasymin}\ {\isasymPhi}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}
 \end{isabelle}
 
-Here, the 7-element set \isatt{overhead} is enough to construct a proper
+Here, the 7-element set \isa{overhead} is enough to construct a proper
 extension. It is  the union of
 \isa{instances{\isadigit{1}}{\isacharunderscore}{\kern0pt}fms} and
 \isa{instances{\isacharunderscore}{\kern0pt}ground{\isacharunderscore}{\kern0pt}fms}.
 Also,
-\isatt{{\isasymcdot}Z{\isasymcdot}} denotes Zermelo set theory. In the
+\isa{{\isasymcdot}Z{\isasymcdot}} denotes Zermelo set theory. In the
 next theorem, the relevant set of formulas is
-\isatt{overhead{\isacharunderscore}{\kern0pt}notCH}, defined above in
-Section~\ref{sec:repl-instances}, and \isatt{ZC} denotes Zermelo set
+\isa{overhead{\isacharunderscore}{\kern0pt}notCH}, defined above in
+Section~\ref{sec:repl-instances}, and \isa{ZC} denotes Zermelo set
 theory plus Choice:
 
 \begin{isabelle}
@@ -196,9 +196,9 @@ theory plus Choice:
 \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymforall}{\isasymalpha}{\isachardot}{\kern0pt}\ Ord{\isacharparenleft}{\kern0pt}{\isasymalpha}{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\ {\isacharparenleft}{\kern0pt}{\isasymalpha}\ {\isasymin}\ M\ {\isasymlongleftrightarrow}\ {\isasymalpha}\ {\isasymin}\ N{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}
 \end{isabelle}
 
-Finally, \isatt{overhead{\isacharunderscore}{\kern0pt}CH} is the union
-of \isatt{overhead{\isacharunderscore}{\kern0pt}CH} with the $\DC$
-instance \isatt{replacement{\isacharunderscore}{\kern0pt}dcwit{\isacharunderscore}{\kern0pt}repl{\isacharunderscore}{\kern0pt}body{\isacharunderscore}{\kern0pt}fm}:
+Finally, \isa{overhead{\isacharunderscore}{\kern0pt}CH} is the union
+of \isa{overhead{\isacharunderscore}{\kern0pt}CH} with the $\DC$
+instance \isa{replacement{\isacharunderscore}{\kern0pt}dcwit{\isacharunderscore}{\kern0pt}repl{\isacharunderscore}{\kern0pt}body{\isacharunderscore}{\kern0pt}fm}:
 \begin{isabelle}
 \isacommand{theorem}\isamarkupfalse%
 \ ctm{\isacharunderscore}{\kern0pt}of{\isacharunderscore}{\kern0pt}CH{\isacharcolon}{\kern0pt}\isanewline

@@ -10,7 +10,7 @@ The reader trusting
 all the libraries on which our development is based, might jump
 directly to Section~\ref{sec:relative-arith}, which treats relative
 cardinal arithmetic as implemented in
-\isatt{T{\kern0pt}r{\kern0pt}a{\kern0pt}n{\kern0pt}s{\kern0pt}i{\kern0pt}t{\kern0pt}i{\kern0pt}v{\kern0pt}e{\kern0pt}{\char`\_}{\kern0pt}M{\kern0pt}o{\kern0pt}d{\kern0pt}e{\kern0pt}l{\kern0pt}s{\kern0pt}}. But in case one wants to dive deeper, the
+\isa{T{\kern0pt}r{\kern0pt}a{\kern0pt}n{\kern0pt}s{\kern0pt}i{\kern0pt}t{\kern0pt}i{\kern0pt}v{\kern0pt}e{\kern0pt}{\char`\_}{\kern0pt}M{\kern0pt}o{\kern0pt}d{\kern0pt}e{\kern0pt}l{\kern0pt}s{\kern0pt}}. But in case one wants to dive deeper, the
 following sections treat some basic concepts of the ZF logic
 (Section~\ref{sec:def-main-ZF}) and in the
 \session{ZF-Constructible} library (Section~\ref{sec:def-main-relative})
@@ -69,9 +69,9 @@ recursively generated from the empty list \isa{{\isacharbrackleft}{\kern0pt}{\is
 operation \isa{Cons} that adds a new element to the left end;
 the induction theorem for them shows that the characterization is
 “complete”. (Mind the
-\isatt{\isasymlbrakk P; Q\isasymrbrakk\ \isasymLongrightarrow\ R}
+\isa{\isasymlbrakk P; Q\isasymrbrakk\ \isasymLongrightarrow\ R}
 abbreviation for
-\isatt{P\ \isasymLongrightarrow\ Q\ \isasymLongrightarrow\ R}.)
+\isa{P\ \isasymLongrightarrow\ Q\ \isasymLongrightarrow\ R}.)
 
 \begin{isabelle}%
 {\isacharbrackleft}{\kern0pt}{\isacharbrackright}{\kern0pt}\ {\isasymin}\ list{\isacharparenleft}{\kern0pt}A{\isacharparenright}{\kern0pt}\isasep\isanewline%
@@ -243,7 +243,7 @@ quantifier are also provided. For instance, negation:%
 \begin{isabelle}%
 {\isasymcdot}{\isasymnot}p{\isasymcdot}\ {\isasymequiv}\ {\isasymcdot}{\isasymnot}{\isacharparenleft}{\kern0pt}p\ {\isasymand}\ p{\isacharparenright}{\kern0pt}{\isasymcdot}%
 \end{isabelle}%
-The \isatt{arity} function strictly bounding the free de Bruijn
+The \isa{arity} function strictly bounding the free de Bruijn
 indices of a formula is defined below:
 \begin{isabelle}%
 arity{\isacharparenleft}{\kern0pt}{\isasymcdot}x\ {\isasymin}\ y{\isasymcdot}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ succ{\isacharparenleft}{\kern0pt}x{\isacharparenright}{\kern0pt}\ {\isasymunion}\ succ{\isacharparenleft}{\kern0pt}y{\isacharparenright}{\kern0pt}\isasep\isanewline%
@@ -367,7 +367,7 @@ is{\isacharunderscore}{\kern0pt}ContHyp{\isacharparenleft}{\kern0pt}{\isasymV}{\
 In turn, the fully relational version evaluated on a nonempty
 transitive \isa{A} is equivalent to the satisfaction of the
 first-order formula \isa{{\isasymcdot}CH{\isasymcdot}} (since it
-actually is a sentence, it does not depend on \isatt{env}, which
+actually is a sentence, it does not depend on \isa{env}, which
 appears only because the definition of $\models$ requires that argument).%
 \begin{isabelle}%
 {\isasymlbrakk}env\ {\isasymin}\ list{\isacharparenleft}{\kern0pt}A{\isacharparenright}{\kern0pt}{\isacharsemicolon}{\kern0pt}\ {\isadigit{0}}\ {\isasymin}\ A{\isasymrbrakk}\ {\isasymLongrightarrow}\ is{\isacharunderscore}{\kern0pt}ContHyp{\isacharparenleft}{\kern0pt}{\isacharhash}{\kern0pt}{\isacharhash}{\kern0pt}A{\isacharparenright}{\kern0pt}\ {\isasymlongleftrightarrow}\ A{\isacharcomma}{\kern0pt}\ env\ {\isasymTurnstile}\ {\isasymcdot}CH{\isasymcdot}%

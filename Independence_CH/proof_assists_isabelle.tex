@@ -174,8 +174,8 @@ the type and sort
 declarations detailed above, it features a finite axiomatization,
 % https://isabelle.in.tum.de/dist/library/FOL/FOL/IFOL.html#ZF_Base.mem|const
 with a predicate for membership, constants for the empty set and an
-infinite set, and functions $\isatt{Pow}::\tyi\fun\tyi$,
-$\union::\tyi\fun\tyi$, and $\isatt{PrimReplace} :: \tyi \fun (\tyi
+infinite set, and functions $\isa{Pow}::\tyi\fun\tyi$,
+$\union::\tyi\fun\tyi$, and $\isa{PrimReplace} :: \tyi \fun (\tyi
 \fun \tyi \fun\tyo)\fun \tyi$ (for Replacement). The Axiom of
 Replacement
 % https://isabelle.in.tum.de/dist/library/FOL/FOL/IFOL.html#ZF_Base.replacement|axiom
@@ -183,7 +183,7 @@ has a free predicate variable $P$: % $P ::\tyi\fun\tyi\fun\tyo$:
 \begin{multline*}
   (\forall x \in A .\ \forall y\, z.\ P(x, y) \wedge P(x, z)
   \longrightarrow y=z) \implies \\
-  b \in \isatt{PrimReplace}(A, P)
+  b \in \isa{PrimReplace}(A, P)
   \longleftrightarrow(\exists x \in A .\ P(x, b)) 
 \end{multline*}
 The restrictions on sorts described above ensure that it is not
@@ -204,7 +204,7 @@ proof tools that would prove each particular instance of reflection:
 This is an example of what was said at the end of Section~\ref{sec:isabelle-metalogic-meta}.
 
 The development of relativization and absoluteness for classes $C::
-\isatt{i} \fun \isatt{o}$ follows the same pattern. Each particular
+\isa{i} \fun \isa{o}$ follows the same pattern. Each particular
 concept was manually written in a relational form and relativized.
 Here, the contrast between the usual way one regards $\ZF$ as a
 first-order theory in the language $\{\in \}$ and the mathematical
@@ -219,11 +219,11 @@ taken in \session{ZF-Constructible} is to consider relativizations of
 the formulas that define each concept. For instance,
 in the case of unions, we find a relativization
 %https://isabelle.in.tum.de/dist/library/ZF/ZF-Constructible/Relative.html#Relative.big_union_def_raw|axiom
-$\isatt{big{\uscore}union}:: (\isatt{i} \fun \isatt{o}) \fun \isatt{i}
-\fun \isatt{i} \fun \isatt{o}$ of the statement
+$\isa{big{\uscore}union}:: (\isa{i} \fun \isa{o}) \fun \isa{i}
+\fun \isa{i} \fun \isa{o}$ of the statement
 “$\union A = z$”:
 \[
- \isatt{big{\uscore}union}(M,A,z) \equiv \forall x[M].\ x \in z
+ \isa{big{\uscore}union}(M,A,z) \equiv \forall x[M].\ x \in z
  \longleftrightarrow (\exists y[M].\ y \in A \land x \in y)
 \]
 where $\forall x[M]\dots$ stands for $\forall x.\ M(x)\limp \dots$,
@@ -255,24 +255,24 @@ formulas in the language $\{ \in \}$, internalized as sets.%
 Isabelle/ZF treatment of inductively defined (internal) datatypes;
 induction and recursion theorems for them are proved automatically
 (this is in constrast to general well-founded recursion, for which
-one has to work with the fundamental recursor $\isatt{wfrec}$).}  Its
+one has to work with the fundamental recursor $\isa{wfrec}$).}  Its
 atomic formulas have the form $\cdot x \in y\cdot$ and $\cdot x =
 y\cdot$. (We use dots as a visual aid signaling internalized formulas.)
 Variables are represented by de Bruijn indices \cite{MR0321704}, so in
 those formulas $x,y \in \omega$; for $\phi\in\formula$ and
 $z\in\omega$, $z$ is free in $\phi$ if it occurs under at most $z$
-quantifiers. The \isatt{arity} function on $\phi$ is one plus the
+quantifiers. The \isa{arity} function on $\phi$ is one plus the
 maximum free index occurring in $\phi$.
 
 The satisfaction predicate
-$\isatt{sats}::\tyi\fun\tyi\fun\tyi\fun\tyo$ takes as arguments a set
-$M$, a list $\mathit{env}\in\isatt{list}(M)$ for the assignment of
+$\isa{sats}::\tyi\fun\tyi\fun\tyi\fun\tyo$ takes as arguments a set
+$M$, a list $\mathit{env}\in\isa{list}(M)$ for the assignment of
 free indices, and $\phi\in\formula$, and it is written
 $M,\mathit{env}\models\phi$ in our formalization.
 %% \footnote{Notice that
 %%   $M,\mathit{env}\models\phi$ is only meaningful if
-%%   $\isatt{length}(\mathit{env}) \geqslant
-%% \isatt{arity}(\phi)$.\textbf{$\leftarrow$ necessary?}}
+%%   $\isa{length}(\mathit{env}) \geqslant
+%% \isa{arity}(\phi)$.\textbf{$\leftarrow$ necessary?}}
 This completes the
 description of the fourth and last formal layer of the development.
 
@@ -282,7 +282,7 @@ early development of
 \session{ZF-Constructible}, most of the concepts were internalized by
 hand; this is the case for union,
 \begin{multline*}
-  \isatt{big{\uscore}union{\uscore}fm}(A,z) \equiv \\
+  \isa{big{\uscore}union{\uscore}fm}(A,z) \equiv \\
   (({\cdot}\forall{\cdot}\,{\cdot}0 \in \mathit{succ}(z){\cdot} \longleftrightarrow
   ({\cdot}\exists{\cdot}\,{\cdot}0 \in \mathit{succ}(\mathit{succ}(A)){\cdot} \land {\cdot}1 \in
   0{\cdot}\,{\cdot}{\cdot}){\cdot}{\cdot})
@@ -290,15 +290,15 @@ hand; this is the case for union,
 for which we have the following satisfaction lemma:
 % https://isabelle.in.tum.de/dist/library/ZF/ZF-Constructible/L_axioms.html#L_axioms.sats_big_union_fm|fact
 \begin{multline}\label{eq:sats_big_union_fm}
-  A \in \omega \implies z \in \omega \implies \mathit{env} \in \isatt{list}(M)
+  A \in \omega \implies z \in \omega \implies \mathit{env} \in \isa{list}(M)
   \implies \\
-  \bigl(M, \mathit{env} \models \isatt{big{\uscore}union{\uscore}fm}(A,z)\bigr)%\cdot\union x \isatt{ is } y\cdot
+  \bigl(M, \mathit{env} \models \isa{big{\uscore}union{\uscore}fm}(A,z)\bigr)%\cdot\union x \isa{ is } y\cdot
   \longleftrightarrow \\
-  \isatt{big{\uscore}union}(\isatt{\#\#} M, \isatt{nth}(A,
-  \mathit{env}), \isatt{nth}(z, \mathit{env}))
+  \isa{big{\uscore}union}(\isa{\#\#} M, \isa{nth}(A,
+  \mathit{env}), \isa{nth}(z, \mathit{env}))
 \end{multline}
-Above, $\isatt{nth}(x,\mathit{env})$ is the $x$th element of $\mathit{env}$
-and $\isatt{\#\#}M::\tyi\fun \tyo$ is the class corresponding to the
+Above, $\isa{nth}(x,\mathit{env})$ is the $x$th element of $\mathit{env}$
+and $\isa{\#\#}M::\tyi\fun \tyo$ is the class corresponding to the
 set $M::\tyi$.
 
 %%% Local Variables:
