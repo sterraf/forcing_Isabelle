@@ -156,7 +156,7 @@ set-theoretic class function $\forceisa:: \tyi \fun \tyi$, which was defined by 
 Isabelle/ZF facilities for primitive recursion.
 
 Next, we state this version of the fundamental theorems in a compact
-way. For any $G\subseteq P$, our notation for the extension of $M$ by
+way. For any $G\subseteq \PP$, our notation for the extension of $M$ by
 $G$ is the  customary one: $M[G]\defi
 \{ \val(G,\tau) : \tau\in M \}$, where the interpretation
 $\val(G,\tau)$ is defined by well-founded recursion on
@@ -164,31 +164,31 @@ $\tau$.
 
 \begin{theorem}\label{th:forcing-thms}
   For every
-  $\phi\in\formula$ and $\tau_0,\dots,\tau_n\in M$,
+  $\phi\in\formula$ with $\isatt{arity}(\phi)\leq n$ and $\tau_1,\dots,\tau_n\in M$,
   \begin{enumerate}
   \item\label{item:definability} (Definability)
     $\forceisa(\phi)\in\formula$, 
   \end{enumerate}
   where the 
   arity of $\forceisa(\phi)$ is at most $\isatt{arity}(\phi) + 4$; and if
-  “$p \forces \phi\ [\tau_0,\dots,\tau_n]$”
+  “$p \forces \phi\ [\tau_1,\dots,\tau_n]$”
   denotes
-  “$M, [p,\PP,\preceq,\1, \tau_0,\dots,\tau_n]  \models
+  “$M, [p,\PP,\preceq,\1, \tau_1,\dots,\tau_n]  \models
   \forceisa(\phi)$”, we have:
   \begin{enumerate}
     \setcounter{enumi}{1}
   \item\label{item:truth-lemma} (Truth Lemma) for every $M$-generic $G$,
     \[
-      \exists p\in G.\ \; p \forces \phi\ [\tau_0,\dots,\tau_n]
+      \exists p\in G.\ \; p \forces \phi\ [\tau_1,\dots,\tau_n]
     \]
     is equivalent to 
     \[
-      M[G], [\val(G,\tau_0),\dots,\val(G,\tau_n)]
+      M[G], [\val(G,\tau_1),\dots,\val(G,\tau_n)]
       \models \phi.
     \]
-  \item \label{item:density-lemma} (Density Lemma) $p \forces \phi\ [\tau_0,\dots,\tau_n]$
+  \item \label{item:density-lemma} (Density Lemma) $p \forces \phi\ [\tau_1,\dots,\tau_n]$
     if and only if 
-    $\{q\in \PP :  q \forces \phi\ [\tau_0,\dots,\tau_n]\}$
+    $\{q\in \PP :  q \forces \phi\ [\tau_1,\dots,\tau_n]\}$
     is dense below $p$.
   \end{enumerate}
 \end{theorem}
