@@ -1,0 +1,180 @@
+\section{22 replacement instances to rule them all}
+\label{sec:repl-instances-appendix}
+
+We isolated 22 instances of Replacement that are sufficient to force
+$\CH$ or $\neg\CH$, which are enumerated below by the name of the
+corresponding internalized first order formula. Many of these were already present in
+relational form in the \session{ZF-Constructible} library.
+
+The first 4 instances, collected in the subset
+\isatt{instances1{\uscore}fms} of \formula, consist of basic
+constructions.
+
+\begin{itemize}
+\item 2 instances for transitive closure.
+  \begin{itemize}
+  \item
+    \sout{\isatt{eclose{\uscore}repl1{\uscore}intf{\uscore}fm}.} \isatt{eclose{\uscore}closed{\uscore}fm}.
+
+    To prove closure under iteration of $X\mapsto\union X$.
+  \item
+    \sout{\isatt{eclose{\uscore}repl2{\uscore}intf{\uscore}fm}} \isatt{eclose{\uscore}abs{\uscore}fm}.
+
+    Auxiliary instance used to show absoluteness.
+  \end{itemize}
+%% The instances so far
+%% are needed to interpret locale
+%% \locale{M{\uscore}eclose}.
+\item \isatt{wfrec{\uscore}rank{\uscore}fm}.
+  
+  For $\in$-rank.
+  %
+\item \sout{\isatt{trans{\uscore}repl{\uscore}HVFrom{\uscore}fm}.} \isatt{transrec{\uscore}VFrom{\uscore}fm}.
+
+  For the cumulative hierarchy (rank initial segments).
+\end{itemize}
+
+%% The last two and next pair have the same syntactic structure, because
+%% they are definitions by well-founded recursion.
+The next 4 instances (gathered in \isatt{instances2{\uscore}fms})
+are needed to set up
+cardinal arithmetic in $M$.
+\begin{itemize}
+\item 2 instances for ordertypes:
+  \begin{itemize}
+  \item
+    \sout{\isatt{wfrec{\uscore}replacement{\uscore}order{\uscore}pred{\uscore}fm}.}
+    \isatt{wfrec{\uscore}ordertype{\uscore}fm}.
+
+    Well-founded recursion for the construction of ordertypes.
+    %
+  \item
+    \sout{\isatt{replacement{\uscore}is{\uscore}order{\uscore}eq{\uscore}map{\uscore}fm}.}
+    \isatt{omap{\uscore}replacement{\uscore}fm}.
+    
+    Auxiliary instance for the definition of ordertypes.
+  \end{itemize}
+\item 2 instances for Aleph:
+  \begin{itemize}
+    %
+  \item
+    \sout{\isatt{replacement{\uscore}is{\uscore}order{\uscore}body{\uscore}fm}.}
+    \isatt{otype{\uscore}replacement{\uscore}fm}.
+
+    Replacement through $x\mapsto \otype(x)$, for Hartogs' Theorem.
+    %
+  \item
+    \sout{\isatt{replacement{\uscore}HAleph{\uscore}wfrec{\uscore}repl{\uscore}body{\uscore}fm}.}
+    \isatt{wfrec{\uscore}Aleph{\uscore}fm}.
+
+    The well-founded recursion to define Aleph.
+  \end{itemize}
+\end{itemize}
+
+We also need a one extra replacement instance $\psi$ on $M$ for each
+$\phi$ of the
+previous ones to have them in $M[G]$:
+\[
+  \psi(x,\alpha,y_1,\dots,y_n) \defi \quine{\alpha = \min \bigl\{
+    \beta \mid \exists\tau\in V_\beta.\  \mathit{snd}(x) \forces
+    \phi\ [\mathit{fst}(x),\tau,y_1,\dots,y_n]\bigr\}}
+\]
+Here, $\mathit{fst}(\lb a,b\rb) = a$, $\mathit{snd}(\lb a,b\rb) = b$
+(with default value $0$ for non pairs).
+In our development, the mapping $\phi\mapsto\psi$ defined above is given by the
+$\isatt{ground{\uscore}repl{\uscore}fm}$ function, and all ground replacement
+instances appear in the locale \locale{M{\uscore}ZF3} and form the set
+\isatt{instances3{\uscore}fms}. These are expressed using
+the $\isatt{ground{\uscore}replacement{\uscore}assm}(M,\mathit{env},\phi)$ predicate
+obtained by replacing $\phi$ by
+$\isatt{ground{\uscore}repl{\uscore}fm}(\phi)$ in Eq.~(\ref{eq:replacement_assm_def}).
+
+That makes 16 instances up to now. For the setup of forcing, we
+require the following 3 instances, which form the set
+\isatt{instances{\uscore}ground{\uscore}fms}.
+
+\begin{itemize}
+\item \isatt{wfrec{\uscore}Hcheck{\uscore}fm}.
+  
+  Well-founded recursion to define check-names.
+  %
+\item \isatt{wfrec{\uscore}Hfrc{\uscore}at{\uscore}fm}.
+
+  Well-founded recursion for the definition of forcing for atomic formulas.
+  %
+\item
+  \sout{\isatt{Lambda{\uscore}in{\uscore}M{\uscore}fm(check{\uscore}fm(2,0,1),1)}.}
+  \isatt{lam{\uscore}replacement{\uscore}check{\uscore}fm}.
+
+  Replacement through $x\mapsto \lb x,\check{x}\rb$ (for the
+  definition of $\punto{G}$).
+  %
+\end{itemize}
+The next two formulas, which form the set
+\isatt{instances{\uscore}ground{\uscore}notCH{\uscore}fms},
+are needed for the $\Delta$-System Lemma.
+\begin{itemize}
+\item
+  \sout{\isatt{replacement{\uscore}is{\uscore}trans{\uscore}apply{\uscore}image{\uscore}fm}.}
+  \isatt{recursive{\uscore}construction{\uscore}fm}.
+
+  Recursive construction of sets using a choice function (as in the
+  construction of a wellorder of $X$ given a choice function on $\Pow(X)$).
+  %
+\item
+  \sout{\isatt{replacement{\uscore}transrec{\uscore}apply{\uscore}image{\uscore}body{\uscore}fm}.}
+  \isatt{recursive{\uscore}construction{\uscore}abs{\uscore}fm}.
+  
+  Absoluteness of the previous construction.
+\end{itemize}
+%
+The $21$ formulas up to this point are collected into the set
+\isatt{overhead{\uscore}notCH}, which is enough to
+force $\neg\CH$. To force $\CH$, we required one further instance:
+%
+\begin{itemize}
+\item
+  \sout{\isatt{replacement{\uscore}dcwit{\uscore}repl{\uscore}body{\uscore}fm}.}
+  \isatt{dc{\uscore}abs{\uscore}fm}.
+  
+  Absoluteness of the recursive construction in the proof of the
+  Dependent Choices from $\AC$.
+\end{itemize}
+
+The particular choice of some of the instances above arose from
+Paulson's architecture on which we based our development.
+This applies every time
+a locale from \session{ZF-Constructible} has to be
+interpreted (\locale{M{\uscore}eclose} and
+\locale{M{\uscore}ordertype}, respectively, for the “auxiliary” instances).
+%% For instance, the first
+%% instance required for the definition of relative ordertypes arises
+%% from Paulson's \session{ZF-Constructible}.
+% https://isabelle.in.tum.de/dist/library/ZF/ZF-Constructible/Rank.html#offset_1123..1139
+
+On the other hand, we replaced the original proof of the
+Schröder-Bernstein Theorem by Zermelo's one
+\cite[Exr. x4.27]{moschovakis1994notes}, because the former required
+at least one extra instance
+% (\isatt{banach{\uscore}iterates{\uscore}fm})
+arising from an iteration. We also managed to avoid 12 further
+replacements by restructuring some of original theories in
+\session{ZF-Constructible}, so these modifications are included as
+part of our project.
+
+It is to be noted that the proofs of the Forcing Theorems do not
+require any extra replacement; actually, they only need the 7
+instances appearing in \isatt{instances1{\uscore}fms} and
+\isatt{instances{\uscore}ground{\uscore}fms}.  But this seems not be
+the case for Separation, at least by inspecting our formalization:
+More instances holding in $M$ are needed 
+as the complexity of $\phi$ grows. One point where this is apparent is
+in the proof of Theorem~\ref{th:forcing-thms}(\ref{item:truth-lemma}),
+that appears as the \isatt{truth{\uscore}lemma} in our development; it
+depends on \isatt{truth{\uscore}lemma'} and
+\isatt{truth{\uscore}lemma{\uscore}Neg}, which explicitly invoke
+\isatt{separation{\uscore}ax}. In any case, our intended grounds
+(v.g., the transitive collapse of countable elementary submodels of a
+rank initial segment $V_\alpha$ or an $H(\kappa)$) all satisfy full
+Separation.
+

@@ -18,10 +18,10 @@ paragraph of Kunen's \cite[Thm.~IV.2.27]{kunen2011set}:
   \operatorname{dom}(\tau)$. Let $\pi=Q \times\{\1\}$ and let
   $b=\pi_{G}=$ $\left\{\vartheta_{G}: \vartheta \in Q\right\}$. Now,
   consider any $c \in \mathcal{P}(a) \cap M[G]$; we need to show that
-  $c \in b$. Fix $\varkappa \in M^{\mathbb{P}}$ such that
-  $\varkappa_{G}=c$, and let $\vartheta=\{\langle\sigma, p\rangle:
+  $c \in b$. Fix $\chi \in M^{\mathbb{P}}$ such that
+  $\chi_{G}=c$, and let $\vartheta=\{\langle\sigma, p\rangle:
   \sigma \in \operatorname{dom}(\tau) \wedge p \Vdash \sigma \in
-  \varkappa\}$; $\vartheta \in M$ by the Definability Lemma. Since
+  \chi\}$; $\vartheta \in M$ by the Definability Lemma. Since
   $\vartheta \in Q$, we are done if we can show that
   $\vartheta_{G}=c$.
 \end{quote}
@@ -111,8 +111,8 @@ that also apply previously proved lemmas.
 \ \ \ \ \isacommand{assume}\isamarkupfalse%
 \ {\isachardoublequoteopen}c\ {\isasymin}\ Pow{\isacharparenleft}{\kern0pt}a{\isacharparenright}{\kern0pt}\ {\isasyminter}\ M{\isacharbrackleft}{\kern0pt}G{\isacharbrackright}{\kern0pt}{\isachardoublequoteclose}
 \end{isabelle}
-\textit{Fix $\varkappa \in M^{\mathbb{P}}$ such that
-  $\varkappa_{G}=c$,}
+\textit{Fix $\chi \in M^{\mathbb{P}}$ such that
+  $\chi_{G}=c$,}
 \begin{isabelle}
 \ \ \ \ \isacommand{then}\isamarkupfalse%
 \isanewline
@@ -124,7 +124,7 @@ that also apply previously proved lemmas.
 \end{isabelle}
 \textit{and let $\vartheta=\{\langle\sigma, p\rangle:
   \sigma \in \operatorname{dom}(\tau) \wedge p \Vdash \sigma \in
-  \varkappa\}$;}
+  \chi\}$;}
 \begin{isabelle}
 \ \ \ \ \isacommand{let}\isamarkupfalse%
 \ {\isacharquery}{\kern0pt}{\isasymtheta}{\isacharequal}{\kern0pt}{\isachardoublequoteopen}{\isacharbraceleft}{\kern0pt}{\isasymlangle}{\isasymsigma}{\isacharcomma}{\kern0pt}p{\isasymrangle}\ {\isasymin}domain{\isacharparenleft}{\kern0pt}{\isasymtau}{\isacharparenright}{\kern0pt}{\isasymtimes}\isasymbbbP\ {\isachardot}{\kern0pt}\ p\ {\isasymtturnstile}\ {\isasymcdot}{\isadigit{0}}\ {\isasymin}\ {\isadigit{1}}{\isasymcdot}\ {\isacharbrackleft}{\kern0pt}{\isasymsigma}{\isacharcomma}{\kern0pt}{\isasymchi}{\isacharbrackright}{\kern0pt}\ {\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}
@@ -166,7 +166,13 @@ that also apply previously proved lemmas.
   $\vartheta_{G}=c$.}
 \begin{isabelle}
 \ \ \ \ \isacommand{have}\isamarkupfalse%
-\ {\isachardoublequoteopen}val{\isacharparenleft}{\kern0pt}G{\isacharcomma}{\kern0pt}{\isacharquery}{\kern0pt}{\isasymtheta}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ c{\isachardoublequoteclose}
+\ {\isachardoublequoteopen}val{\isacharparenleft}{\kern0pt}G{\isacharcomma}{\kern0pt}{\isacharquery}{\kern0pt}{\isasymtheta}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ c{\isachardoublequoteclose}\isanewline
+%
+\ \ \ \ \isacommand{proof}\isamarkupfalse%
+\ {\isacharminus}{\kern0pt}\isanewline
+\ \ \ \ \ \ \dots\isanewline
+%
+\ \ \ \ \isacommand{qed}\isamarkupfalse%
 \end{isabelle}
 
 Undoubtedly, even for this cherry-picked example, the formalization

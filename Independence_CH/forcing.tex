@@ -6,7 +6,13 @@
 The description of set models of fragments of $\ZFC$ was performed
 using locales that fix a variable $M::\tyi$
 and pack assumptions stating that $\lb M, \in\rb$ satisfy some
-axioms. For example, the locale \locale{M{\uscore}Z{\uscore}basic}
+axioms.
+\begin{itemize}
+\item First introduce axioms as satisfactions;
+\item Comment on the convenience of relative forms;
+\item We retain satisfactions for the predicates for Separation and Replacement.
+\end{itemize}
+For example, the locale \locale{M{\uscore}Z{\uscore}basic}
 states that Zermelo set theory holds in $M$. The Union Axiom (\isatt{Union{\uscore}ax}), for
 instance, is defined as follows:
 \[
@@ -37,16 +43,24 @@ the expressions
   \text{ and }
   \isatt{strong{\uscore}replacement}(N,R)
 \]
-that consume a class $N$ and predicates $Q::\tyi\fun\tyo$ and $R::\tyi\fun\tyi\fun\tyo$, and state that $N$
+%%%%%%%%%%
+\sout{that consume a class $N$ and predicates $Q::\tyi\fun\tyo$ and $R::\tyi\fun\tyi\fun\tyo$, and state that $N$
 satisfies the $Q$-instance of Separation and the $R$-instance of
-Replacement, respectively. In the statement of the Separation Axiom in
+Replacement, respectively.
+In the statement of the Separation Axiom in
 \locale{M{\uscore}Z{\uscore}basic} and
 the many replacement instances, predicates $Q$ and $R$ are actually
 defined as the satisfaction of formulas of the appropriate arity; we can only show
-that this form of the axioms hold in generic extensions. 
-
-Further locales gather
-particular replacement instances expressed by means of the
+that this form of the axioms hold in generic extensions.}
+%%%%%%%%%%
+whose first argument $N$ is a class and their second arguments $Q$ and
+$R$ are higher-order predicates of types $R :: \tyi \fun \tyo$ and $Q ::
+\tyi \fun \tyi \fun \tyo$, resp.
+The Separation axiom is axiomatized like
+\[
+  \text{This}
+\]
+Particular replacement instances expressed by means of the
 $\isatt{replacement{\uscore}assm}(M,\mathit{env},\phi)$ predicate ($@$ denotes
 list concatenation):
 \begin{multline}\label{eq:replacement_assm_def}
@@ -66,6 +80,18 @@ instance:
 {\isasymphi}\ {\isasymin}\ formula\ {\isasymLongrightarrow}\isanewline
 {\isacharparenleft}{\kern0pt}M{\isacharcomma}{\kern0pt}\ {\isacharbrackleft}{\kern0pt}{\isacharbrackright}{\kern0pt}\ {\isasymTurnstile}\ {\isasymcdot}Replacement{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}{\isasymcdot}{\isacharparenright}{\kern0pt}\ {\isasymlongleftrightarrow}\ {\isacharparenleft}{\kern0pt}{\isasymforall}env{\isachardot}{\kern0pt}\ replacement{\isacharunderscore}{\kern0pt}assm{\isacharparenleft}{\kern0pt}M{\isacharcomma}{\kern0pt}\ env{\isacharcomma}{\kern0pt}\ {\isasymphi}{\isacharparenright}{\kern0pt}{\isacharparenright}
 \end{isabelle}
+
+In \session{ZF-Constructible} some results are proved assuming some instances of
+separation or replacement (mejor si ponemos ejemplo concreto). In contrast,
+our locale \isatt{M{\uscore}Z{\uscore}basic} assumes the full scheme of separation in terms
+of satisfaction of some internalized formula but no instance of replacement. (Mostrar el enunciado de separation\_ax:
+es distinto a Reemplazo y se nombra después)
+
+In order to have a finer control of the instances of replacement needed,
+we postulate further locales with the instances needed to interpret at
+the class\dots
+(tal vez no sea necesario mostrar la definición de .Replacement.)
+
 %
 %% Some of those instances, which we included for simplicity of design,
 %% are actually “fake” instances in that they can be obtained from
@@ -76,16 +102,17 @@ instance:
 %% doing so we had to reprove many lemmas from
 %% that session in the weakened context. 
 
-The locales gathering all 22 replacement instances necessary are named
+\sout{The locales gathering all 22 replacement instances necessary are named
 \locale{M{\uscore}ZF1} through \locale{M{\uscore}ZF3},
 \locale{M{\uscore}ZF{\uscore}ground},
 \locale{M{\uscore}ZF{\uscore}ground{\uscore}notCH}, and
 \locale{M{\uscore}ZF{\uscore}ground{\uscore}CH} (see
-Section~\ref{sec:repl-instances} for details).
+Section~\ref{sec:repl-instances} for details).}
 These assumptions are then invoked to interpret at the class
 $\isatt{\#\#} M$ the relevant locales appearing in
 \session{ZF-Constructible}, and further ones required for the relative
-results from Section~\ref{sec:extension-isabellezf}.
+results from Section~\ref{sec:extension-isabellezf}. See
+Section~\ref{sec:repl-instances} for details.
 
 %-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%
 
@@ -95,8 +122,8 @@ assumes $M$ to be
 countable and transitive, and satisfies some fragment of
 $\ZFC$%
 \footnote{%
-Namely, Zermelo set theory plus the replacement instances included in
-\locale{M{\uscore}ZF1} and \locale{M{\uscore}ZF{\uscore}ground}.
+Namely, Zermelo set theory plus the 7 replacement instances included in
+the locales \locale{M{\uscore}ZF1} and \locale{M{\uscore}ZF{\uscore}ground}.
 }.
 This is further extended by assuming a forcing notion
 $\lb \PP, {\preceq} ,\1\rb \in M$. The actual implementation reads:
@@ -116,26 +143,27 @@ $\lb \PP, {\preceq} ,\1\rb \in M$. The actual implementation reads:
 \ \ \isakeyword{assumes}\ P{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}M{\isacharcolon}{\kern0pt}\ \ \ \ \ \ \ \ \ \ \ {\isachardoublequoteopen}{\isasymbbbP}\ {\isasymin}\ M{\isachardoublequoteclose}\isanewline
 \ \ \ \ \isakeyword{and}\ leq{\isacharunderscore}{\kern0pt}in{\isacharunderscore}{\kern0pt}M{\isacharcolon}{\kern0pt}\ \ \ \ \ \ \ \ \ {\isachardoublequoteopen}leq\ {\isasymin}\ M{\isachardoublequoteclose}
 \end{isabelle}
-In order to fix notation, the
-$\val$ interpretation function takes as its first argument the filter
-and then the name, so we have
-$M[G]\defi \{ \val(G,\tau) : \tau\in M \}$.
-
 The version of the Forcing Theorems that we formalized follows the
 considerations on the $\forces^*$ relation as discussed in Kunen's new
 \emph{Set Theory}
-\cite[p.~257ff]{kunen2011set}. But in contrast to the point made on
-p.~260 of this book, we internalized the recursion to define the forcing relation,
-in that it involves codes for formulas, and the meta-theoretic formula
-transformer $\phi\mapsto\mathit{Forces}_\phi$ is replaced by the
+\cite[p.~257ff]{kunen2011set}.
+We defined forcing for atomic formulas by recursion on names in an
+analogous fashion. But, in contrast to the point made on
+p.~260 of this book, the structural recursion to define the forcing
+relation was replaced by one  involving codes for formulas. Thus, the meta-theoretic formula
+transformer $\phi\mapsto\mathit{Forces}_\phi$ was replaced by a
 set-theoretic class function $\forceisa:: \tyi \fun \tyi$, which was defined by using
 Isabelle/ZF facilities for primitive recursion.
 
 Next, we state this version of the fundamental theorems in a compact
-way.
+way. For any $G\subseteq P$, our notation for the extension of $M$ by
+$G$ is the  customary one: $M[G]\defi
+\{ \val(G,\tau) : \tau\in M \}$, where the interpretation
+$\val(G,\tau)$ is defined by well-founded recursion on
+$\tau$.
+
 \begin{theorem}\label{th:forcing-thms}
-  There exists a function  $\forceisa$
-  such that for every
+  For every
   $\phi\in\formula$ and $\tau_0,\dots,\tau_n\in M$,
   \begin{enumerate}
   \item\label{item:definability} (Definability)
@@ -164,10 +192,7 @@ way.
     is dense below $p$.
   \end{enumerate}
 \end{theorem}
-We actually have to define $\forceisa$ before we state the fundamental
-theorems, so the main existential quantifier above does not appear in the
-formalization.
-Moreover, the items in Theorem~\ref{th:forcing-thms} appear as three
+The items in Theorem~\ref{th:forcing-thms} appear as three
 separated lemmas in the theory
 \theory{Forcing{\uscore}Theorems} of our
 \session{Independence\_CH} session \cite{Independence_CH-AFP}.
@@ -185,12 +210,7 @@ follows:
 %% where the $\isatt{map}$ function that applies a function to
 %% each element of a list and
 where the $\forces$ notation (and its precedence) had already been set up in the
-\theory{Forces{\uscore}Definition} theory as follows:
-\begin{isabelle}
-\isacommand{abbreviation}\isamarkupfalse%
-\ Forces\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharbrackleft}{\kern0pt}i{\isacharcomma}{\kern0pt}\ i{\isacharcomma}{\kern0pt}\ i{\isacharbrackright}{\kern0pt}\ {\isasymRightarrow}\ o{\isachardoublequoteclose}\ \ {\isacharparenleft}{\kern0pt}{\isachardoublequoteopen}{\isacharunderscore}{\kern0pt}\ {\isasymtturnstile}\ {\isacharunderscore}{\kern0pt}\ {\isacharunderscore}{\kern0pt}{\isachardoublequoteclose}\ {\isacharbrackleft}{\kern0pt}{\isadigit{3}}{\isadigit{6}}{\isacharcomma}{\kern0pt}{\isadigit{3}}{\isadigit{6}}{\isacharcomma}{\kern0pt}{\isadigit{3}}{\isadigit{6}}{\isacharbrackright}{\kern0pt}\ {\isadigit{6}}{\isadigit{0}}{\isacharparenright}{\kern0pt}\ \isakeyword{where}\isanewline
-\ \ {\isachardoublequoteopen}p\ {\isasymtturnstile}\ {\isasymphi}\ env\ \ \ {\isasymequiv}\ \ \ M{\isacharcomma}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isacharbrackleft}{\kern0pt}p{\isacharcomma}{\kern0pt}{\isasymbbbP}{\isacharcomma}{\kern0pt}leq{\isacharcomma}{\kern0pt}{\isasymone}{\isacharbrackright}{\kern0pt}\ {\isacharat}{\kern0pt}\ env{\isacharparenright}{\kern0pt}\ {\isasymTurnstile}\ forces{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}
-\end{isabelle}
+\theory{Forces{\uscore}Definition} theory.
 
 Kunen first describes forcing for atomic formulas using a mutual
 recursion
@@ -205,7 +225,7 @@ recursion
 %%   \pleq r \land \forceseq(q,t_1,s)
 %% \end{multline*}
 but then \cite[p.~257]{kunen2011set} it is cast as a single
-recursively defined function $F$ over a wellfounded  relation $R$.
+recursively defined function $F$ over a well-founded  relation $R$.
 In our formalization, these are called $\frcat$ and 
 $\isatt{frecR}$, respectively, and are defined on tuples $\lb \mathit{ft},t_1,t_2,p\rb$ (where
 $\mathit{ft}\in\{0,1\}$ indicates whether the atomic formula being
