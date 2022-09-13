@@ -31,11 +31,11 @@
 \newcommand{\isamath}[1]{\emph{$#1$}}
 \newcommand{\isatext}[1]{\emph{#1}}
 \DeclareRobustCommand{\isascriptstyle}{\def\isamath##1{##1}\def\isatext##1{\mbox{\isaspacing\isastylescript##1}}}
-\newcommand{\isactrlsub}[1]{\emph{\isascriptstyle${}\sb{#1}$}}
-\newcommand{\isactrlsup}[1]{\emph{\isascriptstyle${}\sp{#1}$}}
-\DeclareRobustCommand{\isactrlbsub}{\emph\bgroup\math{}\sb\bgroup\mbox\bgroup\isaspacing\isastylescript}
+\newcommand{\isactrlsub}[1]{{\isascriptstyle${}\sb{#1}$}}
+\newcommand{\isactrlsup}[1]{{\isascriptstyle${}\sp{#1}$}}
+\DeclareRobustCommand{\isactrlbsub}{\bgroup\math{}\sb\bgroup\mbox\bgroup\isaspacing\isastylescript}
 \DeclareRobustCommand{\isactrlesub}{\egroup\egroup\endmath\egroup}
-\DeclareRobustCommand{\isactrlbsup}{\emph\bgroup\math{}\sp\bgroup\mbox\bgroup\isaspacing\isastylescript}
+\DeclareRobustCommand{\isactrlbsup}{\bgroup\math{}\sp\bgroup\mbox\bgroup\isaspacing\isastylescript}
 \DeclareRobustCommand{\isactrlesup}{\egroup\egroup\endmath\egroup}
 \newcommand{\isactrlbold}[1]{{\bfseries\upshape\boldmath#1}}
 

@@ -85,11 +85,8 @@ proof -
   have "domain(\<tau>)\<times>\<bbbP> \<in> M" "domain(\<tau>) \<in> M"
     by simp_all
   then
-  have "?\<pi>\<in>M"
-    by auto
-  then
   have "?b \<in> M[G]"
-    using GenExtI by simp
+    by (auto intro!:GenExtI)
   have "Pow(a) \<inter> M[G] \<subseteq> ?b"
   proof
     fix c
@@ -107,10 +104,6 @@ proof -
     with \<open>domain(\<tau>)\<times>\<bbbP> \<in> M\<close>
     have "?\<theta> \<in> ?Q"
       using Pow_rel_char by auto
-    then
-    have "val(G,?\<theta>) \<in> ?b"
-      using one_in_G generic val_of_elem [of ?\<theta> \<one> ?\<pi> G]
-      by auto
     have "val(G,?\<theta>) = c"
     proof(intro equalityI subsetI)
       fix x
@@ -180,9 +173,10 @@ proof -
       show "x\<in>val(G,?\<theta>)"
         using val_of_elem [of _ _ "?\<theta>" G] by auto
     qed
-    with \<open>val(G,?\<theta>) \<in> ?b\<close>
+    with \<open>?\<theta> \<in> ?Q\<close>
     show "c\<in>?b"
-      by simp
+      using one_in_G generic val_of_elem [of ?\<theta> \<one> ?\<pi> G]
+      by auto
   qed
   then
   have "Pow(a) \<inter> M[G] = {x\<in>?b . x\<subseteq>a \<and> x\<in>M[G]}"
