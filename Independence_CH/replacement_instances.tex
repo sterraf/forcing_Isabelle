@@ -1,17 +1,10 @@
 \section{22 replacement instances to rule them all}
 \label{sec:repl-instances-appendix}
 
-We isolated 22 instances of Replacement that are sufficient to force
-$\CH$ or $\neg\CH$, which are enumerated below by the name of the
-corresponding internalized first order formula. Many of these were already present in
-relational form in the \session{ZF-Constructible} library.
-
-The first 4 instances, collected in the subset
-\isa{instances1{\uscore}fms} of \formula, consist of basic
-constructions.
+In \isa{instances1{\uscore}fms}:
 
 \begin{itemize}
-\item 2 instances for transitive closure.
+\item Transitive closure:
   \begin{itemize}
   \item
     \sout{\isa{eclose{\uscore}repl1{\uscore}intf{\uscore}fm}.} \isa{eclose{\uscore}closed{\uscore}fm}.
@@ -36,11 +29,9 @@ constructions.
 
 %% The last two and next pair have the same syntactic structure, because
 %% they are definitions by well-founded recursion.
-The next 4 instances (gathered in \isa{instances2{\uscore}fms})
-are needed to set up
-cardinal arithmetic in $M$.
+In \isa{instances2{\uscore}fms} (for cardinal arithmetic):
 \begin{itemize}
-\item 2 instances for ordertypes:
+\item Ordertypes:
   \begin{itemize}
   \item
     \sout{\isa{wfrec{\uscore}replacement{\uscore}order{\uscore}pred{\uscore}fm}.}
@@ -54,7 +45,7 @@ cardinal arithmetic in $M$.
     
     Auxiliary instance for the definition of ordertypes.
   \end{itemize}
-\item 2 instances for Aleph:
+\item Aleph:
   \begin{itemize}
     %
   \item
@@ -71,27 +62,7 @@ cardinal arithmetic in $M$.
   \end{itemize}
 \end{itemize}
 
-We also need a one extra replacement instance $\psi$ on $M$ for each
-$\phi$ of the
-previous ones to have them in $M[G]$:
-\[
-  \psi(x,\alpha,y_1,\dots,y_n) \defi \quine{\alpha = \min \bigl\{
-    \beta \mid \exists\tau\in V_\beta.\  \mathit{snd}(x) \forces
-    \phi\ [\mathit{fst}(x),\tau,y_1,\dots,y_n]\bigr\}}
-\]
-Here, $\mathit{fst}(\lb a,b\rb) = a$, $\mathit{snd}(\lb a,b\rb) = b$
-(with default value $0$ for non pairs).
-In our development, the mapping $\phi\mapsto\psi$ defined above is given by the
-$\isa{ground{\uscore}repl{\uscore}fm}$ function, and all ground replacement
-instances appear in the locale \locale{M{\uscore}ZF3} and form the set
-\isa{instances3{\uscore}fms}. These are expressed using
-the $\isa{ground{\uscore}replacement{\uscore}assm}(M,\mathit{env},\phi)$ predicate
-obtained by replacing $\phi$ by
-$\isa{ground{\uscore}repl{\uscore}fm}(\phi)$ in Eq.~(\ref{eq:replacement_assm_def}).
-
-That makes 16 instances up to now. For the setup of forcing, we
-require the following 3 instances, which form the set
-\isa{instances{\uscore}ground{\uscore}fms}.
+In \isa{instances{\uscore}ground{\uscore}fms}:
 
 \begin{itemize}
 \item \isa{wfrec{\uscore}Hcheck{\uscore}fm}.
@@ -110,16 +81,15 @@ require the following 3 instances, which form the set
   definition of $\punto{G}$).
   %
 \end{itemize}
-The next two formulas, which form the set
-\isa{instances{\uscore}ground{\uscore}notCH{\uscore}fms},
-are needed for the $\Delta$-System Lemma.
+
+In 
+\isa{instances{\uscore}ground{\uscore}notCH{\uscore}fms}:
 \begin{itemize}
 \item
   \sout{\isa{replacement{\uscore}is{\uscore}trans{\uscore}apply{\uscore}image{\uscore}fm}.}
   \isa{recursive{\uscore}construction{\uscore}fm}.
 
-  Recursive construction of sets using a choice function (as in the
-  construction of a wellorder of $X$ given a choice function on $\Pow(X)$).
+  Recursive construction of sets using a choice function.
   %
 \item
   \sout{\isa{replacement{\uscore}transrec{\uscore}apply{\uscore}image{\uscore}body{\uscore}fm}.}
@@ -127,10 +97,6 @@ are needed for the $\Delta$-System Lemma.
   
   Absoluteness of the previous construction.
 \end{itemize}
-%
-The $21$ formulas up to this point are collected into the set
-\isa{overhead{\uscore}notCH}, which is enough to
-force $\neg\CH$. To force $\CH$, we required one further instance:
 %
 \begin{itemize}
 \item
@@ -141,40 +107,8 @@ force $\neg\CH$. To force $\CH$, we required one further instance:
   Dependent Choices from $\AC$.
 \end{itemize}
 
-The particular choice of some of the instances above arose from
-Paulson's architecture on which we based our development.
-This applies every time
-a locale from \session{ZF-Constructible} has to be
-interpreted (\locale{M{\uscore}eclose} and
-\locale{M{\uscore}ordertype}, respectively, for the “auxiliary” instances).
-%% For instance, the first
-%% instance required for the definition of relative ordertypes arises
-%% from Paulson's \session{ZF-Constructible}.
-% https://isabelle.in.tum.de/dist/library/ZF/ZF-Constructible/Rank.html#offset_1123..1139
-
-On the other hand, we replaced the original proof of the
-Schröder-Bernstein Theorem by Zermelo's one
-\cite[Exr. x4.27]{moschovakis1994notes}, because the former required
-at least one extra instance
-% (\isa{banach{\uscore}iterates{\uscore}fm})
-arising from an iteration. We also managed to avoid 12 further
-replacements by restructuring some of original theories in
-\session{ZF-Constructible}, so these modifications are included as
-part of our project.
-
-It is to be noted that the proofs of the Forcing Theorems do not
-require any extra replacement; actually, they only need the 7
-instances appearing in \isa{instances1{\uscore}fms} and
-\isa{instances{\uscore}ground{\uscore}fms}.  But this seems not be
-the case for Separation, at least by inspecting our formalization:
-More instances holding in $M$ are needed 
-as the complexity of $\phi$ grows. One point where this is apparent is
-in the proof of Theorem~\ref{th:forcing-thms}(\ref{item:truth-lemma}),
-that appears as the \isa{truth{\uscore}lemma} in our development; it
-depends on \isa{truth{\uscore}lemma'} and
-\isa{truth{\uscore}lemma{\uscore}Neg}, which explicitly invoke
-\isa{separation{\uscore}ax}. In any case, our intended grounds
-(v.g., the transitive collapse of countable elementary submodels of a
-rank initial segment $V_\alpha$ or an $H(\kappa)$) all satisfy full
-Separation.
-
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "independence_ch_isabelle"
+%%% ispell-local-dictionary: "american"
+%%% End: 
