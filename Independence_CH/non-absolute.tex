@@ -29,14 +29,13 @@ expounded in the next subsection.
 
 \subsection{Discipline and tools for relativization}
 \label{sec:tools-relativization}
-In order to cope with the inconveniences of the completely relational approach, \sout{we added the missing step from the
-literature consisting of relative versions of the various non-absolute
-functions and programmed in ML limited automatic facilities that
-define the needed concepts, and  state and
-prove the requisite lemmas} we
-provide automatic tools
-to ease the definitions of relativized versions, their fully relational
-partenaire, and the internalized formulas. For instance, consider the 
+The missing step, that naturally appears in the literature, consists
+of having relative \emph{functions} like $\Pow^M$, and the ability to
+translate between the different presentations discussed so far.
+
+To achieve this, we provide automatic tools to ease the definitions of
+such relative versions, their fully relational counteparts, and the
+internalized formulas. For instance, consider the
 $\isa{cardinal}::\tyi \fun \tyi$ function defined in
 \session{Isabelle/ZF}. Then the commands
 \begin{isabelle}
