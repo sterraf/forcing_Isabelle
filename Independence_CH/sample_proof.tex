@@ -151,13 +151,32 @@ will intersperse the relevant passages of the proof.
 \ \ \ \ \isacommand{proof} \ \mbox{$[\dots]$}
 \end{isabelle}
 
-Undoubtedly, even for this cherry-picked example, the formalization
-looks a bit codish. It is therefore inevitable to compare this to the
-magnificent results obtained by P.~Koepke and his team by using
-Isabelle/Naproche \cite{10.1007/978-3-030-81097-9_2} (particularly,
-the proof of König's Theorem). The trick there consists in presenting the result
-being formalized as a restricted first-order problem, and then each
-proof step can be handled by an automatic theorem prover.
+This cherry-picked example shows that the formalization can be close
+to the mathematical exposition and might be useful to reconstruct the
+proof from the book; nonetheless, it also has significantly more
+details than the mathematical prose, even with some indications to
+direct the automatic tools.
+
+There has been some progress on assistants where one writes statements
+and proofs in natural language; recently P.~Koepke and his team
+achieved magnificient results by using Isabelle/Naproche
+\cite{10.1007/978-3-030-81097-9_2} to formalize proofs of several
+results (particularly, the proof of König's Theorem). The input
+language of Isabelle/Naproche is a \emph{controlled} natural language
+that presents the result being formalized as a deduction in
+first-order logic, where every assumption and the ``whole logical
+scenario'' are explicitly given. From the input language,
+Isabelle/Naproche builds ``proof tasks'' that are handled to automatic
+theorem provers. As far as we can tell, Isabelle/Naproche is
+promising but still unsuitable for a project of the magnitude of ours.
+
+% Undoubtedly, even for this cherry-picked example, the formalization
+% looks a bit codish. It is therefore inevitable to compare this to the
+% magnificent results obtained by P.~Koepke and his team by using
+% Isabelle/Naproche \cite{10.1007/978-3-030-81097-9_2} (particularly,
+% the proof of König's Theorem). The trick there consists in presenting the result
+% being formalized as a restricted first-order problem, and then each
+% proof step can be handled by an automatic theorem prover.
 
 %%% Local Variables: 
 %%% mode: latex
