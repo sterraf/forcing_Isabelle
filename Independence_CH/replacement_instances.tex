@@ -7,11 +7,11 @@ In \isa{instances1{\uscore}fms}:
 \item Transitive closure:
   \begin{itemize}
   \item
-    \sout{\isa{eclose{\uscore}repl1{\uscore}intf{\uscore}fm}.} \isa{eclose{\uscore}closed{\uscore}fm}.
+    \isa{eclose{\uscore}closed{\uscore}fm}.
 
     To prove closure under iteration of $X\mapsto\union X$.
   \item
-    \sout{\isa{eclose{\uscore}repl2{\uscore}intf{\uscore}fm}} \isa{eclose{\uscore}abs{\uscore}fm}.
+    \isa{eclose{\uscore}abs{\uscore}fm}.
 
     Auxiliary instance used to show absoluteness.
   \end{itemize}
@@ -22,7 +22,7 @@ In \isa{instances1{\uscore}fms}:
   
   For $\in$-rank.
   %
-\item \sout{\isa{trans{\uscore}repl{\uscore}HVFrom{\uscore}fm}.} \isa{transrec{\uscore}VFrom{\uscore}fm}.
+\item \isa{transrec{\uscore}VFrom{\uscore}fm}.
 
   For the cumulative hierarchy (rank initial segments).
 \end{itemize}
@@ -34,13 +34,11 @@ In \isa{instances2{\uscore}fms} (for cardinal arithmetic):
 \item Ordertypes:
   \begin{itemize}
   \item
-    \sout{\isa{wfrec{\uscore}replacement{\uscore}order{\uscore}pred{\uscore}fm}.}
     \isa{wfrec{\uscore}ordertype{\uscore}fm}.
 
     Well-founded recursion for the construction of ordertypes.
     %
   \item
-    \sout{\isa{replacement{\uscore}is{\uscore}order{\uscore}eq{\uscore}map{\uscore}fm}.}
     \isa{omap{\uscore}replacement{\uscore}fm}.
     
     Auxiliary instance for the definition of ordertypes.
@@ -49,13 +47,11 @@ In \isa{instances2{\uscore}fms} (for cardinal arithmetic):
   \begin{itemize}
     %
   \item
-    \sout{\isa{replacement{\uscore}is{\uscore}order{\uscore}body{\uscore}fm}.}
     \isa{ordtype{\uscore}replacement{\uscore}fm}.
 
     Replacement through the ordertype function, for Hartogs' Theorem.
     %
   \item
-    \sout{\isa{replacement{\uscore}HAleph{\uscore}wfrec{\uscore}repl{\uscore}body{\uscore}fm}.}
     \isa{wfrec{\uscore}Aleph{\uscore}fm}.
 
     The well-founded recursion to define Aleph.
@@ -74,7 +70,6 @@ In \isa{instances{\uscore}ground{\uscore}fms}:
   Well-founded recursion for the definition of forcing for atomic formulas.
   %
 \item
-  \sout{\isa{Lambda{\uscore}in{\uscore}M{\uscore}fm(check{\uscore}fm(2,0,1),1)}.}
   \isa{lam{\uscore}replacement{\uscore}check{\uscore}fm}.
 
   Replacement through $x\mapsto \lb x,\check{x}\rb$ (for the
@@ -82,17 +77,26 @@ In \isa{instances{\uscore}ground{\uscore}fms}:
   %
 \end{itemize}
 
+In our development, the $\isa{ground{\uscore}repl{\uscore}fm}$
+function maps instances to \dots. All ground replacement instances
+appear in the locale \locale{M{\uscore}ZF3} and form the set
+\isa{instances3{\uscore}fms}. These are expressed using the following
+predicate:
+\[
+  \isa{ground{\uscore}replacement{\uscore}assm}(M,\mathit{env},\phi)
+\]
+defined as
+$\isa{replacement{\uscore}assm}(M,\mathit{env},\isa{ground{\uscore}repl{\uscore}fm}(\phi))$.
+
 In 
 \isa{instances{\uscore}ground{\uscore}notCH{\uscore}fms}:
 \begin{itemize}
 \item
-  \sout{\isa{replacement{\uscore}is{\uscore}trans{\uscore}apply{\uscore}image{\uscore}fm}.}
   \isa{recursive{\uscore}construction{\uscore}fm}.
 
   Recursive construction of sets using a choice function.
   %
 \item
-  \sout{\isa{replacement{\uscore}transrec{\uscore}apply{\uscore}image{\uscore}body{\uscore}fm}.}
   \isa{recursive{\uscore}construction{\uscore}abs{\uscore}fm}.
   
   Absoluteness of the previous construction.
@@ -100,7 +104,6 @@ In
 %
 \begin{itemize}
 \item
-  \sout{\isa{replacement{\uscore}dcwit{\uscore}repl{\uscore}body{\uscore}fm}.}
   \isa{dc{\uscore}abs{\uscore}fm}.
   
   Absoluteness of the recursive construction in the proof of the

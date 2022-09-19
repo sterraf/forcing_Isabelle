@@ -41,19 +41,9 @@ previous ones to have them in $M[G]$:
 \]
 Here, $\mathit{fst}(\lb a,b\rb) = a$, $\mathit{snd}(\lb a,b\rb) = b$
 (with default value $0$ for non pairs).
-In our development, the mapping $\phi\mapsto\psi$ defined above is given by the
-$\isa{ground{\uscore}repl{\uscore}fm}$ function, and all ground replacement
+All ground replacement
 instances appear in the locale \locale{M{\uscore}ZF3} and form the set
-\isa{instances3{\uscore}fms}. These are expressed using
-the
-\[
-  \isa{ground{\uscore}replacement{\uscore}assm}(M,\mathit{env},\phi)
-\]
-%% predicate
-%% obtained by replacing $\phi$ by
-%% $\isa{ground{\uscore}repl{\uscore}fm}(\phi)$ in Eq.~(\ref{eq:replacement_assm_def}).
-predicate defined as 
-$\isa{replacement{\uscore}assm}(M,\mathit{env},\isa{ground{\uscore}repl{\uscore}fm}(\phi))$.
+\isa{instances3{\uscore}fms}.
 
 That makes 16 instances up to now. For the setup of forcing, we
 require the following 3 instances, which form the set
@@ -176,7 +166,10 @@ extension. It is  the union of
 \isa{instances{\isadigit{1}}{\isacharunderscore}{\kern0pt}fms} and
 \isa{instances{\isacharunderscore}{\kern0pt}ground{\isacharunderscore}{\kern0pt}fms}.
 Also,
-\isa{{\isasymcdot}Z{\isasymcdot}} denotes Zermelo set theory. In the
+\isa{{\isasymcdot}Z{\isasymcdot}} denotes Zermelo set theory and one
+can use the parameter $\Phi$ to ensure those replacement instances in the extension.
+
+In the
 next theorem, the relevant set of formulas is
 \isa{overhead{\isacharunderscore}{\kern0pt}notCH}, defined above in
 Section~\ref{sec:repl-instances}, and \isa{ZC} denotes Zermelo set

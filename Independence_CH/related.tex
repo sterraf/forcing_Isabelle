@@ -8,8 +8,7 @@ influenced by Wiedijk's list of 100 theorems \cite{Formalizing100}.
 
 Many aspects make their formalization different from ours. Their
 presentation of the mathematics is somewhat more elegant and cohesive,
-since they go for the Boolean valued approach and this is closer to
-obtain proofs of relative consistency; they actually set up the
+since they go for the Boolean valued approach; they also  set up the
 calculus of first-order logic, and \emph{en route} to forcing they
 formalized the basic model theory of Boolean valued models and Gödel's
 Completeness Theorem. They also provided the treatment of the regular
@@ -30,15 +29,15 @@ implementation; for instance, ordinals are “defined as equivalence
 classes of (well-ordered) types, [\dots] one
 universe level higher than the types used to construct them”
 \cite{han_et_al:LIPIcs:2019:11074}. It is not clear to us if they are
-able to avoid such strength (at least $\Con(\ZFC)$ is provable in
-their context, a requisite to get either unprovability result).
+able to avoid such strength: At least, $\Con(\ZFC)$ is provable in
+their context. %, a requisite to get either unprovability result.
 % by Gödel's Second).
 
 On a lesser note, in order to prove $\AC$ in the generic extension,
 Flypitch requires choice in the metatheory
-\cite[p.~11]{han_et_al:LIPIcs:2019:11074}. Our formalization works
-entirely in $\ZF$, and only imports the Isabelle theory postulating
-$\AC$ for demostration purposes.
+\cite[p.~11]{han_et_al:LIPIcs:2019:11074}, while our formalization works
+entirely in $\ZF$. %%  and only imports the Isabelle theory postulating
+%% $\AC$ for demostration purposes.
 
 We believe that our alternative formalization using the ctm approach
 over Isabelle/ZF might be more appealing to set-theorists because of the
@@ -48,13 +47,13 @@ be illustrated by the treatment of ordinals; in our formalization, as
 it is expected intuitively, the following are equivalent for every $x$
 in a ctm $M$:
 \begin{itemize}
-\item $\isa{Ord}(x)$,
+\item $\isa{Ord}(x)$;
 \item $\isa{ordinal}(\isa{\#\#}M,x)$ (the relational
-  definition relativized to $M$),
+  definition relativized to $M$);
 \item
-  $M,[x] \models {\cdot}0\isa{ is ordinal}{\cdot}$,
-\item
-  $M[G], [x] \models {\cdot}0\isa{ is ordinal}{\cdot}$ for every generic $G$,
+  $M,[x] \models {\cdot}0\isa{ is ordinal}{\cdot}$.
+%% \item
+%%   $M[G], [x] \models {\cdot}0\isa{ is ordinal}{\cdot}$ for every generic $G$,
 \end{itemize}
 where ${\cdot}n\isa{ is ordinal}{\cdot}$ is the code for the
 appropriate first-order formula  ($0$ is a de
