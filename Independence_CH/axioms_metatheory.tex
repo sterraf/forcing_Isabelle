@@ -1,0 +1,68 @@
+\section{Axioms of the meta-theory}
+\label{appendix:axioms}
+
+In this appendix we list the complete set of axioms of our meta-theory.
+
+\subsection{Pure}
+\begin{isabelle}
+Pure.abstract\_rule: (⋀x. ?f(x) ≡ ?g(x)) ⟹ λx. ?f(x) ≡ λx. ?g(x)\isanewline
+Pure.combination: ?f ≡ ?g ⟹ ?x ≡ ?y ⟹ ?f(?x) ≡ ?g(?y)\isanewline
+Pure.equal\_elim: PROP ?A ≡ PROP ?B ⟹ PROP ?A ⟹ PROP ?B\isanewline
+Pure.equal\_intr: (PROP ?A ⟹ PROP ?B) ⟹ (PROP ?B ⟹ PROP ?A) ⟹ \isanewline
+\ \ \ \ \ \ \ \ \ \ PROP ?A ≡ PROP ?B\isanewline
+Pure.reflexive: ?x ≡ ?x\isanewline
+Pure.symmetric: ?x ≡ ?y ⟹ ?y ≡ ?x\isanewline
+Pure.transitive: ?x ≡ ?y ⟹ ?y ≡ ?z ⟹ ?x ≡ ?z
+\end{isabelle}
+
+\subsection{IFOL and FOL}
+In the axioms \isa{refl, subst, allI, spec, exE, exI,eq\_reflection} there is a constraint
+for the type of the variable \isa{x : ?'a} to be in the class \isa{term\_class}.
+\begin{isabelle}
+IFOL.FalseE: ⋀P. False ⟹ P\isanewline
+IFOL.refl:  (⋀a. a = a)\isanewline
+IFOL.subst: (⋀a b P. a = b ⟹ P(a) ⟹ P(b))\isanewline
+IFOL.allI:  (⋀P. (⋀x. P(x)) ⟹ ∀x. P(x))\isanewline
+IFOL.spec:  (⋀P x. ∀x. P(x) ⟹ P(x))\isanewline
+IFOL.exE:   (⋀P R. ∃x. P(x) ⟹ (⋀x. P(x) ⟹ R) ⟹ R)\isanewline
+IFOL.exI:   (⋀P x. P(x) ⟹ ∃x. P(x))\isanewline
+IFOL.conjI: ⋀P Q. P ⟹ Q ⟹ P ∧ Q\isanewline
+IFOL.conjunct1: ⋀P Q. P ∧ Q ⟹ P\isanewline
+IFOL.conjunct2: ⋀P Q. P ∧ Q ⟹ Q\isanewline
+IFOL.disjE: ⋀P Q R. P ∨ Q ⟹ (P ⟹ R) ⟹ (Q ⟹ R) ⟹ R\isanewline
+IFOL.disjI1: ⋀P Q. P ⟹ P ∨ Q\isanewline
+IFOL.disjI2: ⋀P Q. Q ⟹ P ∨ Q\isanewline
+IFOL.eq\_reflection: (⋀x y. x = y ⟹ x ≡ y)\isanewline
+IFOL.iff\_reflection: ⋀P Q. P ⟷ Q ⟹ P ≡ Q\isanewline
+IFOL.impI: ⋀P Q. (P ⟹ Q) ⟹ P ⟶ Q\isanewline
+IFOL.mp: ⋀P Q. P ⟶ Q ⟹ P ⟹ Q\isanewline%\isanewline
+FOL.classical: ⋀P. (¬ P ⟹ P) ⟹ P
+\end{isabelle}
+
+\subsection{ZF\_Base}
+The following symbols are introduced in this theory:
+\begin{isabelle}
+axiomatization\isanewline
+\ \ \ \      mem :: "[i, i] ⇒ o"  (infixl ‹∈› 50)  ― ‹membership relation›\isanewline
+  and zero :: "i"  (‹0›)  ― ‹the empty set›\isanewline
+  and Pow :: "i ⇒ i"  ― ‹power sets›\isanewline
+  and Inf :: "i"  ― ‹infinite set›\isanewline
+  and Union :: "i ⇒ i"  (‹⋃\_› [90] 90)\isanewline
+  and PrimReplace :: "[i, [i, i] ⇒ o] ⇒ i"
+\end{isabelle}
+\noindent with these axioms
+\begin{isabelle}
+ZF\_Base.Pow\_iff: ⋀A B. A ∈ Pow(B) ⟷ A ⊆ B\isanewline
+ZF\_Base.Union\_iff: ⋀A C. A ∈ ⋃C ⟷ (∃B∈C. A ∈ B)\isanewline
+ZF\_Base.extension: ⋀A B. A = B ⟷ A ⊆ B ∧ B ⊆ A\isanewline
+ZF\_Base.foundation: ⋀A. A = 0 ∨ (∃x∈A. ∀y∈x. y ∉ A)\isanewline
+ZF\_Base.infinity: 0 ∈ Inf ∧ (∀y∈Inf. succ(y) ∈ Inf)\isanewline
+ZF\_Base.replacement: ⋀A P b. ∀x∈A. ∀y z. P(x, y) ∧ P(x, z) ⟶ y = z ⟹ \isanewline
+\ \ \ \ \ \ \ \ \ b ∈ PrimReplace(A, P) ⟷ (∃x∈A. P(x, b))
+\end{isabelle}
+
+\subsection{AC}
+\begin{isabelle}
+AC.AC: ⋀a A B. a ∈ A ⟹ (⋀x. x ∈ A ⟹ ∃y. y ∈ B(x)) ⟹\isanewline
+  \ \ \ \ \ \ ∃z. z ∈ Pi(A, B)
+\end{isabelle}
