@@ -1,15 +1,14 @@
 \section{22 replacement instances to rule them all}
 \label{sec:repl-instances-appendix}
 
-In Table~\ref{tab:instances1} we show the name of the fourteen formulas
-involved in the twenty two instances of replacement needed in our
-mechanization. The formulas marked with ($\dagger$) are needed twice:
-one by themselves and the other as the argument for $\isa{ground{\uscore}repl{\uscore}fm}$.
-
-In our development, the $\isa{ground{\uscore}repl{\uscore}fm}$
-function maps $\phi$ to $\psi$ as described in
-Sect.~\ref{sec:repl-instances}. These instances form the set
-\isa{instances3{\uscore}fms}.
+In Table~\ref{tab:instances1} we show the name of the fourteen
+formulas involved in the twenty two instances of replacement needed in
+our mechanization. The formulas marked with ($\dagger$) are needed
+twice: one by themselves and the other as the argument for
+$\isa{ground{\uscore}repl{\uscore}fm}$. The
+$\isa{ground{\uscore}repl{\uscore}fm}$ function maps $\phi$ to $\psi$
+as described in Sect.~\ref{sec:repl-instances}. These eight instances form
+the set \isa{instances3{\uscore}fms}.
 
 % These are expressed using the following predicate:
 % \[
@@ -25,11 +24,11 @@ Sect.~\ref{sec:repl-instances}. These instances form the set
 \begin{threeparttable}
 \begin{tabular}{r<{\stepcounter{replInstCount}\thereplInstCount.} >{\hspace{2pt}}l @{\hspace{1ex}} p{6cm}}
   \toprule
-  \multicolumn{1}{r}{No.} & name & {purpose} \\
+  \multicolumn{1}{r}{No.} & Formula's name & Comment \\
   \midrule
   \replInstSet{instances1{\uscore}fms}\\
 %  \addlinespace
-  & \isa{eclose{\uscore}closed{\uscore}fm} \groundRepl & closure under iteration of $X\mapsto\union X$. \\
+  & \isa{eclose{\uscore}closed{\uscore}fm} \groundRepl & Closure under iteration of $X\mapsto\union X$. \\
   & \isa{eclose{\uscore}abs{\uscore}fm} \groundRepl & Absoluteness of the previous construction.\\
 %  \addlinespace
   & \isa{wfrec{\uscore}rank{\uscore}fm} \groundRepl &  For $\in$-rank.\\
@@ -49,15 +48,14 @@ Sect.~\ref{sec:repl-instances}. These instances form the set
 %  \addlinespace
   & \isa{wfrec{\uscore}Hcheck{\uscore}fm} & Well-founded recursion to define check.\\
   & \isa{wfrec{\uscore}Hfrc{\uscore}at{\uscore}fm}. & Well-founded recursion for the definition of forcing for atomic formulas.\\
-  & \isa{lam{\uscore}replacement{\uscore}check{\uscore}fm} & Replacement through $x\mapsto \lb x,\check{x}\rb$ (for the
-  definition of $\punto{G}$).\\
+  & \isa{lam{\uscore}replacement{\uscore}check{\uscore}fm} & Replacement through $x\mapsto \lb x,\check{x}\rb$, for $\punto{G}$.\\
   \midrule
   \replInstSet{instances{\uscore}ground{\uscore}notCH{\uscore}fms}\\
 %  \addlinespace
   &   \isa{recursive{\uscore}construction{\uscore}fm} &
   Recursive construction of sets using a choice function.\\
   & \isa{recursive{\uscore}construction{\uscore}abs{\uscore}fm} &
-  Absoluteness of the previous construction \\
+  Absoluteness of the previous construction.\\
   \midrule
   \replInstSet{instances{\uscore}ground{\uscore}CH{\uscore}fms}\\
 %  \addlinespace

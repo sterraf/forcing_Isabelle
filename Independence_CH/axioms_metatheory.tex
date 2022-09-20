@@ -17,7 +17,7 @@ Pure.transitive: ?x ≡ ?y ⟹ ?y ≡ ?z ⟹ ?x ≡ ?z
 
 \subsection{IFOL and FOL}
 In the axioms \isa{refl, subst, allI, spec, exE, exI,eq\_reflection} there is a constraint
-for the type of the variable \isa{x : ?'a} to be in the class \isa{term\_class}.
+for the \emph{type of} the variables \isa{a, b, x} to be in the class \isa{term\_class}.
 \begin{isabelle}
 IFOL.FalseE: ⋀P. False ⟹ P\isanewline
 IFOL.refl:  (⋀a. a = a)\isanewline
@@ -43,10 +43,10 @@ FOL.classical: ⋀P. (¬ P ⟹ P) ⟹ P
 The following symbols are introduced in this theory:
 \begin{isabelle}
 axiomatization\isanewline
-\ \ \ \      mem :: "[i, i] ⇒ o"  (infixl ‹∈› 50)  ― ‹membership relation›\isanewline
-  and zero :: "i"  (‹0›)  ― ‹the empty set›\isanewline
-  and Pow :: "i ⇒ i"  ― ‹power sets›\isanewline
-  and Inf :: "i"  ― ‹infinite set›\isanewline
+\ \ \ \      mem :: "[i, i] ⇒ o"  (infixl ‹∈› 50)  \isamarkupcmt{membership relation}\isanewline
+  and zero :: "i"  (‹0›)  \isamarkupcmt{the empty set}\isanewline
+  and Pow :: "i ⇒ i"  \isamarkupcmt{power sets}\isanewline
+  and Inf :: "i"  \isamarkupcmt{infinite set}\isanewline
   and Union :: "i ⇒ i"  (‹⋃\_› [90] 90)\isanewline
   and PrimReplace :: "[i, [i, i] ⇒ o] ⇒ i"
 \end{isabelle}
@@ -66,3 +66,9 @@ ZF\_Base.replacement: ⋀A P b. ∀x∈A. ∀y z. P(x, y) ∧ P(x, z) ⟶ y = z 
 AC.AC: ⋀a A B. a ∈ A ⟹ (⋀x. x ∈ A ⟹ ∃y. y ∈ B(x)) ⟹\isanewline
   \ \ \ \ \ \ ∃z. z ∈ Pi(A, B)
 \end{isabelle}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "independence_ch_isabelle"
+%%% ispell-local-dictionary: "american"
+%%% End: 
