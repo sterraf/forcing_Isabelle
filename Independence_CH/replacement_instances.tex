@@ -1,114 +1,80 @@
 \section{22 replacement instances to rule them all}
 \label{sec:repl-instances-appendix}
 
-In \isa{instances1{\uscore}fms}:
-
-\begin{itemize}
-\item Transitive closure:
-  \begin{itemize}
-  \item
-    \isa{eclose{\uscore}closed{\uscore}fm}.
-
-    To prove closure under iteration of $X\mapsto\union X$.
-  \item
-    \isa{eclose{\uscore}abs{\uscore}fm}.
-
-    Auxiliary instance used to show absoluteness.
-  \end{itemize}
-%% The instances so far
-%% are needed to interpret locale
-%% \locale{M{\uscore}eclose}.
-\item \isa{wfrec{\uscore}rank{\uscore}fm}.
-  
-  For $\in$-rank.
-  %
-\item \isa{transrec{\uscore}VFrom{\uscore}fm}.
-
-  For the cumulative hierarchy (rank initial segments).
-\end{itemize}
-
-%% The last two and next pair have the same syntactic structure, because
-%% they are definitions by well-founded recursion.
-In \isa{instances2{\uscore}fms} (for cardinal arithmetic):
-\begin{itemize}
-\item Ordertypes:
-  \begin{itemize}
-  \item
-    \isa{wfrec{\uscore}ordertype{\uscore}fm}.
-
-    Well-founded recursion for the construction of ordertypes.
-    %
-  \item
-    \isa{omap{\uscore}replacement{\uscore}fm}.
-    
-    Auxiliary instance for the definition of ordertypes.
-  \end{itemize}
-\item Aleph:
-  \begin{itemize}
-    %
-  \item
-    \isa{ordtype{\uscore}replacement{\uscore}fm}.
-
-    Replacement through the ordertype function, for Hartogs' Theorem.
-    %
-  \item
-    \isa{wfrec{\uscore}Aleph{\uscore}fm}.
-
-    The well-founded recursion to define Aleph.
-  \end{itemize}
-\end{itemize}
-
-In \isa{instances{\uscore}ground{\uscore}fms}:
-
-\begin{itemize}
-\item \isa{wfrec{\uscore}Hcheck{\uscore}fm}.
-  
-  Well-founded recursion to define check-names.
-  %
-\item \isa{wfrec{\uscore}Hfrc{\uscore}at{\uscore}fm}.
-
-  Well-founded recursion for the definition of forcing for atomic formulas.
-  %
-\item
-  \isa{lam{\uscore}replacement{\uscore}check{\uscore}fm}.
-
-  Replacement through $x\mapsto \lb x,\check{x}\rb$ (for the
-  definition of $\punto{G}$).
-  %
-\end{itemize}
+In Table~\ref{tab:instances1} we show the name of the fourteen formulas
+involved in the twenty two instances of replacement needed in our
+mechanization. The formulas marked with ($\dagger$) are needed twice:
+one by themselves and the other as the argument for $\isa{ground{\uscore}repl{\uscore}fm}$.
 
 In our development, the $\isa{ground{\uscore}repl{\uscore}fm}$
-function maps instances to \dots. All ground replacement instances
-appear in the locale \locale{M{\uscore}ZF3} and form the set
-\isa{instances3{\uscore}fms}. These are expressed using the following
-predicate:
-\[
-  \isa{ground{\uscore}replacement{\uscore}assm}(M,\mathit{env},\phi)
-\]
-defined as
-$\isa{replacement{\uscore}assm}(M,\mathit{env},\isa{ground{\uscore}repl{\uscore}fm}(\phi))$.
+function maps $\phi$ to $\psi$ as described in
+Sect.~\ref{sec:repl-instances}. These instances form the set
+\isa{instances3{\uscore}fms}.
 
-In 
-\isa{instances{\uscore}ground{\uscore}notCH{\uscore}fms}:
-\begin{itemize}
-\item
-  \isa{recursive{\uscore}construction{\uscore}fm}.
+% These are expressed using the following predicate:
+% \[
+%   \isa{ground{\uscore}replacement{\uscore}assm}(M,\mathit{env},\phi)
+% \]
+% defined as
+% $\isa{replacement{\uscore}assm}(M,\mathit{env},\isa{ground{\uscore}repl{\uscore}fm}(\phi))$.
+\newcommand{\groundRepl}{\ensuremath{{}^\dagger}}
+\newcommand{\replInstSet}[1]{\multicolumn{3}{@{}l}{\hspace{0.3em}{$\mathbf{\mathit{#1}}$}}}
 
-  Recursive construction of sets using a choice function.
-  %
-\item
-  \isa{recursive{\uscore}construction{\uscore}abs{\uscore}fm}.
-  
-  Absoluteness of the previous construction.
-\end{itemize}
-%
-\begin{itemize}
-\item
-  \isa{dc{\uscore}abs{\uscore}fm}.
-  
-  Absoluteness of the recursive construction in the proof of the
-  Dependent Choices from $\AC$.
-\end{itemize}
+\begin{table}[!h]
+\centering
+\begin{threeparttable}
+\begin{tabular}{r<{\stepcounter{replInstCount}\thereplInstCount.} >{\hspace{2pt}}l @{\hspace{1ex}} p{6cm}}
+  \toprule
+  \multicolumn{1}{r}{No.} & name & {purpose} \\
+  \midrule
+  \replInstSet{instances1{\uscore}fms}\\
+%  \addlinespace
+  & \isa{eclose{\uscore}closed{\uscore}fm} \groundRepl & closure under iteration of $X\mapsto\union X$. \\
+  & \isa{eclose{\uscore}abs{\uscore}fm} \groundRepl & Absoluteness of the previous construction.\\
+%  \addlinespace
+  & \isa{wfrec{\uscore}rank{\uscore}fm} \groundRepl &  For $\in$-rank.\\
+%  \addlinespace
+  & \isa{transrec{\uscore}VFrom{\uscore}fm} \groundRepl & For rank initial segments.\\
+  \midrule
+  \replInstSet{instances2{\uscore}fms}\\
+%  \addlinespace
+  & \isa{wfrec{\uscore}ordertype{\uscore}fm} \groundRepl & Well-founded recursion for the construction of ordertypes. \\
+  & \isa{omap{\uscore}replacement{\uscore}fm} \groundRepl & Auxiliary instance for the definition of ordertypes. \\
+%  \addlinespace
+  & \isa{ordtype{\uscore}replacement{\uscore}fm} \groundRepl& Replacement through the ordertype function, for Hartogs' Theorem.\\
+%  \addlinespace
+  & \isa{wfrec{\uscore}Aleph{\uscore}fm} \groundRepl& Well-founded recursion to define Aleph.\\
+  \midrule
+  \replInstSet{instances{\uscore}ground{\uscore}fms}\\
+%  \addlinespace
+  & \isa{wfrec{\uscore}Hcheck{\uscore}fm} & Well-founded recursion to define check.\\
+  & \isa{wfrec{\uscore}Hfrc{\uscore}at{\uscore}fm}. & Well-founded recursion for the definition of forcing for atomic formulas.\\
+  & \isa{lam{\uscore}replacement{\uscore}check{\uscore}fm} & Replacement through $x\mapsto \lb x,\check{x}\rb$ (for the
+  definition of $\punto{G}$).\\
+  \midrule
+  \replInstSet{instances{\uscore}ground{\uscore}notCH{\uscore}fms}\\
+%  \addlinespace
+  &   \isa{recursive{\uscore}construction{\uscore}fm} &
+  Recursive construction of sets using a choice function.\\
+  & \isa{recursive{\uscore}construction{\uscore}abs{\uscore}fm} &
+  Absoluteness of the previous construction \\
+  \midrule
+  \replInstSet{instances{\uscore}ground{\uscore}CH{\uscore}fms}\\
+%  \addlinespace
+  & \isa{dc{\uscore}abs{\uscore}fm} &  Absoluteness of the recursive construction in the proof of
+  Dependent Choice from $\AC$. \\
+  \midrule
+  \replInstSet{instances3{\uscore}fms}\\
+%  \addlinespace
+  \multicolumn{1}{r}{15-22.} & $\isa{ground{\uscore}repl{\uscore}fm}(\phi)$ & one for each formula $\phi$ marked with $\dagger$ \\
+  \bottomrule
+\end{tabular}
+\caption{Replacement Instances used in our mechanization}
+\label{tab:instances1}
+\end{threeparttable}
+\end{table}
+
+
 
 %%% Local Variables:
 %%% mode: latex

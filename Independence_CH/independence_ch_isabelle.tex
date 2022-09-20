@@ -7,6 +7,7 @@
 %\usepackage[utf8]{inputenc}
 %\usepackage[final]{microtype}
 \usepackage{isabelle_indepCH,isabellesym_indepCH}
+\usepackage{booktabs,array,threeparttable}
 \input{header-indepCH}
 \usepackage{graphicx}
 % Used for displaying a sample figure. If possible, figure files should
@@ -22,6 +23,9 @@
 % to display URLs in blue roman font according to Springer's eBook style:
 % \renewcommand\UrlFont{\color{blue}\rmfamily}
 \input{unicode_support}
+\usepackage{array}
+\newcounter{replInstCount}
+\setcounter{replInstCount}{0}
 \begin{document}
 %
 \title{The formal verification of the ctm approach to forcing%Some lessons after the formalization of the ctm approach to forcing%
