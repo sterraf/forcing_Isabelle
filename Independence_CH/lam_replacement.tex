@@ -31,8 +31,36 @@ Axiom for the class $M$) is sufficient to obtain the lambda
 replacement under $x\mapsto \lb x,F(G(x))\rb$ given those for $F$ and
 $G$. To obtain compositions with binary class functions $H$, it is
 enough to assume the lambda replacement
-$x\mapsto \lb x,H(\mathit{fst}(x),\mathit{snd}(x)))\rb$.
+$x\mapsto \lb x,H(\mathit{fst}(x),\mathit{snd}(x)))\rb$. We summarize
+the assumptions in Table~\ref{tab:m-repl-instances}.
 
+\newcommand{\lamRepl}[2][x]{#1 \mapsto\langle #1,#2\rangle}
+\begin{table}[!h]
+\centering
+\begin{threeparttable}
+\begin{tabular}{r<{\stepcounter{LamReplCount}\theLamReplCount.} >{\hspace{1ex}}l @{\hspace{1em}} l}
+  \toprule
+  \multicolumn{1}{r}{No.} & Name & Instance  \\
+  \midrule
+  \multicolumn{3}{@{}l}{\hspace{0.3em}{\textit{{Replacement Instances}}}}\\
+  & \isa{lam{\uscore}replacement{\uscore}fst} & $\lamRepl{\mathit{fst}(x)}$ \\
+  & \isa{lam{\uscore}replacement{\uscore}snd} & $\lamRepl{\mathit{snd}(x)}$ \\
+  & \isa{lam{\uscore}replacement{\uscore}Union} & $\lamRepl{\bigcup(x)}$ \\
+  & \isa{lam{\uscore}replacement{\uscore}Image} & $\lamRepl{\mathit{fst}(x)``\mathit{snd}(x)}$ \\
+  & \isa{lam{\uscore}replacement{\uscore}middle{\uscore}del} &
+        $\lamRepl{\langle \mathit{fst}(\mathit{fst}(x)),\mathit{snd}(\mathit{snd}(x)) \rangle}$ \\
+  & \isa{lam{\uscore}replacement{\uscore}prodRepl} &
+        $\lamRepl{\langle \mathit{snd}(\mathit{fst}(x)),\langle \mathit{fst}(\mathit{fst}(x)),\mathit{snd}(\mathit{snd}(x))\rangle \rangle}$\\
+  \midrule
+  \multicolumn{3}{@{}l}{\hspace{0.3em}{\textit{{Separation Instances}}}}\\
+  & \isa{middle{\uscore}separation} & $\mathit{snd}(\mathit{fst}(x))=\mathit{fst}(\mathit{snd}(x))$ \\
+  & \isa{separation{\uscore}fst{\uscore}in{\uscore}snd} & $\mathit{fst}(\mathit{snd}(x)) \in \mathit{snd}(\mathit{snd}(x))$\\
+  \bottomrule
+\end{tabular}
+\caption{Replacement and Separation instances of the locale \isa{M{\uscore}remplacement}}
+\label{tab:m-repl-instances}
+\end{threeparttable}
+\end{table}
 
 %%% Local Variables:
 %%% mode: latex
