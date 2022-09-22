@@ -14,12 +14,12 @@ for that task were rudimentary (as discussed in
 Section~\ref{sec:bureaucracy-scale-factors}).
 
 Faced with this situation, we decided that we needed some sort of
-\emph{compositionality} in order to obtain instances new instances
-from the ones already proved: Having Replacement for class functions
-$F$ and $G$ does not entail immediately replacement under $F\circ G$
-(unless you use one further instance of Separation, and the net gain
-is zero). The solution was to postulate for the relevant $F$s, instead
-of replacement through $x\mapsto F(x)$, a \emph{lambda replacement}
+\emph{compositionality} in order to obtain new instances from the ones
+already proved: Having Replacement for class functions $F$ and $G$
+does not entail immediately replacement under $F\circ G$ (unless you
+use one further instance of Separation, and the net gain is zero). The
+solution was to postulate for the relevant $F$s, instead of
+replacement through $x\mapsto F(x)$, a \emph{lambda replacement}
 through $x\mapsto \lb x,F(x)\rb$. The name “lambda” corresponds to the
 fact that this type of replacement is equivalent to closure under
 $(\lambda x\in A.\ F(x)) \defi \{ \lb x,F(x)\rb : x\in A \}$ for every
