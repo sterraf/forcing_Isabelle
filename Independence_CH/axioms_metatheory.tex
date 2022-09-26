@@ -1,9 +1,10 @@
-\section{Axioms of the meta-theory}
+\section{Axioms of Isabelle/ZF}
 \label{appendix:axioms}
 
-In this appendix we list the complete set of axioms of our meta-theory.
+In this appendix we list the complete set of axioms of Isabelle's
+metatheory and logic.
 
-\subsection{Pure}
+\subsection{The metatheory Pure}
 \begin{isabelle}
 Pure.abstract\_rule: (⋀x. ?f(x) ≡ ?g(x)) ⟹ λx. ?f(x) ≡ λx. ?g(x)\isanewline
 Pure.combination: ?f ≡ ?g ⟹ ?x ≡ ?y ⟹ ?f(?x) ≡ ?g(?y)\isanewline
@@ -63,10 +64,10 @@ ZF\_Base.replacement: ⋀A P b. ∀x∈A. ∀y z. P(x, y) ∧ P(x, z) ⟶ y = z 
 
 \subsection{AC}
 
-This theory \textit{AC} is only imported in the theory
+The theory \theory{AC} is only imported in the theory
 \isa{Absolute{\uscore}Versions}; none of the main results
-depends on \textit{AC}. The theory \isa{Absolute{\uscore}Versions}
-shows that some absolut results can be obtained from the
+depends on $\AC$. The theory \theory{Absolute\_Versions}
+shows that some absolute results can be obtained from the
 relativized versions on $\mathcal{V}$.
 
 \begin{isabelle}
