@@ -53,14 +53,13 @@ our target results. For example,
 \begin{itemize}
 \item
   we only proved the Delta System Lemma for $\aleph_1$-sized families;
-  thus limiting us to $\kappa=\aleph_1$ case of the $\kappa$-chain condition, and dodging the relativization
+  thus limiting us to the case of the $\aleph_1$-chain condition, and avoiding the relativization
   of the material on cofinalities \cite{Delta_System_Lemma-AFP};
 \item we showed preservation of sequences by considering countably
   closed forcings (in fact, we formalized the bare minimum requirement
   of being $(<\omega+1)$-closed, that is, under plain $\omega$-sequences).
 \end{itemize}
-In doing this we went against the tried and
-true advice that one should formalize the most general version of the
+In doing this we went against the conventional wisdom that one should formalize the most general version of the
 results available. Another shortcut we took was to
 simplify some proofs by appealing to the countability of the ground
 model; this is the case of
@@ -78,9 +77,13 @@ if the claimed theorems are indeed the results that have been
 checked. One key aspect of this is the logical foundation of the
 assistant (Section~\ref{sec:isabelle-metalogic-meta}). But the weakest
 link in the chain is the laying down of definitions building up to the
-concepts needed to state the target results. (Another related aspect,
+concepts needed to state the target results.%
+%%%%%%%
+\footnote{%
+Another related aspect,
 concerning the way results are printed and parsed by assistant versus
-their internal meaning, was studied by Wiedijk \cite{zbMATH06319597}.)
+their internal meaning, was studied by Wiedijk \cite{zbMATH06319597}.}
+%%%%%%%
 
 We took care of this matter by providing, as an entry point for our
 whole development, the theory \theory{Definitions\_Main} in which a
@@ -90,7 +93,7 @@ navigated by using Isabelle) are provided there. A curated version can
 be found as Appendix~\ref{sec:definitions_main} to this paper.
 
 Frequently, we formalized material by directly typing the proof we
-knew by heart, and in doing so we assumed that some definitions
+knew by heart, and in so doing we assumed that some definitions
 accommodated some of our preconceptions.
 It is significant that in a few such occasions, we were doubly
 surprised by the fact that some supposedly trivial lemma would not go
@@ -100,10 +103,16 @@ relation), and also that we were able to prove the adjacent
 results. The takeaway is that intuition may drive proofs
 even if you are not working on what you believe we are.
 
-A final aspect on this topic concerns automated methods. As it was
-mentioned in the Introduction, some proofs can actually be
-\emph{obscured} by automation, simply because one has to take
-complicated opaque computations “on faith.”
+A final aspect on this topic concerns automated methods. In the
+Introduction we hinted at the fact that a proof can actually be
+\emph{obscured} by automation. Specifically, proof steps that were solved automatically give no
+information for someone who wants to understand the details of the
+argument; by the same token, automatic methods might silently exploit
+inconsistencies in the definitions, and this will only be apparent in
+a later stage of the development.
+
+%, simply because one has to take
+%complicated opaque computations “on faith.”
 
 \subsection{Bureaucracy and scale factors}
 \label{sec:bureaucracy-scale-factors}
@@ -130,23 +139,23 @@ programming Isabelle/ML\footnote{%
   instances paved the way for identifying which were the ones needed for
   forcing!}.
 
-Nevertheless, the experience of the CS members of the team (and
-community) is invaluable for the kind of engineering that is needed in
+Nevertheless, experience  in software engineering is invaluable in
 a large project like the present one. For example, it is
 (mathematically) misleading when automatic tools (\isa{simp},
 \isa{auto}, etc) stop working just because of the sheer size of the
 goal (v.g., the same statement with 7 variables succeeds but with 8
 variables doesn't). Scale issues are very easily disregarded in the
-abstract but, as an example, the formula $\forceisa({\cdot}0\in 1{\cdot})$
+abstract but, as a colorful example, the formula $\forceisa({\cdot}0\in 1{\cdot})$
 can be explicitly printed by Isabelle2021-1 (it spans nearly 20k symbols), but
 $\forceisa({\cdot}\neg{\cdot}\neg{\cdot}0\in 1{\cdot}{\cdot}{\cdot})$
 can not.
 
-Another point where CS expertise was a prime asset was
+Another point where computer science expertise was a prime asset was
 the very definition of $\forceisa$. As a
 proof of concept, one of us tried to obtain its definition by
-using formula synthesis exclusively, which was supposed to be trivial,
-since it is mathematically (as in the case of
+using formula synthesis exclusively, which was supposed to be as
+trivial as in the usual
+mathematical development (similarly to the case of
 Equation~(\ref{eq:sats_big_union_fm})).
 But in fact, some early minor mistake
 rendered the whole effort useless. We then turned to a more
