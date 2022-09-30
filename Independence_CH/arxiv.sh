@@ -29,7 +29,7 @@ sed 's/\\bibliographystyle{[^}]*}//g' $root | \
  > $arxiv
 rm -f $root
 
-tar --exclude=$root -zcvf $tgz *tex *sty *cls *bbl $extra_files
+tar --exclude=$root -zcvf $tgz *tex *sty *bbl $extra_files
 mv $tgz ..
 
 cd ..
