@@ -58,8 +58,8 @@ ZF\_Base.Union\_iff: ⋀A C. A ∈ ⋃C ⟷ (∃B∈C. A ∈ B)\isanewline
 ZF\_Base.extension: ⋀A B. A = B ⟷ A ⊆ B ∧ B ⊆ A\isanewline
 ZF\_Base.foundation: ⋀A. A = 0 ∨ (∃x∈A. ∀y∈x. y ∉ A)\isanewline
 ZF\_Base.infinity: 0 ∈ Inf ∧ (∀y∈Inf. succ(y) ∈ Inf)\isanewline
-ZF\_Base.replacement: ⋀A P b. ∀x∈A. ∀y z. P(x, y) ∧ P(x, z) ⟶ y = z ⟹ \isanewline
-\ \ \ \ \ \ \ \ \ b ∈ PrimReplace(A, P) ⟷ (∃x∈A. P(x, b))
+ZF\_Base.replacement: ⋀A P b. ∀x∈A. ∀y z. P(x, y) ∧ P(x, z) ⟶ y = z \isanewline
+\ \ \ \ \ \ \ \ \ ⟹ b ∈ PrimReplace(A, P) ⟷ (∃x∈A. P(x, b))
 \end{isabelle}
 
 \subsection{AC}
