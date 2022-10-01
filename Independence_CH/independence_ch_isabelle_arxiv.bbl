@@ -1,0 +1,438 @@
+\providecommand{\noopsort}[1]{}
+\begin{small}\begin{thebibliography}{54}
+\expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
+\providecommand{\bibinfo}[2]{#2}
+\ifx\xfnm\relax \def\xfnm[#1]{\unskip,\space#1}\fi
+%Type = Software
+\bibitem[{{Agda Development Team}(2022)}]{agda}
+\textsc{\bibinfo{author}{{Agda Development Team}}},
+  \bibinfo{version}{``\bibinfo{title}{Agda}''}, version 2.6.2
+  (\bibinfo{year}{2022}).
+  \url{https://agda.readthedocs.io/en/v2.6.2.1/index.html}.
+%Type = Article
+\bibitem[{Avigad(2020)}]{2020arXiv200909541A}
+\textsc{\bibinfo{author}{J.~Avigad}}, \bibinfo{title}{Foundations},
+  \textit{\bibinfo{journal}{arXiv e-prints}}  (\bibinfo{year}{2020}).
+  \bibinfo{note}{For the forthcoming Handbook of Proof Assistants and Their
+  Applications in Mathematics and Computer Science, edited by Jasmin Blanchette
+  and Assia Mahboubi}.
+%Type = Article
+\bibitem[{Bayer et~al.(2022)Bayer, Benzmüller, Buzzard, David, Lamport,
+  Matiyasevich, Paulson, Schleicher, Stock and Zelmanov}]{2022arXiv220704779B}
+\textsc{\bibinfo{author}{J.~Bayer}, \bibinfo{author}{C.~Benzmüller},
+  \bibinfo{author}{K.~Buzzard}, \bibinfo{author}{M.~David},
+  \bibinfo{author}{L.~Lamport}, \bibinfo{author}{Y.~Matiyasevich},
+  \bibinfo{author}{L.~Paulson}, \bibinfo{author}{D.~Schleicher},
+  \bibinfo{author}{B.~Stock}, \bibinfo{author}{E.~Zelmanov}},
+  \bibinfo{title}{Mathematical proof between generations},
+  \textit{\bibinfo{journal}{arXiv e-prints}}  (\bibinfo{year}{2022}).
+%Type = Article
+\bibitem[{de~Bruijn(1972)}]{MR0321704}
+\textsc{\bibinfo{author}{N.G. de~Bruijn}}, \bibinfo{title}{Lambda calculus
+  notation with nameless dummies, a tool for automatic formula manipulation,
+  with application to the {C}hurch-{R}osser theorem},
+  \textit{\bibinfo{journal}{Nederl. Akad. Wetensch. Proc. Ser. A {\bf
+  75}=Indag. Math.}} \textbf{\bibinfo{volume}{34}}: \bibinfo{pages}{381--392}
+  (\bibinfo{year}{1972}).
+%Type = Article
+\bibitem[{Buzzard(2021)}]{2021arXiv211211598B}
+\textsc{\bibinfo{author}{K.~Buzzard}}, \bibinfo{title}{What is the point of
+  computers? {A} question for pure mathematicians},
+  \textit{\bibinfo{journal}{arXiv e-prints}}  (\bibinfo{year}{2021}).
+%Type = Inproceedings
+\bibitem[{Buzzard et~al.(2020)Buzzard, Commelin and
+  Massot}]{10.1145/3372885.3373830}
+\textsc{\bibinfo{author}{K.~Buzzard}, \bibinfo{author}{J.~Commelin},
+  \bibinfo{author}{P.~Massot}}, \bibinfo{title}{Formalising perfectoid spaces},
+  in: \bibinfo{booktitle}{Proceedings of the 9th ACM SIGPLAN International
+  Conference on Certified Programs and Proofs}, CPP 2020,
+  \bibinfo{publisher}{Association for Computing Machinery},
+  \bibinfo{address}{New York, NY, USA}: \bibinfo{pages}{29--312}
+  (\bibinfo{year}{2020}).
+%Type = Masterthesis
+\bibitem[{Carneiro(2019)}]{carneiro-ms-thesis}
+\textsc{\bibinfo{author}{M.~Carneiro}}, ``\bibinfo{title}{The Type Theory of
+  {L}ean}'', Master's thesis, Carnegie Mellon University
+  (\bibinfo{year}{2019}).
+%Type = Article
+\bibitem[{Castelvecchi(2021)}]{nature-lte}
+\textsc{\bibinfo{author}{D.~Castelvecchi}}, \bibinfo{title}{Mathematicians
+  welcome computer-assisted proof in ‘grand unification’ theory},
+  \textit{\bibinfo{journal}{Nature}} \textbf{\bibinfo{volume}{595}}:
+  \bibinfo{pages}{18--19} (\bibinfo{year}{2021}).
+%Type = Article
+\bibitem[{Cohen(2002)}]{zbMATH02012060}
+\textsc{\bibinfo{author}{P.J. Cohen}}, \bibinfo{title}{The discovery of
+  forcing}, \textit{\bibinfo{journal}{Rocky Mt. J. Math.}}
+  \textbf{\bibinfo{volume}{32}}: \bibinfo{pages}{1071--1100}
+  (\bibinfo{year}{2002}).
+%Type = Software
+\bibitem[{{Coq Development Team}(2017)}]{coq}
+\textsc{\bibinfo{author}{{Coq Development Team}}},
+  \bibinfo{version}{``\bibinfo{title}{The Coq Proof Assistant}''}, version
+  8.7.0  (\bibinfo{year}{2017}). \url{https://doi.org/10.5281/zenodo.1028037}.
+%Type = Article
+\bibitem[{Coquand and Huet(1988)}]{DBLP:journals/iandc/CoquandH88}
+\textsc{\bibinfo{author}{T.~Coquand}, \bibinfo{author}{G.P. Huet}},
+  \bibinfo{title}{The calculus of constructions},
+  \textit{\bibinfo{journal}{Inf. Comput.}} \textbf{\bibinfo{volume}{76}}:
+  \bibinfo{pages}{95--120} (\bibinfo{year}{1988}).
+%Type = Misc
+\bibitem[{Davenport et~al.(2018)Davenport, Poonen, Maynard, Helfgott, Tiep and
+  Cruz-Filipe}]{https://doi.org/10.48550/arxiv.1809.08062}
+\textsc{\bibinfo{author}{J.~Davenport}, \bibinfo{author}{B.~Poonen},
+  \bibinfo{author}{J.~Maynard}, \bibinfo{author}{H.~Helfgott},
+  \bibinfo{author}{P.H. Tiep}, \bibinfo{author}{L.~Cruz-Filipe}},
+  \bibinfo{title}{Machine-assisted proofs (icm 2018 panel)},
+  (\bibinfo{year}{2018}).
+%Type = Inproceedings
+\bibitem[{De~Lon et~al.(2021)De~Lon, Koepke, Lorenzen, Marti, Sch{\"u}tz and
+  Sturzenhecker}]{10.1007/978-3-030-81097-9_2}
+\textsc{\bibinfo{author}{A.~De~Lon}, \bibinfo{author}{P.~Koepke},
+  \bibinfo{author}{A.~Lorenzen}, \bibinfo{author}{A.~Marti},
+  \bibinfo{author}{M.~Sch{\"u}tz}, \bibinfo{author}{E.~Sturzenhecker}},
+  \bibinfo{title}{Beautiful formalizations in isabelle/naproche}, in:
+  \bibinfo{editor}{F.~Kamareddine}, \bibinfo{editor}{C.~Sacerdoti~Coen} (Eds.),
+  \bibinfo{booktitle}{Intelligent Computer Mathematics: 14th International
+  Conference, CICM 2021, Timisoara, Romania, July 26–31, 2021, Proceedings},
+  \bibinfo{publisher}{Springer International Publishing},
+  \bibinfo{address}{Cham}: \bibinfo{pages}{19--31} (\bibinfo{year}{2021}).
+%Type = Article
+\bibitem[{Džamonja et~al.(2021)Džamonja, Koutsoukou-Argyraki and
+  Paulson}]{doi:10.1080/10586458.2021.1980464}
+\textsc{\bibinfo{author}{M.~Džamonja},
+  \bibinfo{author}{A.~Koutsoukou-Argyraki}, \bibinfo{author}{L.C. Paulson}},
+  \bibinfo{title}{Formalizing ordinal partition relations using isabelle/hol},
+  \textit{\bibinfo{journal}{Experimental Mathematics}}
+  \textbf{\bibinfo{volume}{0}}: \bibinfo{pages}{1--18} (\bibinfo{year}{2021}).
+%Type = Inproceedings
+\bibitem[{Edmonds and Paulson(2021)}]{10.1007/978-3-030-81097-9_1}
+\textsc{\bibinfo{author}{C.~Edmonds}, \bibinfo{author}{L.C. Paulson}},
+  \bibinfo{title}{A modular first formalisation of combinatorial design
+  theory}, in: \bibinfo{editor}{F.~Kamareddine},
+  \bibinfo{editor}{C.~Sacerdoti~Coen} (Eds.), \bibinfo{booktitle}{Intelligent
+  Computer Mathematics: 14th International Conference, CICM 2021, Timisoara,
+  Romania, July 26–31, 2021, Proceedings}, \bibinfo{publisher}{Springer
+  International Publishing}, \bibinfo{address}{Cham}: \bibinfo{pages}{3--18}
+  (\bibinfo{year}{2021}).
+%Type = Article
+\bibitem[{Gonthier(2008)}]{MR2463991}
+\textsc{\bibinfo{author}{G.~Gonthier}}, \bibinfo{title}{Formal proof---the
+  four-color theorem}, \textit{\bibinfo{journal}{Notices Amer. Math. Soc.}}
+  \textbf{\bibinfo{volume}{55}}: \bibinfo{pages}{1382--1393}
+  (\bibinfo{year}{2008}).
+%Type = Inproceedings
+\bibitem[{Gonthier et~al.(2013)Gonthier, Asperti, Avigad, Bertot, Cohen,
+  Garillot, Le~Roux, Mahboubi, O'Connor, Biha, Pasca, Rideau, Solovyev, Tassi
+  and Th\'{e}ry}]{10.1007/978-3-642-39634-2_14}
+\textsc{\bibinfo{author}{G.~Gonthier}, \bibinfo{author}{A.~Asperti},
+  \bibinfo{author}{J.~Avigad}, \bibinfo{author}{Y.~Bertot},
+  \bibinfo{author}{C.~Cohen}, \bibinfo{author}{F.~Garillot},
+  \bibinfo{author}{S.~Le~Roux}, \bibinfo{author}{A.~Mahboubi},
+  \bibinfo{author}{R.~O'Connor}, \bibinfo{author}{S.O. Biha},
+  \bibinfo{author}{I.~Pasca}, \bibinfo{author}{L.~Rideau},
+  \bibinfo{author}{A.~Solovyev}, \bibinfo{author}{E.~Tassi},
+  \bibinfo{author}{L.~Th\'{e}ry}}, \bibinfo{title}{A machine-checked proof of
+  the odd order theorem}, in: \bibinfo{booktitle}{Proceedings of the 4th
+  International Conference on Interactive Theorem Proving}, ITP'13,
+  \bibinfo{publisher}{Springer-Verlag}, \bibinfo{address}{Berlin, Heidelberg}:
+  \bibinfo{pages}{163--179} (\bibinfo{year}{2013}).
+%Type = Book
+\bibitem[{Gordon et~al.(1979)Gordon, Milner and Wadsworth}]{Gordon1979-qm}
+\textsc{\bibinfo{author}{M.~Gordon}, \bibinfo{author}{R.~Milner},
+  \bibinfo{author}{C.P. Wadsworth}}, ``\bibinfo{title}{Edinburgh {LCF}}'',
+  Lecture notes in computer science, \bibinfo{publisher}{Springer},
+  \bibinfo{address}{Berlin, Germany} (\bibinfo{year}{1979}),
+  \bibinfo{edition}{1979} edition.
+%Type = Inproceedings
+\bibitem[{Gunther et~al.(2018)Gunther, Pagano and
+  S{\'a}nchez~Terraf}]{2018arXiv180705174G}
+\textsc{\bibinfo{author}{E.~Gunther}, \bibinfo{author}{M.~Pagano},
+  \bibinfo{author}{P.~S{\'a}nchez~Terraf}}, \bibinfo{title}{First steps towards
+  a formalization of forcing}, in: \bibinfo{editor}{B.~Accattoli},
+  \bibinfo{editor}{C.~Olarte} (Eds.), \bibinfo{booktitle}{Proceedings of the
+  13th Workshop on Logical and Semantic Frameworks with Applications, {LSFA}
+  2018, Fortaleza, Brazil, September 26-28, 2018}, \bibinfo{series}{Electronic
+  Notes in Theoretical Computer Science} \textbf{\bibinfo{volume}{344}},
+  \bibinfo{publisher}{Elsevier}: \bibinfo{pages}{119--136}
+  (\bibinfo{year}{2018}).
+%Type = Article
+\bibitem[{Gunther et~al.(2019)Gunther, Pagano and
+  S{\'a}nchez~Terraf}]{2019arXiv190103313G}
+\textsc{\bibinfo{author}{E.~Gunther}, \bibinfo{author}{M.~Pagano},
+  \bibinfo{author}{P.~S{\'a}nchez~Terraf}}, \bibinfo{title}{{Mechanization of
+  Separation in Generic Extensions}}, \textit{\bibinfo{journal}{arXiv
+  e-prints}}  (\bibinfo{year}{2019}).
+%Type = Inproceedings
+\bibitem[{Gunther et~al.(2020)Gunther, Pagano and
+  S{\'a}nchez~Terraf}]{2020arXiv200109715G}
+\textsc{\bibinfo{author}{E.~Gunther}, \bibinfo{author}{M.~Pagano},
+  \bibinfo{author}{P.~S{\'a}nchez~Terraf}}, \bibinfo{title}{{Formalization of
+  Forcing in {Isabelle/ZF}}}, in: \bibinfo{editor}{N.~Peltier},
+  \bibinfo{editor}{V.~Sofronie-Stokkermans} (Eds.),
+  \bibinfo{booktitle}{Automated Reasoning. 10th International Joint Conference,
+  IJCAR 2020, Paris, France, July 1--4, 2020, Proceedings, Part II},
+  \bibinfo{series}{Lecture Notes in Artificial Intelligence}
+  \textbf{\bibinfo{volume}{12167}}, \bibinfo{publisher}{Springer International
+  Publishing}: \bibinfo{pages}{221--235} (\bibinfo{year}{2020}).
+%Type = Article
+\bibitem[{Gunther et~al.(2022{\natexlab{a}})Gunther, Pagano, Sánchez~Terraf
+  and Steinberg}]{Independence_CH-AFP}
+\textsc{\bibinfo{author}{E.~Gunther}, \bibinfo{author}{M.~Pagano},
+  \bibinfo{author}{P.~Sánchez~Terraf}, \bibinfo{author}{M.~Steinberg}},
+  \bibinfo{title}{The independence of the continuum hypothesis in
+  {Isabelle/ZF}}, \textit{\bibinfo{journal}{Archive of Formal Proofs}}
+  (\bibinfo{year}{2022}).
+  \bibinfo{note}{\url{https://isa-afp.org/entries/Independence_CH.html}, Formal
+  proof development}.
+%Type = Article
+\bibitem[{Gunther et~al.(2022{\natexlab{b}})Gunther, Pagano, Sánchez~Terraf
+  and Steinberg}]{Transitive_Models-AFP}
+\textsc{\bibinfo{author}{E.~Gunther}, \bibinfo{author}{M.~Pagano},
+  \bibinfo{author}{P.~Sánchez~Terraf}, \bibinfo{author}{M.~Steinberg}},
+  \bibinfo{title}{Transitive models of fragments of {ZFC}},
+  \textit{\bibinfo{journal}{Archive of Formal Proofs}}  (\bibinfo{year}{2022}).
+  \bibinfo{note}{\url{https://isa-afp.org/entries/Transitive_Models.html},
+  Formal proof development}.
+%Type = Article
+\bibitem[{Hales et~al.(2017)Hales, Adams, Bauer, Dang, Harrison, Hoang,
+  Kaliszyk, Magron, Mclaughlin, Nguyen and et~al.}]{MR3659768}
+\textsc{\bibinfo{author}{T.~Hales}, \bibinfo{author}{M.~Adams},
+  \bibinfo{author}{G.~Bauer}, \bibinfo{author}{T.D. Dang},
+  \bibinfo{author}{J.~Harrison}, \bibinfo{author}{L.T. Hoang},
+  \bibinfo{author}{C.~Kaliszyk}, \bibinfo{author}{V.~Magron},
+  \bibinfo{author}{S.~Mclaughlin}, \bibinfo{author}{T.T. Nguyen},
+  \bibinfo{author}{et~al.}}, \bibinfo{title}{A formal proof of the {K}epler
+  conjecture}, \textit{\bibinfo{journal}{Forum Math. Pi}}
+  \textbf{\bibinfo{volume}{5}}: \bibinfo{pages}{e2, 29} (\bibinfo{year}{2017}).
+%Type = Inproceedings
+\bibitem[{Han and van Doorn(2019)}]{han_et_al:LIPIcs:2019:11074}
+\textsc{\bibinfo{author}{J.M. Han}, \bibinfo{author}{F.~van Doorn}},
+  \bibinfo{title}{A formalization of forcing and the unprovability of the
+  continuum hypothesis}, in: \bibinfo{editor}{J.~Harrison},
+  \bibinfo{editor}{J.~O'Leary}, \bibinfo{editor}{A.~Tolmach} (Eds.),
+  \bibinfo{booktitle}{10th International Conference on Interactive Theorem
+  Proving (ITP 2019)}, \bibinfo{series}{Leibniz International Proceedings in
+  Informatics (LIPIcs)} \textbf{\bibinfo{volume}{141}},
+  \bibinfo{publisher}{Schloss Dagstuhl--Leibniz-Zentrum fuer Informatik},
+  \bibinfo{address}{Dagstuhl, Germany}: \bibinfo{pages}{19:1--19:19}
+  (\bibinfo{year}{2019}).
+%Type = Inproceedings
+\bibitem[{Han and van Doorn(2020)}]{DBLP:conf/cpp/HanD20}
+\textsc{\bibinfo{author}{J.M. Han}, \bibinfo{author}{F.~van Doorn}},
+  \bibinfo{title}{A formal proof of the independence of the continuum
+  hypothesis}, in: \bibinfo{editor}{J.~Blanchette}, \bibinfo{editor}{C.~Hritcu}
+  (Eds.), \bibinfo{booktitle}{Proceedings of the 9th {ACM} {SIGPLAN}
+  International Conference on Certified Programs and Proofs, {CPP} 2020, New
+  Orleans, LA, {USA}, January 20-21, 2020}, \bibinfo{publisher}{{ACM}}
+  (\bibinfo{year}{2020}).
+%Type = Incollection
+\bibitem[{Harrison et~al.(2014)Harrison, Urban and
+  Wiedijk}]{DBLP:series/hhl/HarrisonUW14}
+\textsc{\bibinfo{author}{J.~Harrison}, \bibinfo{author}{J.~Urban},
+  \bibinfo{author}{F.~Wiedijk}}, \bibinfo{title}{History of interactive theorem
+  proving}, in: \bibinfo{editor}{J.H. Siekmann} (Ed.),
+  \bibinfo{booktitle}{Computational Logic}, \bibinfo{series}{Handbook of the
+  History of Logic}~\textbf{\bibinfo{volume}{9}}, pp.
+  \bibinfo{pages}{135--214}, \bibinfo{publisher}{Elsevier}:
+  \bibinfo{pages}{135--214} (\bibinfo{year}{2014}).
+%Type = Book
+\bibitem[{Jech(2002)}]{Jech_Millennium}
+\textsc{\bibinfo{author}{T.~Jech}}, ``\bibinfo{title}{Set Theory. The
+  Millennium Edition}'', Springer Monographs in Mathematics,
+  \bibinfo{publisher}{Springer-Verlag} (\bibinfo{year}{2002}),
+  \bibinfo{edition}{third} edition. \bibinfo{note}{Corrected fourth printing,
+  2006}.
+%Type = Incollection
+\bibitem[{Koutsoukou-Argyraki(2022)}]{angeliki}
+\textsc{\bibinfo{author}{A.~Koutsoukou-Argyraki}}, \bibinfo{title}{History of
+  interactive theorem proving}, in: \bibinfo{editor}{B.~Löwe},
+  \bibinfo{editor}{D.~Sarikaya} (Eds.), \bibinfo{booktitle}{60 Jahre DVMLG
+  (Special Issue for the 60th Anniversary of the DVMLG)}, Tributes,
+  \bibinfo{publisher}{College Publications} (\bibinfo{year}{2022}).
+%Type = Book
+\bibitem[{Kunen(2011)}]{kunen2011set}
+\textsc{\bibinfo{author}{K.~Kunen}}, ``\bibinfo{title}{Set Theory}'', Studies
+  in Logic, \bibinfo{publisher}{College Publications} (\bibinfo{year}{2011}),
+  \bibinfo{edition}{second} edition. \bibinfo{note}{Revised edition, 2013}.
+%Type = Book
+\bibitem[{Martin{-}L{\"{o}}f(1984)}]{DBLP:books/daglib/0000395}
+\textsc{\bibinfo{author}{P.~Martin{-}L{\"{o}}f}},
+  ``\bibinfo{title}{Intuitionistic type theory}'', \bibinfo{series}{Studies in
+  proof theory}~\textbf{\bibinfo{volume}{1}}, \bibinfo{publisher}{Bibliopolis}
+  (\bibinfo{year}{1984}).
+%Type = Software
+\bibitem[{Mizar(2022)}]{mizar}
+\textsc{\bibinfo{author}{Mizar}},
+  \bibinfo{version}{``\bibinfo{title}{Mizar}''}, version 8.1.11
+  (\bibinfo{year}{2022}). \url{http://mizar.uwb.edu.pl/}.
+%Type = Book
+\bibitem[{Moschovakis(1994)}]{moschovakis1994notes}
+\textsc{\bibinfo{author}{Y.N. Moschovakis}}, ``\bibinfo{title}{Notes on Set
+  Theory}'', Springer Texts in Electrical Engineering,
+  \bibinfo{publisher}{Springer-Verlag} (\bibinfo{year}{1994}).
+%Type = Inproceedings
+\bibitem[{de~Moura and Ullrich(2021)}]{DBLP:conf/cade/Moura021}
+\textsc{\bibinfo{author}{L.~de~Moura}, \bibinfo{author}{S.~Ullrich}},
+  \bibinfo{title}{The {Lean} 4 theorem prover and programming language}, in:
+  \bibinfo{editor}{A.~Platzer}, \bibinfo{editor}{G.~Sutcliffe} (Eds.),
+  \bibinfo{booktitle}{Automated Deduction - {CADE} 28 - 28th International
+  Conference on Automated Deduction, Virtual Event, July 12-15, 2021,
+  Proceedings}, \bibinfo{series}{Lecture Notes in Computer Science}
+  \textbf{\bibinfo{volume}{12699}}, \bibinfo{publisher}{Springer}:
+  \bibinfo{pages}{625--635} (\bibinfo{year}{2021}).
+%Type = Inproceedings
+\bibitem[{Nipkow(1993)}]{Nipkow-LF-91}
+\textsc{\bibinfo{author}{T.~Nipkow}}, \bibinfo{title}{Order-sorted polymorphism
+  in {Isabelle}}, in: \bibinfo{editor}{G.~Huet}, \bibinfo{editor}{G.~Plotkin}
+  (Eds.), \bibinfo{booktitle}{Logical Environments},
+  \bibinfo{publisher}{Cambridge University Press}: \bibinfo{pages}{164--188}
+  (\bibinfo{year}{1993}).
+%Type = Inproceedings
+\bibitem[{Nipkow and Ro{\ss}kopf(2021)}]{10.1007/978-3-030-79876-5_6}
+\textsc{\bibinfo{author}{T.~Nipkow}, \bibinfo{author}{S.~Ro{\ss}kopf}},
+  \bibinfo{title}{Isabelle's metalogic: Formalization and proof checker}, in:
+  \bibinfo{editor}{A.~Platzer}, \bibinfo{editor}{G.~Sutcliffe} (Eds.),
+  \bibinfo{booktitle}{Automated Deduction -- CADE 28},
+  \bibinfo{publisher}{Springer International Publishing},
+  \bibinfo{address}{Cham}: \bibinfo{pages}{93--110} (\bibinfo{year}{2021}).
+%Type = Inproceedings
+\bibitem[{Obua(2006)}]{DBLP:conf/ictac/Obua06}
+\textsc{\bibinfo{author}{S.~Obua}}, \bibinfo{title}{Partizan games in
+  {Isabelle/HOLZF}}, in: \bibinfo{editor}{K.~Barkaoui},
+  \bibinfo{editor}{A.~Cavalcanti}, \bibinfo{editor}{A.~Cerone} (Eds.),
+  \bibinfo{booktitle}{Theoretical Aspects of Computing - {ICTAC} 2006, Third
+  International Colloquium, Tunis, Tunisia, November 20-24, 2006, Proceedings},
+  \bibinfo{series}{Lecture Notes in Computer Science}
+  \textbf{\bibinfo{volume}{4281}}, \bibinfo{publisher}{Springer}:
+  \bibinfo{pages}{272--286} (\bibinfo{year}{2006}).
+%Type = Article
+\bibitem[{Paulson(1989)}]{Paulson1989}
+\textsc{\bibinfo{author}{L.C. Paulson}}, \bibinfo{title}{The foundation of a
+  generic theorem prover}, \textit{\bibinfo{journal}{Journal of Automated
+  Reasoning}} \textbf{\bibinfo{volume}{5}}: \bibinfo{pages}{363--397}
+  (\bibinfo{year}{1989}).
+%Type = Book
+\bibitem[{Paulson(1994)}]{DBLP:books/sp/Paulson94}
+\textsc{\bibinfo{author}{L.C. Paulson}}, ``\bibinfo{title}{Isabelle - {A}
+  Generic Theorem Prover (with a contribution by T. Nipkow)}'',
+  \bibinfo{series}{Lecture Notes in Computer Science}
+  \textbf{\bibinfo{volume}{828}}, \bibinfo{publisher}{Springer}
+  (\bibinfo{year}{1994}).
+%Type = Article
+\bibitem[{Paulson(1995)}]{Paulson1995-wz}
+\textsc{\bibinfo{author}{L.C. Paulson}}, \bibinfo{title}{Set theory for
+  verification. {II}: Induction and recursion},
+  \textit{\bibinfo{journal}{Journal of Automated Reasoning}}
+  \textbf{\bibinfo{volume}{15}}: \bibinfo{pages}{167--215}
+  (\bibinfo{year}{1995}).
+%Type = Article
+\bibitem[{Paulson(2003)}]{paulson_2003}
+\textsc{\bibinfo{author}{L.C. Paulson}}, \bibinfo{title}{The relative
+  consistency of the axiom of choice mechanized using {Isabelle/ZF}},
+  \textit{\bibinfo{journal}{LMS Journal of Computation and Mathematics}}
+  \textbf{\bibinfo{volume}{6}}: \bibinfo{pages}{198--248}
+  (\bibinfo{year}{2003}).
+%Type = Article
+\bibitem[{Paulson(2019)}]{ZFC_in_HOL-AFP}
+\textsc{\bibinfo{author}{L.C. Paulson}}, \bibinfo{title}{{Z}ermelo {F}raenkel
+  set theory in higher-order logic}, \textit{\bibinfo{journal}{Archive of
+  Formal Proofs}}  (\bibinfo{year}{2019}).
+  \bibinfo{note}{\url{http://isa-afp.org/entries/ZFC_in_HOL.html}, Formal proof
+  development}.
+%Type = Inproceedings
+\bibitem[{Paulson(2022)}]{2022arXiv220503159P}
+\textsc{\bibinfo{author}{L.C. Paulson}}, \bibinfo{title}{Wetzel:
+  {F}ormalisation of an undecidable problem linked to the {C}ontinuum
+  {H}ypothesis}, in: \bibinfo{editor}{K.~Buzzard}, \bibinfo{editor}{T.~Kutsia}
+  (Eds.), \bibinfo{booktitle}{Intelligent Computer Mathematics},
+  \bibinfo{publisher}{Springer International Publishing},
+  \bibinfo{address}{Cham}: \bibinfo{pages}{92--106} (\bibinfo{year}{2022}).
+%Type = Article
+\bibitem[{Paulson and Grabczewski(1996)}]{DBLP:journals/jar/PaulsonG96}
+\textsc{\bibinfo{author}{L.C. Paulson}, \bibinfo{author}{K.~Grabczewski}},
+  \bibinfo{title}{Mechanizing set theory}, \textit{\bibinfo{journal}{J. Autom.
+  Reasoning}} \textbf{\bibinfo{volume}{17}}: \bibinfo{pages}{291--323}
+  (\bibinfo{year}{1996}).
+%Type = Inproceedings
+\bibitem[{Pfenning and Paulin{-}Mohring(1989)}]{DBLP:conf/mfps/PfenningP89}
+\textsc{\bibinfo{author}{F.~Pfenning}, \bibinfo{author}{C.~Paulin{-}Mohring}},
+  \bibinfo{title}{Inductively defined types in the calculus of constructions},
+  in: \bibinfo{editor}{M.G. Main}, \bibinfo{editor}{A.~Melton},
+  \bibinfo{editor}{M.W. Mislove}, \bibinfo{editor}{D.A. Schmidt} (Eds.),
+  \bibinfo{booktitle}{Mathematical Foundations of Programming Semantics, 5th
+  International Conference, Tulane University, New Orleans, Louisiana, USA,
+  March 29 - April 1, 1989, Proceedings}, \bibinfo{series}{Lecture Notes in
+  Computer Science} \textbf{\bibinfo{volume}{442}},
+  \bibinfo{publisher}{Springer}: \bibinfo{pages}{209--228}
+  (\bibinfo{year}{1989}).
+%Type = Incollection
+\bibitem[{Pollack(1998)}]{MR1686867}
+\textsc{\bibinfo{author}{R.~Pollack}}, \bibinfo{title}{How to believe a
+  machine-checked proof}, in: \bibinfo{booktitle}{Twenty-five years of
+  constructive type theory ({V}enice, 1995)}, \bibinfo{series}{Oxford Logic
+  Guides}~\textbf{\bibinfo{volume}{36}}, pp. \bibinfo{pages}{205--220},
+  \bibinfo{publisher}{Oxford Univ. Press, New York}: \bibinfo{pages}{205--220}
+  (\bibinfo{year}{1998}).
+%Type = Inproceedings
+\bibitem[{Prawitz(1971)}]{MR0387024}
+\textsc{\bibinfo{author}{D.~Prawitz}}, \bibinfo{title}{Ideas and results in
+  proof theory}, in: \bibinfo{booktitle}{Proceedings of the {S}econd
+  {S}candinavian {L}ogic {S}ymposium ({U}niv. {O}slo, {O}slo, 1970)},
+  \bibinfo{series}{Studies in Logic and the Foundations of
+  Mathematics}~\textbf{\bibinfo{volume}{63}}, pp. \bibinfo{pages}{235--307}
+  (\bibinfo{year}{1971}).
+%Type = Misc
+\bibitem[{Scholze(2020)}]{LTE2020}
+\textsc{\bibinfo{author}{P.~Scholze}}, \bibinfo{title}{{Liquid Tensor
+  Experiment}}, \bibinfo{howpublished}{Xena Project blog post},
+  (\bibinfo{year}{2020}).
+  \bibinfo{note}{\href{https://xenaproject.wordpress.com/2020/12/05/liquid-tensor-experiment/}{\texttt{xenaproject.wordpress.com/2020/12/05/liquid-tensor-experiment/}}}.
+%Type = Misc
+\bibitem[{Scholze(2021)}]{LTE2021}
+\textsc{\bibinfo{author}{P.~Scholze}}, \bibinfo{title}{Half a year of the
+  {Liquid Tensor Experiment}: Amazing developments},
+  \bibinfo{howpublished}{Xena Project blog post},  (\bibinfo{year}{2021}).
+  \bibinfo{note}{\href{https://xenaproject.wordpress.com/2021/06/05/half-a-year-of-the-liquid-tensor-experiment-amazing-developments/}{\texttt{https://xenaproject.wordpress.com/2021/06/05/half-a-year-of-the-}}
+    \href{https://xenaproject.wordpress.com/2021/06/05/half-a-year-of-the-liquid-tensor-experiment-amazing-developments/}{\texttt{liquid-tensor-experiment-amazing-developments/}}}.
+%Type = Article
+\bibitem[{Sánchez~Terraf(2020)}]{Delta_System_Lemma-AFP}
+\textsc{\bibinfo{author}{P.~Sánchez~Terraf}}, \bibinfo{title}{Cofinality and
+  the delta system lemma}, \textit{\bibinfo{journal}{Archive of Formal Proofs}}
+   (\bibinfo{year}{2020}).
+  \bibinfo{note}{\url{https://isa-afp.org/entries/Delta_System_Lemma.html},
+  Formal proof development}.
+%Type = Inproceedings
+\bibitem[{Wenzel(1999)}]{DBLP:conf/tphol/Wenzel99}
+\textsc{\bibinfo{author}{M.~Wenzel}}, \bibinfo{title}{Isar - {A} generic
+  interpretative approach to readable formal proof documents}, in:
+  \bibinfo{editor}{Y.~Bertot}, \bibinfo{editor}{G.~Dowek},
+  \bibinfo{editor}{A.~Hirschowitz}, \bibinfo{editor}{C.~Paulin{-}Mohring},
+  \bibinfo{editor}{L.~Th{\'{e}}ry} (Eds.), \bibinfo{booktitle}{Theorem Proving
+  in Higher Order Logics, 12th International Conference, TPHOLs'99, Nice,
+  France, September, 1999, Proceedings}, \bibinfo{series}{Lecture Notes in
+  Computer Science} \textbf{\bibinfo{volume}{1690}},
+  \bibinfo{publisher}{Springer}: \bibinfo{pages}{167--184}
+  (\bibinfo{year}{1999}).
+%Type = Inproceedings
+\bibitem[{Werner(1997)}]{10.5555/645869.668660}
+\textsc{\bibinfo{author}{B.~Werner}}, \bibinfo{title}{Sets in types, types in
+  sets}, in: \bibinfo{booktitle}{Proceedings of the Third International
+  Symposium on Theoretical Aspects of Computer Software}, TACS ’97,
+  \bibinfo{publisher}{Springer-Verlag}, \bibinfo{address}{Berlin, Heidelberg}:
+  \bibinfo{pages}{530--346} (\bibinfo{year}{1997}).
+%Type = Misc
+\bibitem[{Wiedijk(2005)}]{Formalizing100}
+\textsc{\bibinfo{author}{F.~Wiedijk}}, \bibinfo{title}{Formalizing 100
+  theorems}, \bibinfo{howpublished}{Web page},  (\bibinfo{year}{2005}).
+  \bibinfo{note}{\url{https://www.cs.ru.nl/~freek/100/} (retrieved 29 May
+  2022)}.
+%Type = Incollection
+\bibitem[{Wiedijk(2012)}]{zbMATH06319597}
+\textsc{\bibinfo{author}{F.~Wiedijk}}, \bibinfo{title}{Pollack-inconsistency},
+  in: \bibinfo{booktitle}{Proceedings of the 9th international workshop on user
+  interfaces for theorem provers (UITP10), Edinburgh, UK, July 15, 2010}, pp.
+  \bibinfo{pages}{85--100}, \bibinfo{publisher}{Amsterdam: Elsevier}:
+  \bibinfo{pages}{85--100} (\bibinfo{year}{2012}).
+
+\end{thebibliography}\end{small}
