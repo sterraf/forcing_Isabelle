@@ -40,9 +40,11 @@ previous ones to have them in $M[G]$:
     \beta \mid \exists\tau\in V_\beta.\  \mathit{snd}(x) \forces
     \phi\ [\mathit{fst}(x),\tau,y_1,\dots,y_n]\bigr\}}
 \]
-Here, $\mathit{fst}(\lb a,b\rb) = a$, $\mathit{snd}(\lb a,b\rb) = b$
-(with default value $0$ for non pairs).
-All ground replacement
+Here, $\mathit{fst}(\lb a,b\rb) = a$ and $\mathit{snd}(\lb a,b\rb) = b$.
+% (with default value $0$ for non pairs).
+The map $\phi\mapsto\psi$ is
+the function $\calF$ referred to in the abstract.
+All such “ground” replacement
 instances appear in the locale \locale{M{\uscore}ZF3} and form the set
 \isa{instances3{\uscore}fms}.
 
@@ -66,7 +68,7 @@ construction of a wellorder of $X$ given a choice function on
 $\Pow(X)$), and to show its absoluteness.
 
 The $21$ formulas up to this point are collected into the set
-\isa{overhead{\uscore}notCH}, which is enough to
+\isa{overhead{\uscore}notCH} (called $\Omega$ in the abstract), which is enough to
 force $\neg\CH$. To force $\CH$, we required one further instance for
 the absoluteness of the recursive construction in the proof of
 Dependent Choices from $\AC$. A listing with the names of all the formulas
