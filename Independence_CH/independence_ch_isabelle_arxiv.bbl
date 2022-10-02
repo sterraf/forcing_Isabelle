@@ -12,7 +12,8 @@
 %Type = Article
 \bibitem[{Avigad(2020)}]{2020arXiv200909541A}
 \textsc{\bibinfo{author}{J.~Avigad}}, \bibinfo{title}{Foundations},
-  \textit{\bibinfo{journal}{arXiv e-prints}}  (\bibinfo{year}{2020}).
+  \textit{\bibinfo{journal}{arXiv e-prints}}
+  \textbf{\bibinfo{volume}{2009.09541}} (\bibinfo{year}{2020}).
   \bibinfo{note}{For the forthcoming Handbook of Proof Assistants and Their
   Applications in Mathematics and Computer Science, edited by Jasmin Blanchette
   and Assia Mahboubi}.
@@ -25,7 +26,8 @@
   \bibinfo{author}{L.~Paulson}, \bibinfo{author}{D.~Schleicher},
   \bibinfo{author}{B.~Stock}, \bibinfo{author}{E.~Zelmanov}},
   \bibinfo{title}{Mathematical proof between generations},
-  \textit{\bibinfo{journal}{arXiv e-prints}}  (\bibinfo{year}{2022}).
+  \textit{\bibinfo{journal}{arXiv e-prints}}
+  \textbf{\bibinfo{volume}{2207.04779}} (\bibinfo{year}{2022}).
 %Type = Article
 \bibitem[{de~Bruijn(1972)}]{MR0321704}
 \textsc{\bibinfo{author}{N.G. de~Bruijn}}, \bibinfo{title}{Lambda calculus
@@ -38,7 +40,8 @@
 \bibitem[{Buzzard(2021)}]{2021arXiv211211598B}
 \textsc{\bibinfo{author}{K.~Buzzard}}, \bibinfo{title}{What is the point of
   computers? {A} question for pure mathematicians},
-  \textit{\bibinfo{journal}{arXiv e-prints}}  (\bibinfo{year}{2021}).
+  \textit{\bibinfo{journal}{arXiv e-prints}}
+  \textbf{\bibinfo{volume}{2112.11598}} (\bibinfo{year}{2021}).
 %Type = Inproceedings
 \bibitem[{Buzzard et~al.(2020)Buzzard, Commelin and
   Massot}]{10.1145/3372885.3373830}
@@ -83,7 +86,7 @@
 \textsc{\bibinfo{author}{J.~Davenport}, \bibinfo{author}{B.~Poonen},
   \bibinfo{author}{J.~Maynard}, \bibinfo{author}{H.~Helfgott},
   \bibinfo{author}{P.H. Tiep}, \bibinfo{author}{L.~Cruz-Filipe}},
-  \bibinfo{title}{Machine-assisted proofs (icm 2018 panel)},
+  \bibinfo{title}{Machine-assisted proofs ({ICM 2018 Panel})},
   (\bibinfo{year}{2018}).
 %Type = Inproceedings
 \bibitem[{De~Lon et~al.(2021)De~Lon, Koepke, Lorenzen, Marti, Sch{\"u}tz and
@@ -162,7 +165,7 @@
 \textsc{\bibinfo{author}{E.~Gunther}, \bibinfo{author}{M.~Pagano},
   \bibinfo{author}{P.~S{\'a}nchez~Terraf}}, \bibinfo{title}{{Mechanization of
   Separation in Generic Extensions}}, \textit{\bibinfo{journal}{arXiv
-  e-prints}}  (\bibinfo{year}{2019}).
+  e-prints}} \textbf{\bibinfo{volume}{1901.03313}} (\bibinfo{year}{2019}).
 %Type = Inproceedings
 \bibitem[{Gunther et~al.(2020)Gunther, Pagano and
   S{\'a}nchez~Terraf}]{2020arXiv200109715G}
@@ -345,9 +348,10 @@
 \textsc{\bibinfo{author}{L.C. Paulson}}, \bibinfo{title}{Wetzel:
   {F}ormalisation of an undecidable problem linked to the {C}ontinuum
   {H}ypothesis}, in: \bibinfo{editor}{K.~Buzzard}, \bibinfo{editor}{T.~Kutsia}
-  (Eds.), \bibinfo{booktitle}{Intelligent Computer Mathematics},
-  \bibinfo{publisher}{Springer International Publishing},
-  \bibinfo{address}{Cham}: \bibinfo{pages}{92--106} (\bibinfo{year}{2022}).
+  (Eds.), \bibinfo{booktitle}{Intelligent Computer Mathematics}
+  \textbf{\bibinfo{volume}{2205.03159}}, \bibinfo{publisher}{Springer
+  International Publishing}, \bibinfo{address}{Cham}: \bibinfo{pages}{92--106}
+  (\bibinfo{year}{2022}).
 %Type = Article
 \bibitem[{Paulson and Grabczewski(1996)}]{DBLP:journals/jar/PaulsonG96}
 \textsc{\bibinfo{author}{L.C. Paulson}, \bibinfo{author}{K.~Grabczewski}},
