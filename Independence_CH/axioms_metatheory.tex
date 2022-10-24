@@ -51,7 +51,8 @@ axiomatization\isanewline
   and Union :: "i ⇒ i"  (‹⋃\_› [90] 90)\isanewline
   and PrimReplace :: "[i, [i, i] ⇒ o] ⇒ i"
 \end{isabelle}
-\noindent with these axioms
+\noindent After the definitions of $\notin$, $\subseteq$, $\isa{succ}$,
+and relative quantifications are introduced, the following axioms are postulated:
 \begin{isabelle}
 ZF\_Base.Pow\_iff: ⋀A B. A ∈ Pow(B) ⟷ A ⊆ B\isanewline
 ZF\_Base.Union\_iff: ⋀A C. A ∈ ⋃C ⟷ (∃B∈C. A ∈ B)\isanewline

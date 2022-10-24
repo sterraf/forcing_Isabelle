@@ -39,6 +39,18 @@ Flypitch requires choice in the metatheory
 entirely in $\ZF$. %%  and only imports the Isabelle theory postulating
 %% $\AC$ for demostration purposes.
 
+This is perhaps an appropriate time to insist that we have \emph{not}
+formalized the relative consistency of $\neg\CH$, and we are actually
+not aiming for that in the short term. In our context, going for the
+plain consistency result seems off the mark, since we can not weaken
+our base theory (which is essentially equivalent to $\ZF$)%%,
+%% and we catch our tail.
+Even if we intended to do so, the standard route to use ctms for a
+relative consistency proof (through the Reflection Theorem) is
+prohibitive for us, since our metatheory does not have the required
+induction principles (on Isabelle/ZF formulas---in contrast to
+formulas coded as sets, as in our presentation).
+
 We believe that our alternative formalization using the ctm approach
 over Isabelle/ZF might be more appealing to set-theorists because of the
 type-theoretic machinery used in Flypitch, and % might be a bit alien
@@ -87,6 +99,31 @@ Larson's $\forall k\ \omega^{\omega}\longrightarrow(\omega^\omega,k)$
 clear way the convenience of the interaction with Isabelle/HOL
 (which is also paid in consistency-strength currency
 \cite[Sect.~3]{DBLP:conf/ictac/Obua06}).
+
+Concerning the minimum amount of Replacement needed to construct
+forcing extensions, only recently we learned about Mathias' work on the
+subject (for which a summary is offered in
+\cite[Sect.~6]{kanamori-mathias}). In
+\cite[Sect.~1]{mathias:hal-01188043}, models $M$ of Zermelo Set Theory
+are offered for which each of the inclusions $M\subseteq M[G]$ and
+$M\supseteq M[G]$ fail, where the poset $\pP$ is the trivial $\{\1
+\}$. In one of them, $K$, we have $\om\in K \sm K[G]$, hence the
+ordinals do not coincide.
+
+Also, in the reference \cite{mathias-provident}, a reasonably minimal
+fragment \textsc{Prov} of $\ZF$ that allows to do set forcing is
+identified, and transitive sets satisfying it are called
+\emph{provident}. Existence of rank and of transitive closure are
+among them; hence their appearance in our list seems
+justified. Nevertheless, \textsc{Prov} is far weaker than the
+fragments of $\ZF$ considered here, since it is a restriction of
+Kripke-Platek Set Theory, and thus it does not include neither
+Powerset nor full Separation. The detailed theory of provident sets is
+developed in \cite{mathias-bowler-gentle}. % Its Section~0 is very
+% readable.
+
+
+
 
 %%% Local Variables: 
 %%% mode: latex
