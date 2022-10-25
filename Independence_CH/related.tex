@@ -32,7 +32,6 @@ universe level higher than the types used to construct them”
 able to avoid such strength: At least, $\Con(\ZFC)$ is provable in
 their context. %, a requisite to get either unprovability result.
 % by Gödel's Second).
-
 On a lesser note, in order to prove $\AC$ in the generic extension,
 Flypitch requires choice in the metatheory
 \cite[p.~11]{han_et_al:LIPIcs:2019:11074}, while our formalization works
@@ -43,7 +42,7 @@ This is perhaps an appropriate time to insist that we have \emph{not}
 formalized the relative consistency of $\neg\CH$, and we are actually
 not aiming for that in the short term. In our context, going for the
 plain consistency result seems off the mark, since we can not weaken
-our base theory (which is essentially equivalent to $\ZF$)%%,
+our base theory (which is essentially equivalent to $\ZF$). %%,
 %% and we catch our tail.
 Even if we intended to do so, the standard route to use ctms for a
 relative consistency proof (through the Reflection Theorem) is
@@ -51,7 +50,7 @@ prohibitive for us, since our metatheory does not have the required
 induction principles (on Isabelle/ZF formulas---in contrast to
 formulas coded as sets, as in our presentation).
 
-We believe that our alternative formalization using the ctm approach
+We believe that our formalization using the ctm approach
 over Isabelle/ZF might be more appealing to set-theorists because of the
 type-theoretic machinery used in Flypitch, and % might be a bit alien
 since absoluteness grants us extra naturality. This last point may also
@@ -84,7 +83,7 @@ typed discipline provides aid to write succinctly and many assumptions
 are satisfied by mere notation. To be clear, those benefits come from
 doing set theory in a non set-theoretical language. On the other
 hand, Isar proofs, as the one shown in
-Sec.~\ref{sec:sample-formal-proof}, are easier to write and understand
+Sec.~\ref{sec:sample-formal-proof}, are easier to understand
 than the language of tactics of Lean.
 
 A sweet spot combining the best of both worlds is to be found on
