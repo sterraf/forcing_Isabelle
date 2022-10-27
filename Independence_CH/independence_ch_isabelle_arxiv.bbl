@@ -1,5 +1,5 @@
 \providecommand{\noopsort}[1]{}
-\begin{small}\begin{thebibliography}{54}
+\begin{small}\begin{thebibliography}{58}
 \expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
 \providecommand{\bibinfo}[2]{#2}
 \ifx\xfnm\relax \def\xfnm[#1]{\unskip,\space#1}\fi
@@ -246,6 +246,12 @@
   \bibinfo{publisher}{Springer-Verlag} (\bibinfo{year}{2002}),
   \bibinfo{edition}{third} edition. \bibinfo{note}{Corrected fourth printing,
   2006}.
+%Type = Article
+\bibitem[{Kanamori(2016)}]{kanamori-mathias}
+\textsc{\bibinfo{author}{A.~Kanamori}}, \bibinfo{title}{Mathias and set
+  theory}, \textit{\bibinfo{journal}{Mathematical Logic Quarterly}}
+  \textbf{\bibinfo{volume}{62}}: \bibinfo{pages}{278--294}
+  (\bibinfo{year}{2016}).
 %Type = Incollection
 \bibitem[{Koutsoukou-Argyraki(2022)}]{angeliki}
 \textsc{\bibinfo{author}{A.~Koutsoukou-Argyraki}}, \bibinfo{title}{History of
@@ -264,6 +270,28 @@
   ``\bibinfo{title}{Intuitionistic type theory}'', \bibinfo{series}{Studies in
   proof theory}~\textbf{\bibinfo{volume}{1}}, \bibinfo{publisher}{Bibliopolis}
   (\bibinfo{year}{1984}).
+%Type = Inproceedings
+\bibitem[{Mathias(2008)}]{mathias:hal-01188043}
+\textsc{\bibinfo{author}{A.R.D. Mathias}}, \bibinfo{title}{Set forcing over
+  models of {Zermelo} or {Mac Lane}}, in: \bibinfo{editor}{Libert},
+  \bibinfo{editor}{Thierry}, \bibinfo{editor}{Hinnion},
+  \bibinfo{editor}{Roland} (Eds.), \bibinfo{booktitle}{{One hundred years of
+  axiomatic set theory}}, \bibinfo{series}{Cahiers Centre
+  Logique}~\textbf{\bibinfo{volume}{17}}, \bibinfo{publisher}{{Acad.-Bruylant,
+  Louvain-la-Neuve}}, \bibinfo{address}{Bruxelles, Belgium}:
+  \bibinfo{pages}{41--66} (\bibinfo{year}{2008}).
+%Type = Article
+\bibitem[{Mathias(2015)}]{mathias-provident}
+\textsc{\bibinfo{author}{A.R.D. Mathias}}, \bibinfo{title}{Provident sets and
+  rudimentary set forcing}, \textit{\bibinfo{journal}{Fundamenta Mathematicae}}
+  \textbf{\bibinfo{volume}{230}}: \bibinfo{pages}{99--148}
+  (\bibinfo{year}{2015}).
+%Type = Article
+\bibitem[{Mathias and Bowler(2015)}]{mathias-bowler-gentle}
+\textsc{\bibinfo{author}{A.R.D. Mathias}, \bibinfo{author}{N.J. Bowler}},
+  \bibinfo{title}{Rudimentary recursion, gentle functions and provident sets},
+  \textit{\bibinfo{journal}{Notre Dame Journal of Formal Logic}}
+  \textbf{\bibinfo{volume}{56}}: \bibinfo{pages}{3--60} (\bibinfo{year}{2015}).
 %Type = Software
 \bibitem[{Mizar(2022)}]{mizar}
 \textsc{\bibinfo{author}{Mizar}},
