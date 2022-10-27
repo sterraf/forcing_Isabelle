@@ -8,6 +8,12 @@ arxiv="$rootbase"_arxiv.tex
 tgz="$rootbase"_arxiv.tar.gz
 extra_files="llncs.cls"
 
+if [ $rootbase.bbl -nt $bbl ]
+then
+   echo "Error: "$rootbase.bbl" newer than "$bbl"!"
+   exit 1
+fi
+
 pdflatex -draftmode \\nonstopmode \\input $root > /dev/null
 bibtex $rootbase
 makeindex $rootbase
