@@ -1,0 +1,3 @@
+We discuss some highlights of our computer-verified proof of the construction, given a countable transitive set-model M of ZFC, of generic extensions satisfying ZFC + ¬CH and ZFC + CH. Moreover, let R be the set of instances of the Axiom of Replacement. We isolated a 21-element subset Omega of R and defined F:R -> R such that for every Phi subset of R and M-generic G, (M satisfies ZC U F``Phi U Omega) implies (M[G] satisfies ZC U Phi U {¬CH}), where ZC is Zermelo set theory with Choice.
+
+To achieve this, we worked in the proof assistant Isabelle, basing our development on the Isabelle/ZF library by L. Paulson and others.
