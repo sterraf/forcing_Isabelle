@@ -38,7 +38,7 @@ the assumptions in Table~\ref{tab:m-repl-instances}.
 \begin{table}[!h]
 \centering
 \begin{threeparttable}
-\begin{tabular}{r<{\stepcounter{LamReplCount}\theLamReplCount.} >{\hspace{1ex}}l @{\hspace{0.8em}} l}
+\begin{tabular}{r<{\stepcounter{LamReplCount}\theLamReplCount.} >{\hspace{1ex}}l @{\hspace{0.8em}} p{16.3em}}
   \toprule
   \multicolumn{1}{r}{No.} & Name & Instance  \\
   \midrule
@@ -50,7 +50,9 @@ the assumptions in Table~\ref{tab:m-repl-instances}.
   & \isa{lam{\uscore}replacement{\uscore}middle{\uscore}del} &
         $\lamRepl{\langle \mathit{fst}(\mathit{fst}(x)),\mathit{snd}(\mathit{snd}(x)) \rangle}$ \\
   & \isa{lam{\uscore}replacement{\uscore}prodRepl} &
-        $\lamRepl{\langle \mathit{snd}(\mathit{fst}(x)),\langle \mathit{fst}(\mathit{fst}(x)),\mathit{snd}(\mathit{snd}(x))\rangle \rangle}$\\
+  $x \mapsto \bigl\langle \mathit{snd}(\mathit{fst}(x)),\bigr.$
+  \newline
+  $\bigl.\phantom{x \mapsto \langle \mathit{snd}}\langle \mathit{fst}(\mathit{fst}(x)),\mathit{snd}(\mathit{snd}(x))\rangle \bigr\rangle$\\
   \midrule
   \multicolumn{3}{@{}l}{\hspace{0.3em}{\textit{{Separation Instances}}}}\\
   & \isa{middle{\uscore}separation} & $\mathit{snd}(\mathit{fst}(x))=\mathit{fst}(\mathit{snd}(x))$ \\
