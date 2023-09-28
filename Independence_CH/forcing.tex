@@ -37,15 +37,32 @@ Both assumptions are then shown to be equivalent:
 %% \end{isabelle}
 
 For stating the axiom schemes, \session{ZF-Constructible} defines
-the expressions
+$\isa{separation}(N,Q)$:
 \[
-  \isa{separation}(N,Q)
-  \text{ and }
-  \isa{strong{\uscore}replacement}(N,R)
+  \forall z[N].\ \exists y[N].\ \forall
+  x[N].\ x\in y \longleftrightarrow x\in z \land Q(x),
 \]
+and $\isa{strong{\uscore}replacement}(N,R)$:
+\begin{multline*}
+  \forall
+  A[N].\ \isa{univalent}(N,A,R) \longrightarrow \\
+  (\exists Y[N].\ \forall b[N].\ b\in Y\longleftrightarrow (\exists x[N].\ x\in
+  A \land R(x,b))),
+\end{multline*}
+%% \begin{isabelle}%
+%% separation{\isacharparenleft}{\kern0pt}N{\isacharcomma}{\kern0pt}\ Q{\isacharparenright}{\kern0pt}\ {\isasymequiv}\ {\isasymforall}z{\isacharbrackleft}{\kern0pt}N{\isacharbrackright}{\kern0pt}{\isachardot}{\kern0pt}\ {\isasymexists}y{\isacharbrackleft}{\kern0pt}N{\isacharbrackright}{\kern0pt}{\isachardot}{\kern0pt}\ {\isasymforall}x{\isacharbrackleft}{\kern0pt}N{\isacharbrackright}{\kern0pt}{\isachardot}{\kern0pt}\ x\ {\isasymin}\ y\ {\isasymlongleftrightarrow}\ x\ {\isasymin}\ z\ {\isasymand}\ Q{\isacharparenleft}{\kern0pt}x{\isacharparenright}{\kern0pt}%
+%% \end{isabelle}%
+%% \begin{isabelle}%
+%% strong{\isacharunderscore}{\kern0pt}replacement{\isacharparenleft}{\kern0pt}N{\isacharcomma}{\kern0pt}\ R{\isacharparenright}{\kern0pt}\ {\isasymequiv}\isanewline
+%% {\isasymforall}A{\isacharbrackleft}{\kern0pt}N{\isacharbrackright}{\kern0pt}{\isachardot}{\kern0pt}\isanewline
+%% \isaindent{\ \ \ }univalent{\isacharparenleft}{\kern0pt}N{\isacharcomma}{\kern0pt}\ A{\isacharcomma}{\kern0pt}\ R{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\ {\isacharparenleft}{\kern0pt}{\isasymexists}Y{\isacharbrackleft}{\kern0pt}N{\isacharbrackright}{\kern0pt}{\isachardot}{\kern0pt}\ {\isasymforall}b{\isacharbrackleft}{\kern0pt}N{\isacharbrackright}{\kern0pt}{\isachardot}{\kern0pt}\ b\ {\isasymin}\ Y\ {\isasymlongleftrightarrow}\isanewline
+%% \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymexists}x{\isacharbrackleft}{\kern0pt}N{\isacharbrackright}{\kern0pt}{\isachardot}{\kern0pt}\ x\ {\isasymin}\ A\ {\isasymand}
+%% R{\isacharparenleft}{\kern0pt}x{\isacharcomma}{\kern0pt}\ b{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}%
+%% \end{isabelle}%
 whose first argument $N$ is a class and their second arguments $Q$ and
 $R$ are predicates of types $Q :: \tyi \fun \tyo$ and $R ::
-\tyi \fun \tyi \fun \tyo$, respectively. The Separation Axiom appears in
+\tyi \fun \tyi \fun \tyo$, respectively (the \isatt{univalent}
+predicate states that $R$ is functional in its first variable; see Appendix~\ref{sec:def-main-relative}). The Separation Axiom appears in
 \locale{M{\uscore}Z{\uscore}basic} as follows, where 
 \isa{\isasymphi} is free and \isa{\isacharat} denotes
 list concatenation:
@@ -65,7 +82,7 @@ $\isa{replacement{\uscore}assm}(M,\mathit{env},\phi)$ predicate:
 \begin{isabelle}
 {\isasymphi}\ {\isasymin}\ formula\ {\isasymlongrightarrow}\ env\ {\isasymin}\ list{\isacharparenleft}{\kern0pt}M{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\isanewline
 \ \ arity{\isacharparenleft}{\kern0pt}{\isasymphi}{\isacharparenright}{\kern0pt}\ {\isasymle}\ {\isadigit{2}}\ {\isacharplus}{\kern0pt}\isactrlsub {\isasymomega}\ length{\isacharparenleft}{\kern0pt}env{\isacharparenright}{\kern0pt}\ {\isasymlongrightarrow}\isanewline
-\ \ \ \ strong{\isacharunderscore}{\kern0pt}replacement{\isacharparenleft}{\kern0pt}{\isacharhash}{\kern0pt}{\isacharhash}{\kern0pt}M{\isacharcomma}{\kern0pt}{\isasymlambda}x\ y{\isachardot}{\kern0pt}\ {\isacharparenleft}{\kern0pt}M\ {\isacharcomma}{\kern0pt}\ {\isacharbrackleft}{\kern0pt}x{\isacharcomma}{\kern0pt}y{\isacharbrackright}{\kern0pt}{\isacharat}{\kern0pt}env\ {\isasymTurnstile}\ {\isasymphi}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}
+\ \ \ \ strong{\isacharunderscore}{\kern0pt}replacement{\isacharparenleft}{\kern0pt}{\isacharhash}{\kern0pt}{\isacharhash}{\kern0pt}M{\isacharcomma}{\kern0pt}{\isasymlambda}x\ y{\isachardot}{\kern0pt}\ {\isacharparenleft}{\kern0pt}M\ {\isacharcomma}{\kern0pt}\ {\isacharbrackleft}{\kern0pt}x{\isacharcomma}{\kern0pt}y{\isacharbrackright}{\kern0pt}{\isacharat}{\kern0pt}env\ {\isasymTurnstile}\ {\isasymphi}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose},
 \end{isabelle}
 %% % Same as above
 %% \begin{multline}\label{eq:replacement_assm_def}
@@ -73,6 +90,10 @@ $\isa{replacement{\uscore}assm}(M,\mathit{env},\phi)$ predicate:
 %%  \isa{strong{\uscore}replacement}(\isa{\#\#} M, \lambda x\, y.\ (M, [x,y]
 %% \mathbin{@} \mathit{env}  \models \varphi))
 %% \end{multline}
+which encodes the instance of replacement for the model $M$
+corresponding to the predicate $R(x,y)$ given by
+$\phi^M(x,y,x_0,\dots,x_n)$, where $\isatt{env} = [x_0,\dots,x_n]$.
+
 In turn, the \isa{{\isasymcdot}Replacement{\isasymcdot}} function
 takes a formula code and returns the corresponding replacement
 instance:

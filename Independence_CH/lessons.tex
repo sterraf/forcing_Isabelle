@@ -146,6 +146,10 @@ abstract but, as a colorful example, the formula $\forceisa({\cdot}0\in 1{\cdot}
 can be explicitly printed by Isabelle2021-1 (it spans nearly 20k symbols), but
 $\forceisa({\cdot}\neg{\cdot}\neg{\cdot}0\in 1{\cdot}{\cdot}{\cdot})$
 can not.
+(For this particular example, one reason for the blow-up in
+length comes from our encoding of negation using the “nand”
+connective, but otherwise the formulas grow bigger by the sheer
+complexity of the definition of the forcing relation.)
 
 Another point where computer science expertise was a prime asset was
 the very definition of $\forceisa$. As a
