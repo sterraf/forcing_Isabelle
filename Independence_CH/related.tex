@@ -41,16 +41,18 @@ entirely in $\ZF$. %%  and only imports the Isabelle theory postulating
 This is perhaps an appropriate time to insist that we have \emph{not}
 formalized the relative consistency of $\neg\CH$, and we are actually
 not aiming for that in the short term. In our context, going for the
-plain consistency result seems off the mark, since we can not weaken
-our base theory (which is essentially equivalent to $\ZF$). %%,
+plain consistency result (that is, proving the arithmetical statement
+$\Con(ZFC) \implies \Con(ZFC + \neg\CH)$ over a weak base theory)
+seems off the mark, since our base is fixed (and essentially equivalent to $\ZF$). %%,
 %% and we catch our tail.
-Even if we intended to do so, the standard route to use ctms for a
-relative consistency proof (through the Reflection Theorem) is
-prohibitive for us, since our metatheory does not have the required
-induction principles (on Isabelle/ZF formulas---in contrast to
-formulas coded as sets, as in our presentation).
+If we intended to do so, we would a need a development of a weak base with a
+new type of (external) formulas having the required
+induction principles, plus an interface from this new type to
+Isabelle/ZF. This might allow us to take the standard route to use ctms for a
+relative consistency proof (through a version of the Reflection
+Theorem proved by induction on the external formulas).
 
-We believe that our formalization using the ctm approach
+Back to the comparison, we believe that our formalization using the ctm approach
 over Isabelle/ZF might be more appealing to set-theorists because of the
 type-theoretic machinery used in Flypitch, and % might be a bit alien
 since absoluteness grants us extra naturality. This last point may also
