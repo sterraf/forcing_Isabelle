@@ -1,4 +1,4 @@
-\section{Recursions in cofinality}\label{sec:recursions-cofinality}
+\section{Recursions in cofinality and the Delta System Lemma}\label{sec:recursions-cofinality}
 
 As we mentioned near the end of
 Section~\ref{sec:aims-formalization-planning}, we decided to minimize
@@ -24,9 +24,40 @@ It turns out that the rest of the basic results on cofinality (namely,
 idempotence of $\cf$, that regular ordinals are cardinals, the
 cofinality of Alephs, König's Theorem) follow easily from the previous
 Lemma by “algebraic” reasoning only.
-
-We therefore expect that the relativization of these
+We expect that the relativization of these
 results be straightforward, when time permits.
+
+The AFP entry \cite{Delta_System_Lemma-AFP} also includes the
+formalization of the (absolute) Delta System Lemma (DSL). Formalizing its
+proof was rather straightforward, once the many prerequisites were
+taken care of. Some of those were really basic, for instance:
+\begin{itemize}
+\item $\omega$ injects into every infinite set;
+\item surjective images of countable sets are countable;
+\item the union over a countable index set $J$ of a family $X :: \tyi
+  \fun \tyi$ of countable sets is countable.
+\end{itemize}
+It was also convenient to isolate the relevant recursive construction
+principle (\isatt{bounded{\uscore}cardinal{\uscore}selection}) that
+appears in the proof of DSL, which was also useful for showing the
+first item:
+\begin{lemma}
+  Assume $F$ is nonempty,
+  $\gamma$ is a cardinal, and $Q$ is a binary predicate over $F$ satisfying 
+  \[
+    \forall X \sbq F.\ |X| < \gamma \implies \exists a\in F.\ \forall
+    x\in X.\ Q(s,a).
+  \]
+  Then there exists  $S:\gamma \to F$ such that
+  $Q(S(\alpha),S(\beta))$ for all $\alpha<\beta<\gamma$.
+\end{lemma}
+
+Concerning the relativization of the proof of DSL for its use in
+forcing, it required inserting proofs that all the relevant objects
+lied in the model $M$; this was only tedious. But the point where the
+last item above was used required some expansion due to an application
+of Replacement (the relevant $X$ was a class function).
+
 
 %%% Local Variables:
 %%% mode: latex
