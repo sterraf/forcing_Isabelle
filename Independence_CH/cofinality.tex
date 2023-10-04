@@ -24,29 +24,29 @@ It turns out that the rest of the basic results on cofinality (namely,
 idempotence of $\cf$, that regular ordinals are cardinals, the
 cofinality of Alephs, König's Theorem) follow easily from the previous
 Lemma by “algebraic” reasoning only.
-We expect that the relativization of these
-results be straightforward, when time permits.
+We expect the relativization of these
+results to be straightforward.
 
 The AFP entry \cite{Delta_System_Lemma-AFP} also includes the
 formalization of the (absolute) Delta System Lemma (DSL). Formalizing its
 proof was rather straightforward, once the many prerequisites were
 taken care of. Some of those were really basic, for instance:
-\begin{itemize}
-\item $\omega$ injects into every infinite set;
-\item surjective images of countable sets are countable;
-\item the union over a countable index set $J$ of a family $X :: \tyi
+\begin{enumerate}
+\item \label{item:1}$\omega$ injects into every infinite set;
+\item \label{item:2}surjective images of countable sets are countable;
+\item \label{item:3}the union over a countable index set $J$ of a family $X :: \tyi
   \fun \tyi$ of countable sets is countable.
-\end{itemize}
+\end{enumerate}
 It was also convenient to isolate the relevant recursive construction
 principle (\isatt{bounded{\uscore}cardinal{\uscore}selection}) that
-appears in the proof of DSL, which was also useful for showing the
-first item:
-\begin{lemma}
+appears in the proof of DSL, which was also useful for showing
+Item~\ref{item:1}:
+\begin{lemma}\label{lem:bdd-card-selection}
   Assume $F$ is nonempty,
   $\gamma$ is a cardinal, and $Q$ is a binary predicate over $F$ satisfying 
   \[
-    \forall X \sbq F.\ |X| < \gamma \implies \exists a\in F.\ \forall
-    x\in X.\ Q(s,a).
+    \forall Y \sbq F.\ |Y| < \gamma \implies \exists a\in F.\ \forall
+    y\in Y.\ Q(y,a).
   \]
   Then there exists  $S:\gamma \to F$ such that
   $Q(S(\alpha),S(\beta))$ for all $\alpha<\beta<\gamma$.
@@ -54,9 +54,12 @@ first item:
 
 Concerning the relativization of the proof of DSL for its use in
 forcing, it required inserting proofs that all the relevant objects
-lied in the model $M$; this was only tedious. But the point where the
-last item above was used required some expansion due to an application
-of Replacement (the relevant $X$ was a class function).
+lied in the model $M$; this was only tedious.
+A bit more effort was required at the point where Item~\ref{item:3}
+was used, because it involved an application of Replacement (being $X$
+a class function); relativizing
+Lemma~\ref{lem:bdd-card-selection} also required some work, because of the
+recursion.
 
 
 %%% Local Variables:

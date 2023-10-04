@@ -4,7 +4,9 @@
 In this appendix we list the complete set of axioms of Isabelle's
 metatheory and logic.
 
-\subsection{The metatheory Pure}
+\subsection{The metatheory $\Meta$}
+Below, the \isatt{PROP} operator corresponds to the
+injection $[\cdot]$ of Section~\ref{sec:isabelle-metalogic-meta}.
 \begin{isabelle}
 Pure.abstract\_rule: (⋀x. ?f(x) ≡ ?g(x)) ⟹ λx. ?f(x) ≡ λx. ?g(x)\isanewline
 Pure.combination: ?f ≡ ?g ⟹ ?x ≡ ?y ⟹ ?f(?x) ≡ ?g(?y)\isanewline
@@ -19,7 +21,7 @@ Pure.transitive: ?x ≡ ?y ⟹ ?y ≡ ?z ⟹ ?x ≡ ?z
 \subsection{IFOL and FOL}
 In the axioms \isa{refl}, \isa{subst}, \isa{allI}, \isa{spec},
 \isa{exE}, \isa{exI}, and \isa{eq\_reflection} there is a constraint
-for the \emph{type} of the variables \isa{a, b, x} to be in the class \isa{term\_class}.
+on the \emph{type} of the variables \isa{a, b, x}: It should be in the class \isa{term\_class}.
 \begin{isabelle}
 IFOL.FalseE: ⋀P. False ⟹ P\isanewline
 IFOL.refl:  (⋀a. a = a)\isanewline
