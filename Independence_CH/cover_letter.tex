@@ -1,0 +1,166 @@
+% This is samplepaper.tex, a sample chapter demonstrating the
+% LLNCS macro package for Springer Computer Science proceedings;
+% Version 2.20 of 2017/10/04
+%
+\documentclass[runningheads]{llncs}
+%
+%\usepackage[utf8]{inputenc}
+%\usepackage[final]{microtype}
+\usepackage{isabelle_indepCH,isabellesym_indepCH}
+\usepackage{booktabs,array,threeparttable}
+\input{header-indepCH}
+\usepackage{graphicx}
+% Used for displaying a sample figure. If possible, figure files should
+% be included in EPS format.
+%
+\hypersetup{
+  colorlinks,
+  urlcolor={blue},
+  linkcolor={blue!50!black},
+  citecolor={blue!50!black},
+}
+% If you use the hyperref package, please uncomment the following line
+% to display URLs in blue roman font according to Springer's eBook style:
+% \renewcommand\UrlFont{\color{blue}\rmfamily}
+\input{unicode_support}
+\usepackage{array}
+\newcounter{replInstCount}
+\setcounter{replInstCount}{0}
+
+\newcounter{LamReplCount}
+\setcounter{LamReplCount}{0}
+\begin{document}
+%
+\title{Cover Letter: Replies to Referee
+}
+%
+\titlerunning{Formalization of ctm forcing}%Lessons after formalizing ctm forcing}
+% If the paper title is too long for the running head, you can set
+% an abbreviated paper title here
+%
+\author{Emmanuel Gunther\inst{1} \and
+Miguel Pagano\inst{1} \and \\
+Pedro Sánchez Terraf\inst{1,2}%\orcidID{0000-0003-3928-6942}
+\and
+Matías Steinberg\inst{1}
+}
+%
+\authorrunning{E.~Gunther, M.~Pagano, P.~Sánchez Terraf, M.~Steinberg}
+% First names are abbreviated in the running head.
+% If there are more than two authors, 'et al.' is used.
+%
+\institute{Universidad Nacional de C\'ordoba. 
+  \\  Facultad de Matem\'atica, Astronom\'{\i}a,  F\'{\i}sica y
+  Computaci\'on.
+  \and
+    Centro de Investigaci\'on y Estudios de Matem\'atica (CIEM-FaMAF),
+    Conicet. C\'ordoba. Argentina. \\
+    \email{\{gunther,sterraf\}@famaf.unc.edu.ar\\
+        \{miguel.pagano,matias.steinberg\}@unc.edu.ar}
+}
+%
+\maketitle              % typeset the header of the contribution
+%
+First and foremost, we are very grateful
+for your comments and pointers. After the comments in this cover
+letter, you may find useful a version of the paper with highlighted
+changes.
+
+\begin{verbatim}
+p 5 l 33: Isabelle Z/F reaches Hessenberg's |A|.|A| = |A|: I
+ have no idea what this means.
+\end{verbatim}
+
+We expanded that section.
+
+\begin{verbatim}
+p 7 l 40: It would help to explain the type of cardinal_rel, in
+ particular explain that the first argument is M.
+\end{verbatim}
+
+Same.
+
+\begin{verbatim}
+p 8 l 19: You haven't said what a locale is; it would help to
+ explain that the text that follows the term is an explanation
+ of that.
+\end{verbatim}
+
+We did, in the last paragraph of Sect.~2.2. Should we expand on
+that?
+
+\begin{verbatim}
+p 8 bottom: it would help to show separation(N, Q) and
+ strong_replacement(N, R) and explain the formula at the bottom
+ of the page.
+\end{verbatim}
+
+Please indicate if the edition makes things clearer.
+
+\begin{verbatim}
+The example on page 11 is nice.
+\end{verbatim}
+
+Much appreciated!
+
+\begin{verbatim}
+p 13: it would be nice to say more about the Delta system lemma
+ and its proof (and whether it was relatively hard or easy
+ compared to other aspects of the formalization).
+\end{verbatim}
+
+We added comments to Appendix C.
+
+\begin{verbatim}
+p 16 last sentence of the first full paragraph ("Even if we
+ intended ..."): I don't understand what is going on here. Do
+ you mean relative consistency in terms of probability?  Is the
+ difficult proving soundness and completeness of first-order
+ logic?  You should clarify what this paragraph aims to get
+ across.
+\end{verbatim}
+
+We meant a finitary, relative consistency proof. We hope now
+that is better expressed on the manuscript.
+
+\begin{verbatim}
+p 17 toward the bottom: "They actually wrote the blueprint for
+ the formalization *afterwards* it was complete": this is
+ false. Commelin and Topaz have given many talks explaining how
+ the blueprint was used, and how essential it was to guiding the
+ collaboration. The project made key use of an online version of
+ the blueprint that showed the status of the formalization and
+ provided links from the informal text to the formal proof. The
+ prior sentence sounds wrong too. Even Scholze's post describes
+ the process of revising the proof and discovering new
+ approaches as they proceeded. If the authors want to make
+ claims about LTE, they should check the claims with a member of
+ the project to make sure they are accurate.
+\end{verbatim}
+
+We checked with Commelin and he acknowledged that there was some
+back and forth between the formalization effort and the
+blueprint. But he did not confirm that they shared the same kind of
+“feeling” we were trying to convey in that paragraph, so we deleted
+the comment. 
+
+\begin{verbatim}
+p 19 l -15: It would be helpful to say something about where the
+ blowup in length comes from.
+\end{verbatim}
+
+Done.
+
+\begin{verbatim}
+  If length is an issue, the appendices could be shortened, but
+ the data is interesting and I recommend keeping them if
+ possible.
+\end{verbatim}
+
+Thanks again for your support.
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% ispell-local-dictionary: "american"
+%%% End: 
