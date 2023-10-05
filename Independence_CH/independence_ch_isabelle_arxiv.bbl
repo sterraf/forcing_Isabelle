@@ -1,5 +1,5 @@
 \providecommand{\noopsort}[1]{}
-\begin{small}\begin{thebibliography}{58}
+\begin{small}\begin{thebibliography}{59}
 \expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
 \providecommand{\bibinfo}[2]{#2}
 \ifx\xfnm\relax \def\xfnm[#1]{\unskip,\space#1}\fi
@@ -94,7 +94,7 @@
 \textsc{\bibinfo{author}{A.~De~Lon}, \bibinfo{author}{P.~Koepke},
   \bibinfo{author}{A.~Lorenzen}, \bibinfo{author}{A.~Marti},
   \bibinfo{author}{M.~Sch{\"u}tz}, \bibinfo{author}{E.~Sturzenhecker}},
-  \bibinfo{title}{Beautiful formalizations in Isabelle/Naproche}, in:
+  \bibinfo{title}{Beautiful formalizations in {I}sabelle/{N}aproche}, in:
   \bibinfo{editor}{F.~Kamareddine}, \bibinfo{editor}{C.~Sacerdoti~Coen} (Eds.),
   \bibinfo{booktitle}{Intelligent Computer Mathematics: 14th International
   Conference, CICM 2021, Timisoara, Romania, July 26–31, 2021, Proceedings},
@@ -115,9 +115,9 @@
   theory}, in: \bibinfo{editor}{F.~Kamareddine},
   \bibinfo{editor}{C.~Sacerdoti~Coen} (Eds.), \bibinfo{booktitle}{Intelligent
   Computer Mathematics: 14th International Conference, CICM 2021, Timisoara,
-  Romania, July 26–31, 2021, Proceedings}, \bibinfo{publisher}{Springer
-  International Publishing}, \bibinfo{address}{Cham}: \bibinfo{pages}{3--18}
-  (\bibinfo{year}{2021}).
+  Romania, July 26–31, 2021, Proceedings},
+  \bibinfo{publisher}{Springer-Verlag}, \bibinfo{address}{Cham}:
+  \bibinfo{pages}{3--18} (\bibinfo{year}{2021}).
 %Type = Article
 \bibitem[{Gonthier(2008)}]{MR2463991}
 \textsc{\bibinfo{author}{G.~Gonthier}}, \bibinfo{title}{Formal proof---the
@@ -371,15 +371,21 @@
   Formal Proofs}}  (\bibinfo{year}{2019}).
   \bibinfo{note}{\url{http://isa-afp.org/entries/ZFC_in_HOL.html}, Formal proof
   development}.
+%Type = Article
+\bibitem[{Paulson(2021)}]{2021arXiv210411613P}
+\textsc{\bibinfo{author}{L.C. Paulson}}, \bibinfo{title}{A formalised theorem
+  in the partition calculus}, \textit{\bibinfo{journal}{Annals of Pure and
+  Applied Logic}}  (\bibinfo{year}{2021}). \bibinfo{note}{In press. Available
+  at \url{https://doi.org/10.17863/CAM.88991} and
+  \url{https://arxiv.org/abs/2104.11613}}.
 %Type = Inproceedings
 \bibitem[{Paulson(2022)}]{2022arXiv220503159P}
 \textsc{\bibinfo{author}{L.C. Paulson}}, \bibinfo{title}{Wetzel:
   {F}ormalisation of an undecidable problem linked to the {C}ontinuum
   {H}ypothesis}, in: \bibinfo{editor}{K.~Buzzard}, \bibinfo{editor}{T.~Kutsia}
-  (Eds.), \bibinfo{booktitle}{Intelligent Computer Mathematics}
-  \textbf{\bibinfo{volume}{2205.03159}}, \bibinfo{publisher}{Springer
-  International Publishing}, \bibinfo{address}{Cham}: \bibinfo{pages}{92--106}
-  (\bibinfo{year}{2022}).
+  (Eds.), \bibinfo{booktitle}{Intelligent Computer Mathematics},
+  \bibinfo{publisher}{Springer International Publishing},
+  \bibinfo{address}{Cham}: \bibinfo{pages}{92--106} (\bibinfo{year}{2022}).
 %Type = Article
 \bibitem[{Paulson and Grabczewski(1996)}]{DBLP:journals/jar/PaulsonG96}
 \textsc{\bibinfo{author}{L.C. Paulson}, \bibinfo{author}{K.~Grabczewski}},
