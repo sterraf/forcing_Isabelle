@@ -39,5 +39,7 @@ to be installed with the AFP component loaded (by downloading from
 https://www.isa-afp.org/download.html and following the instructions at https://www.isa-afp.org/using.html).
 The tool wrapper 'isabelle' should be on the `PATH` env var.
 
+Note that the complete development can also be checked and browsed with Isabelle2023.
+
 
 E. Gunther, M. Pagano, P. Sánchez Terraf, M. Steinberg (2022)
